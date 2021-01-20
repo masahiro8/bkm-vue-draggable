@@ -1,25 +1,21 @@
 <template>
-  <div class="expandbox" refType="expandbox" ref="root">
+  <div
+    class="draggable_expandbox"
+    refType="expandbox"
+    ref="root"
+    :style="frameStyle"
+  >
+    <div class="content" :style="frameStyle">
+      <slot />
+    </div>
     <DraggableVertical
-      ref="parent"
-      refType="parent"
-      :fixY="fixY"
-      :initialPosition="initialPosition.parent"
+      ref="child"
+      refType="child"
+      :initialPosition="initialPosition.child"
       :fitGridY="8"
       :forceHeight="16"
-      @set-rect="setHandleRectTop"
-    >
-      <div class="content" :style="frameStyle">
-        <slot />
-      </div>
-      <DraggableVertical
-        ref="child"
-        refType="child"
-        :initialPosition="initialPosition.child"
-        :fitGridY="8"
-        :forceHeight="16"
-        @set-rect="setHandleRectBottom"
-    /></DraggableVertical>
+      @set-rect="setHandleRectBottom"
+    />
     <div class="expandbox--frame" :style="frameStyle"></div>
   </div>
 </template>
@@ -52,17 +48,14 @@ export default {
   computed: {
     frameStyle() {
       return `top:${this.handleRects.top.y}px;height:${
-        this.handleRects.bottom.y + this.handleRects.bottom.height
+        this.handleRects.bottom.y +
+        this.handleRects.bottom.height -
+        this.handleRects.bottom.margin_y
       }px;`;
     },
   },
   mounted() {},
   methods: {
-    setHandleRectTop(rect) {
-      let handleRects = { ...this.handleRects };
-      handleRects.top = rect;
-      this.handleRects = handleRects;
-    },
     setHandleRectBottom(rect) {
       let handleRects = { ...this.handleRects };
       handleRects.bottom = rect;
@@ -72,11 +65,14 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.expandbox {
+.draggable_expandbox {
   position: relative;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   background-color: #eee;
+  pointer-events: none;
 }
 .expandbox--frame {
   background-color: red;
@@ -87,7 +83,7 @@ export default {
   z-index: 0;
   pointer-events: none;
 }
-.frameStyle {
+.content {
   position: relative;
   top: 0;
   left: 0;

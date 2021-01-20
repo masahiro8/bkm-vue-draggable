@@ -25,7 +25,13 @@
           :fitGridX="params.grid.x"
           :fitGridY="params.grid.y"
           :fit0="params.fit0"
-          >list1</DraggableItem
+          ><DraggableExpandBox
+            :initialPosition="{
+              parent: { x: 0, y: 0 },
+              child: { x: 0, y: 30 },
+            }"
+            >okoko</DraggableExpandBox
+          ></DraggableItem
         >
       </DragTarget>
       <DragTarget
@@ -59,6 +65,15 @@
           parent: { x: 0, y: 0 },
           child: { x: 0, y: 200 },
         }"
+        >okokokokok</ExpandBox
+      >
+    </div>
+    <div style="height: 400px; width: 80px">
+      <DraggableExpandBox
+        :initialPosition="{
+          parent: { x: 0, y: 0 },
+          child: { x: 0, y: 100 },
+        }"
       />
     </div>
   </div>
@@ -69,12 +84,14 @@ import DraggableItem from "./components/custom-draggable/DraggableItem";
 import DragTarget from "./components/custom-draggable/DragTarget";
 import { dragStore } from "./components/custom-draggable/DragStore";
 import ExpandBox from "./components/expand-box/ExpandBox";
+import DraggableExpandBox from "./components/expand-box/DraggableExpandBox";
 export default {
   name: "App",
   components: {
     DraggableItem,
     DragTarget,
     ExpandBox,
+    DraggableExpandBox,
   },
   mounted() {},
   methods: {

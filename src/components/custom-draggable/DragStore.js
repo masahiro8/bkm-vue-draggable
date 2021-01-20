@@ -46,7 +46,6 @@ const _dragStore = () => {
         }
       );
     });
-    console.log("hitTarget ", hits[0]);
     return hits[0];
   };
 

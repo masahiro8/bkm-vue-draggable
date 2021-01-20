@@ -1,6 +1,5 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    id:{{ itemId }}
     <slot />
   </div>
 </template>

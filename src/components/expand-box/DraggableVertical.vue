@@ -1,15 +1,19 @@
 <template>
-  <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    id:
-    <slot :params="params" />
+  <div
+    ref="self"
+    class="draggable_vertical"
+    :class="getClass()"
+    :style="getStyle()"
+  >
+    <slot />
   </div>
 </template>
 <script>
-// import { roundGrid } from "../../util/roundGrid";
 import { hitArea } from "../../util/hitArea";
 
 //ポインター位置を返すラッパー
-const getPointer = (e) => {
+const getPointer = (e, type) => {
+  // const scrollTop = type === "child" ? e.clientY : e.clientY + window.scrollY;
   return { x: e.clientX, y: e.clientY };
 };
 
@@ -21,20 +25,10 @@ const convertToLocalPoint = (selfPoint, parentRect) => {
   };
 };
 
-//値を標準化
-// const getNormalizeValue = (self, targetRect) => {
-//   const _rect = self.getBoundingClientRect();
-//   return (_rect.y - targetRect.y) / (targetRect.height - _rect.height);
-// };
-
-// //標準化した値からピクセルを検出
-// const getPixRectFromNormalRect = (self, targetRect, normalPos) => {
-//   const _rect = self.getBoundingClientRect();
-//   console.log("getPixRectFromNormalRect", _rect, targetRect, normalPos);
-//   const x = 100 / targetRect.width - _rect.width * normalPos.y;
-//   const y = 100 / targetRect.height - _rect.height * normalPos.y;
-//   return { x, y };
-// };
+//親要素を取得
+const getParentElement = (target) => {
+  return target.parentNode;
+};
 
 export default {
   data: () => {
@@ -46,18 +40,15 @@ export default {
       movingpoint: null,
       mousepoint_margin: { x: 0, y: 0 },
       mousepoint: null,
-      params: {
-        rect: { x: null, y: null, width: null, height: null },
+      parent: {
+        refType: null,
+        element: null,
       },
     };
   },
   props: {
-    name: {
+    type: {
       type: String,
-    },
-    targetRect: {
-      type: Object,
-      defaultValue: { x: 0, y: 0, width: 0, height: 0 },
     },
     initialPosition: {
       type: Object,
@@ -84,12 +75,25 @@ export default {
       this.rect = this.$refs.self.getBoundingClientRect();
     }
 
+    //親コンポーネントを登録
+    const element = getParentElement(this.$refs.self);
+    const refType = element.getAttribute("refType");
+    this.parent = {
+      element,
+      refType,
+    };
+
+    //初期値をセット
     this.$watch(
       () => [this.initialPosition],
       (newValue, oldValue) => {
-        const pos = newValue[0];
-        this.movingpoint = pos;
-        this.UpdateParam(pos);
+        if (
+          JSON.stringify(newValue) !== JSON.stringify(oldValue) &&
+          newValue[0]
+        ) {
+          const pos = newValue[0];
+          this.movingpoint = pos;
+        }
       },
       {
         immediate: true,
@@ -97,12 +101,10 @@ export default {
       }
     );
 
+    //座標を更新
     this.$watch(
       () => [this.movingpoint],
       (newValue, oldValue) => {
-        const pos = newValue[0];
-        this.movingpoint = pos;
-        this.UpdateParam(pos);
         this.callbackRect();
       },
       {
@@ -115,20 +117,15 @@ export default {
     this.removeDragEvent();
   },
   methods: {
-    UpdateParam(pos) {
-      let params = { ...this.params };
-      params.rect.x = this.rect.x;
-      params.rect.y = this.rect.y;
-      params.rect.width = this.rect.width;
-      params.rect.height = this.rect.height;
-      this.params = params;
-    },
+    //frameのサイズを更新
     callbackRect() {
       this.$emit("set-rect", {
         x: this.movingpoint.x,
         y: this.movingpoint.y,
         width: this.rect.width,
         height: this.rect.height,
+        margin_x: this.mousepoint_margin.x,
+        margin_y: this.mousepoint_margin.y,
       });
     },
     getClass() {
@@ -147,28 +144,38 @@ export default {
       }
       return style;
     },
+    updatePosition(e) {
+      //自分の座標を取得
+      this.rect = this.$refs.self.getBoundingClientRect();
+
+      //親の座標を取得
+      const parentRect = this.parent.element.getBoundingClientRect();
+      const targetRect = {
+        x: parentRect.x,
+        y: parentRect.y,
+        width: parentRect.width,
+        height: parentRect.height,
+      };
+
+      //クリック座標を取得
+      const point = getPointer(e, this.type);
+      this.movingpoint = convertToLocalPoint(
+        point,
+        targetRect || { x: 0, y: 0, width: 0, height: 0 }
+      );
+    },
     mouseMove(e) {
       e.stopPropagation();
       if (!this.self || !this.isMove) return;
-      this.rect = this.$refs.self.getBoundingClientRect();
-      const point = getPointer(e);
-      const movingpoint = convertToLocalPoint(
-        point,
-        this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
-      );
-      this.movingpoint = movingpoint;
+      this.updatePosition(e);
     },
     mouseDown(e) {
       e.stopPropagation();
       if (!this.self || !this.isEnter) return;
       this.isMove = true;
-      this.rect = this.$refs.self.getBoundingClientRect();
-      const point = getPointer(e);
-      const movingpoint = convertToLocalPoint(
-        point,
-        this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
-      );
-      this.movingpoint = movingpoint;
+      this.updatePosition(e);
+
+      const point = getPointer(e, this.type);
       const hitarea = hitArea(point, this.rect);
       if (hitarea && this.isEnter) {
         //ドラッグ開始時にマージンを取得する
@@ -216,14 +223,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.box {
+.draggable_vertical {
   user-select: none;
-  position: relative;
+  position: absolute;
   opacity: 0.5;
   background-color: #eee;
   width: 100%;
   font-size: 12px;
   z-index: 1;
+  pointer-events: auto;
   &:hover {
     cursor: move;
     opacity: 1;
