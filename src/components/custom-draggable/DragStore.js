@@ -50,7 +50,7 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({ itemId, targetId, position, margin }) => {
+  const putOnTarget = ({ itemId, targetId, localPosition }) => {
     //検索
     const find = targetsItems[`${targetId}`].find((item) => {
       return item === itemId;
@@ -61,8 +61,7 @@ const _dragStore = () => {
       lastPutItem = {
         id: itemId,
         targetId,
-        position,
-        margin
+        localPosition
       };
       targetsItems[`${targetId}`].push(itemId);
       allItems.push(lastPutItem);
@@ -82,8 +81,7 @@ const _dragStore = () => {
       lastPutItem = {
         id: null,
         targetId: null,
-        position: { x: null, y: null },
-        margin: { x: null, y: null }
+        localPosition: { x: null, y: null }
       };
     }
     publishCallbacks();

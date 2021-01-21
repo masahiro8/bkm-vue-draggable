@@ -130,19 +130,10 @@ export default {
           x: rect.x - targetRect.x,
           y: rect.y - targetRect.y,
         };
-        this.mousepoint = this.lastItem.position
-          ? {
-              x: this.lastItem.position.x - this.lastItem.margin.x,
-              y: this.lastItem.position.y - this.lastItem.margin.y,
-            }
-          : { x: targetRect.x, y: targetRect.y };
         this.target = target.ref;
         this.target_margin = target_margin;
         this.mousepoint_margin = { x: 0, y: 0 };
-        const movingpoint = convertToLocalPoint(
-          this.mousepoint,
-          targetRect || { x: 0, y: 0, width: 0, height: 0 }
-        );
+        let movingpoint = { ...this.lastItem.localPosition };
         //固定補正
         this.movingpoint = {
           x: this.fixHorizontal ? 0 : movingpoint.x,
@@ -190,11 +181,7 @@ export default {
         dragStore.putOnTarget({
           itemId: this.id,
           targetId: hit.id,
-          position: { x, y },
-          margin: {
-            x: x - selfRect.x,
-            y: y - selfRect.y,
-          },
+          localPosition: this.movingpoint,
         });
         this.movepoint_start = null;
       } else {

@@ -91,8 +91,7 @@ export default {
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
         targetId: 100,
-        position: { x: 0, y: 30 },
-        margin: { x: 0, y: 0 },
+        localPosition: { x: 0, y: 30 },
       });
     },
   },
