@@ -29,11 +29,13 @@
           :fitGridX="params.grid.x"
           :fitGridY="params.grid.y"
           :fit0="params.fit0"
+          v-slot="{ position, expand, expandCallback }"
           ><DraggableExpandBox
             :initialPosition="{
-              parent: { x: 0, y: 0 },
-              child: { x: 0, y: 30 },
+              position,
+              expand,
             }"
+            @callback-expand="expandCallback"
             ><ItemBox :id="item" /></DraggableExpandBox
         ></DraggableItem>
       </DragTarget>
@@ -70,7 +72,16 @@ export default {
   data: () => {
     return {
       lists: [
-        { id: 100, items: [{ id: 1001 }] },
+        {
+          id: 100,
+          items: [
+            {
+              id: 1001,
+              localPosition: { x: 0, y: 10 },
+              expand: { x: 0, y: 30 },
+            },
+          ],
+        },
         { id: 101 },
         { id: 102 },
         { id: 103 },
@@ -90,8 +101,9 @@ export default {
     addNew() {
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
-        targetId: 100,
+        targetId: 102,
         localPosition: { x: 0, y: 30 },
+        expand: { x: 0, y: 50 },
       });
     },
   },

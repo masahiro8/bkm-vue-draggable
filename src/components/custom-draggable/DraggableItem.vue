@@ -1,6 +1,10 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    <slot />
+    <slot
+      :position="params.position"
+      :expand="params.expand"
+      :expandCallback="expandCallback"
+    />
   </div>
 </template>
 <script>
@@ -62,6 +66,11 @@ export default {
       hitarea: false,
       target: null,
       target_margin: null,
+      params: {
+        expand: { x: 0, y: 20 },
+      },
+      timerExpandUpdate: null,
+      updatedExpand: 20,
     };
   },
   props: {
@@ -80,9 +89,6 @@ export default {
       type: Boolean,
       defaultValue: false,
     },
-    // canDropTargets: {
-    //   type: Array,
-    // },
     //x方向の移動を固定
     fixHorizontal: {
       type: Boolean,
@@ -139,6 +145,11 @@ export default {
           x: this.fixHorizontal ? 0 : movingpoint.x,
           y: this.fixVertical ? 0 : movingpoint.y,
         };
+        //expandから経過時間を設定
+        this.params = {
+          position: this.movingpoint,
+          expand: this.lastItem.expand,
+        };
       }
     }
   },
@@ -167,6 +178,14 @@ export default {
     },
     initial() {},
 
+    //DraggableExpandBoxから高さを受け取る
+    expandCallback(value) {
+      clearTimeout(this.timerExpandUpdate);
+      this.timerExpandUpdate = setTimeout(() => {
+        this.updatedExpand = value;
+      }, 200);
+    },
+
     //エリアヒット検出 >> ドロップ先を検出して登録
     detectTarget({ x, y }) {
       const selfRect = this.$refs.self.getBoundingClientRect();
@@ -182,6 +201,7 @@ export default {
           itemId: this.id,
           targetId: hit.id,
           localPosition: this.movingpoint,
+          expand: { x: 0, y: this.updatedExpand },
         });
         this.movepoint_start = null;
       } else {

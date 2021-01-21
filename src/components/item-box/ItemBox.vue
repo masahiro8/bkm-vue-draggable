@@ -19,7 +19,6 @@ export default {
       () => [this.id],
       (newValue, oldValue) => {
         this.params = dragStore.getItemById(newValue[0]);
-        console.log("Item ", { ...this.params });
       },
       { immediate: true }
     );

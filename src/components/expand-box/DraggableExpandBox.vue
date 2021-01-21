@@ -11,7 +11,7 @@
     <DraggableVertical
       ref="child"
       refType="child"
-      :initialPosition="initialPosition.child"
+      :initialPosition="initialPosition.expand"
       :fitGridY="8"
       :forceHeight="16"
       @set-rect="setHandleRectBottom"
@@ -41,8 +41,7 @@ export default {
     initialPosition: {
       type: Object,
       defaultValue: {
-        parent: { x: 0, y: 0 },
-        child: { x: 0, y: 200 },
+        expand: { x: 0, y: 50 },
       },
     },
   },
@@ -64,6 +63,11 @@ export default {
       let handleRects = { ...this.handleRects };
       handleRects.bottom = rect;
       this.handleRects = handleRects;
+      const expand =
+        this.handleRects.bottom.y +
+        this.handleRects.bottom.height -
+        this.handleRects.bottom.margin_y;
+      this.$emit("callback-expand", expand);
     },
   },
 };
