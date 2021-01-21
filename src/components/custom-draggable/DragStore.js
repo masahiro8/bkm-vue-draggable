@@ -6,7 +6,7 @@ const _dragStore = () => {
 
   let targets = [];
   let targetsItems = {};
-  let initialTargetItems = {};
+  let allItems = [];
 
   let lastPutItem = {
     id: null,
@@ -14,9 +14,7 @@ const _dragStore = () => {
     position: { x: null, y: null }
   };
 
-  let prevCallbackValues = "";
-
-  const setTarget = ({ id, ref }) => {
+  const setTarget = ({ id, ref, items }) => {
     const find = targets.find((t) => {
       return t.id === id;
     });
@@ -26,7 +24,9 @@ const _dragStore = () => {
         ref: ref
       });
       targetsItems[`${id}`] = [];
-      initialTargetItems[`${id}`] = [];
+    }
+    if (items && items.length) {
+      allItems.concat(items);
     }
   };
 
@@ -49,14 +49,6 @@ const _dragStore = () => {
     return hits[0];
   };
 
-  //配列でアイテムをまとめてターゲットに設定
-  const setItemsOnTarget = ({ targetId, items }) => {
-    initialTargetItems[`${targetId}`] = items;
-    initialCallbacks.forEach((callback) => {
-      callback(initialTargetItems);
-    });
-  };
-
   //ターゲットに追加
   const putOnTarget = ({ itemId, targetId, position, margin }) => {
     //検索
@@ -73,6 +65,7 @@ const _dragStore = () => {
         margin
       };
       targetsItems[`${targetId}`].push(itemId);
+      allItems.push(lastPutItem);
 
       //他のターゲットから削除
       Object.keys(targetsItems).forEach((key) => {
@@ -150,6 +143,10 @@ const _dragStore = () => {
     publishCallbacks();
   };
 
+  const getItemById = (id) => {
+    return allItems.find((item) => item.id === id);
+  };
+
   return {
     setTarget,
     setCallback,
@@ -160,7 +157,7 @@ const _dragStore = () => {
     getTargets,
     getTarget,
     clearLastItem,
-    setItemsOnTarget
+    getItemById
   };
 };
 

@@ -1,6 +1,5 @@
 <template>
   <div ref="self" class="target">
-    id:{{ id }}
     <slot :params="params" />
   </div>
 </template>
@@ -24,6 +23,10 @@ export default {
     grid: {
       type: Object,
       defaultValue: { x: 1, y: 1 },
+    },
+    initItems: {
+      type: Array,
+      defaultValue: [],
     },
     //x=0,y=0に固定するかフラグ
     fit0: {
@@ -55,6 +58,7 @@ export default {
       dragStore.setTarget({
         id: this.id,
         ref: this.$refs.self,
+        items: this.initItems,
       });
       dragStore.setCallback(({ targets, targetsItems, lastPutItem }) => {
         const lastItem = targetsItems[this.id].find((item) => {

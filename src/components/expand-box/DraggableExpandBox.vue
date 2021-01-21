@@ -20,6 +20,10 @@
   </div>
 </template>
 <script>
+/*
+移動と縦方向に伸縮するコンポーネント
+座標の管理だけをする
+*/
 import DraggableVertical from "./DraggableVertical";
 export default {
   data: () => {
