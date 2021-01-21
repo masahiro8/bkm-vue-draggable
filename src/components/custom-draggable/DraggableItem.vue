@@ -264,18 +264,19 @@ export default {
           x: this.fixHorizontal ? 0 : this.mousepoint_margin.x,
           y: this.fixVertical ? 0 : this.mousepoint_margin.y,
         };
+        this.detectTarget(point);
       }
       this.mousedown = false;
       this.isMove = false;
-
-      this.detectTarget(point);
     },
     mouseEnter(e) {
       e.stopPropagation();
       this.isEnter = true;
     },
     mouseOut(e) {
-      this.isEnter = false;
+      //mouseOutはこの要素の上に乗ってる要素にポインターが乗った時にも呼ばれるので、
+      //座標だけではなく、深度も含めて挙動を監視している
+      // this.isEnter = false;
     },
     mouseLeave(e) {
       this.isEnter = false;

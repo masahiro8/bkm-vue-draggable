@@ -226,24 +226,20 @@ export default {
 .draggable_vertical {
   user-select: none;
   position: absolute;
-  opacity: 0.5;
-  background-color: #eee;
+  opacity: 0;
   width: 100%;
   font-size: 12px;
   z-index: 1;
   pointer-events: auto;
   &:hover {
-    cursor: move;
-    opacity: 1;
+    cursor: row-resize;
   }
   &.moving {
-    opacity: 1;
-    background-color: #ff8888;
   }
   &.disabled {
     &:hover {
       cursor: default;
-      opacity: 0.5;
+      opacity: 0;
     }
   }
 }
