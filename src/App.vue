@@ -10,7 +10,7 @@
         :key="list.id"
         :id="list.id"
         :initItems="list.items"
-        :grid="{ x: 1, y: 1 }"
+        :grid="{ x: 1, y: 8 }"
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
         style="width: 64px; height: 200px"
@@ -28,12 +28,13 @@
           :fitGridX="params.grid.x"
           :fitGridY="params.grid.y"
           :fit0="params.fit0"
-          v-slot="{ position, expand, expandCallback }"
+          v-slot="{ position, expand, expandCallback, fitGrid }"
           ><DraggableExpandBox
             :initialPosition="{
               position,
               expand,
             }"
+            :fitGrid="fitGrid"
             @callback-expand="expandCallback"
             ><ItemBox :id="itemId" /></DraggableExpandBox
         ></DraggableItem>

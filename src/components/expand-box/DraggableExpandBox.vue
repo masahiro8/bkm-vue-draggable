@@ -38,6 +38,9 @@ export default {
     fixY: {
       type: Boolean,
     },
+    fitGrid: {
+      type: Object,
+    },
     initialPosition: {
       type: Object,
       defaultValue: {
@@ -50,9 +53,14 @@ export default {
   },
   computed: {
     frameStyle() {
+      //グリッドのサイズにまるめる
+      const fitGrid = (gridSize, value) => {
+        return Math.floor(value / gridSize) * gridSize;
+      };
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
-      return `top:${this.handleRects.top.y}px;height:${height}px;`;
+      const _height = fitGrid(this.fitGrid.y, height);
+      return `top:${this.handleRects.top.y}px;height:${_height}px;`;
     },
   },
   mounted() {},

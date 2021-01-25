@@ -3,6 +3,7 @@
     <slot
       :position="params.position"
       :expand="params.expand"
+      :fitGrid="params.fitGrid"
       :expandCallback="expandCallback"
     />
   </div>
@@ -69,6 +70,7 @@ export default {
       target_margin: null,
       params: {
         expand: { x: 0, y: 20 },
+        fitGrid: { x: 1, y: 1 },
       },
       timerExpandUpdate: null,
       updatedExpand: 20,
@@ -148,6 +150,10 @@ export default {
       this.params = {
         position: this.movingpoint,
         expand: self.expand,
+        fitGrid: {
+          x: this.fitGridX,
+          y: this.fitGridY,
+        },
       };
     }
   },
@@ -164,16 +170,13 @@ export default {
       const margin = { ...this.mousepoint_margin };
       const point = { ...this.movingpoint };
 
-      let top = point.y - margin.y;
-      let left = point.x - margin.x;
+      let top = !this.fitGridY
+        ? point.y - margin.y
+        : fitGrid(this.fitGridY, point.y - margin.y);
 
-      // let top = !this.fitGridY
-      //   ? point.y - margin.y
-      //   : fitGrid(this.fitGridY, point.y - margin.y);
-
-      // let left = !this.fitGridX
-      //   ? point.x - margin.x
-      //   : fitGrid(this.fitGridX, point.x - margin.x);
+      let left = !this.fitGridX
+        ? point.x - margin.x
+        : fitGrid(this.fitGridX, point.x - margin.x);
 
       return `left:${left}px;top:${top}px;`;
     },

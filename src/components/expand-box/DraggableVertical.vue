@@ -228,15 +228,17 @@ export default {
 .draggable_vertical {
   user-select: none;
   position: absolute;
-  opacity: 0.5;
+  opacity: 0;
   background-color: blue;
   width: 100%;
   font-size: 12px;
   z-index: 1;
   pointer-events: auto;
+
   &:hover {
     cursor: row-resize;
   }
+
   &.moving {
   }
   &.disabled {
