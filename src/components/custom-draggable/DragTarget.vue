@@ -55,23 +55,19 @@ export default {
   },
   methods: {
     init() {
-      dragStore.setTarget({
-        id: this.id,
-        ref: this.$refs.self,
-        items: this.initItems,
-      });
-      dragStore.setCallback(({ targets, targetsItems, lastPutItem }) => {
-        const lastItem = targetsItems[this.id].find((item) => {
-          return item === lastPutItem.id;
-        });
+      dragStore.setCallback(({ targets, targetsItems }) => {
         this.params = {
           listId: this.id,
           lists: targetsItems[this.id],
-          lastItem: lastItem ? lastPutItem : null,
           grid: this.grid,
           fit0: this.fit0,
           limit: this.limit,
         };
+      });
+      dragStore.setTarget({
+        id: this.id,
+        ref: this.$refs.self,
+        items: this.initItems,
       });
     },
   },

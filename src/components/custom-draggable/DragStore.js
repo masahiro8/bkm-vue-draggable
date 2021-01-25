@@ -8,12 +8,6 @@ const _dragStore = () => {
   let targetsItems = {};
   let allItems = [];
 
-  let lastPutItem = {
-    id: null,
-    targetId: null,
-    position: { x: null, y: null }
-  };
-
   const setTarget = ({ id, ref, items }) => {
     const find = targets.find((t) => {
       return t.id === id;
@@ -26,7 +20,9 @@ const _dragStore = () => {
       targetsItems[`${id}`] = [];
     }
     if (items && items.length) {
-      allItems.concat(items);
+      allItems = allItems.concat(items);
+      targetsItems[`${id}`] = items.map((item) => item.itemId);
+      publishCallbacks();
     }
   };
 
@@ -58,14 +54,7 @@ const _dragStore = () => {
 
     //なかったら追加
     if (!find) {
-      lastPutItem = {
-        id: itemId,
-        targetId,
-        localPosition,
-        expand
-      };
       targetsItems[`${targetId}`].push(itemId);
-      allItems.push(lastPutItem);
 
       //他のターゲットから削除
       Object.keys(targetsItems).forEach((key) => {
@@ -78,13 +67,23 @@ const _dragStore = () => {
           }
         }
       });
+    }
+
+    //全アイテムを検索
+    const result = allItems.find((item) => {
+      return item.itemId === itemId;
+    });
+
+    if (!result) {
+      //なければ追加
+      allItems.push({ itemId, targetId, localPosition, expand });
     } else {
-      lastPutItem = {
-        id: null,
-        targetId: null,
-        localPosition: { x: null, y: null },
-        expand: { x: null, y: null }
-      };
+      //あれば更新
+      allItems = allItems.map((item) => {
+        return item.itemId === itemId
+          ? { itemId, targetId, localPosition, expand }
+          : item;
+      });
     }
     publishCallbacks();
   };
@@ -93,8 +92,7 @@ const _dragStore = () => {
     callbacks.forEach((callback) => {
       callback({
         targets,
-        targetsItems,
-        lastPutItem
+        targetsItems
       });
     });
   };
@@ -118,6 +116,7 @@ const _dragStore = () => {
       targetsItems
     };
   };
+
   const getTarget = ({ targetId }) => {
     return targets.find((t) => {
       return t.id === targetId;
@@ -134,17 +133,8 @@ const _dragStore = () => {
     callbacks.push(callback);
   };
 
-  const clearLastItem = () => {
-    lastPutItem = {
-      id: null,
-      targetId: null,
-      position: { x: null, y: null }
-    };
-    publishCallbacks();
-  };
-
   const getItemById = (id) => {
-    return allItems.find((item) => item.id === id);
+    return allItems.find((item) => item.itemId === id);
   };
 
   return {
@@ -156,7 +146,6 @@ const _dragStore = () => {
     getSelfTarget,
     getTargets,
     getTarget,
-    clearLastItem,
     getItemById
   };
 };

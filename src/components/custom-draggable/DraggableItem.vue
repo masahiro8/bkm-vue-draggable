@@ -54,6 +54,7 @@ const detectInTargetRect = (selfRect, targetRect, limit) => {
 export default {
   data: () => {
     return {
+      id: null,
       self: null,
       rect: null,
       isMove: false,
@@ -79,10 +80,6 @@ export default {
     },
     listId: {
       type: Number,
-    },
-    //最後に追加されたアイテム
-    lastItem: {
-      type: Object,
     },
     //ターゲット追加をするか
     isTargetDetect: {
@@ -126,31 +123,32 @@ export default {
     //idが無い場合はdragStoreに登録
     this.id = this.itemId;
 
+    //自分を取得
+    const self = dragStore.getItemById(this.id);
+
     //新規ドロップの検知
-    if (this.id === this.lastItem.id) {
-      const target = dragStore.getSelfTarget({ itemId: this.id });
-      const targetRect = target ? target.ref.getBoundingClientRect() : null;
-      if (targetRect) {
-        let rect = this.$refs.self.getBoundingClientRect();
-        const target_margin = {
-          x: rect.x - targetRect.x,
-          y: rect.y - targetRect.y,
-        };
-        this.target = target.ref;
-        this.target_margin = target_margin;
-        this.mousepoint_margin = { x: 0, y: 0 };
-        let movingpoint = { ...this.lastItem.localPosition };
-        //固定補正
-        this.movingpoint = {
-          x: this.fixHorizontal ? 0 : movingpoint.x,
-          y: this.fixVertical ? 0 : movingpoint.y,
-        };
-        //expandから経過時間を設定
-        this.params = {
-          position: this.movingpoint,
-          expand: this.lastItem.expand,
-        };
-      }
+    const target = dragStore.getSelfTarget({ itemId: this.id });
+    const targetRect = target ? target.ref.getBoundingClientRect() : null;
+    if (targetRect) {
+      let rect = this.$refs.self.getBoundingClientRect();
+      const target_margin = {
+        x: rect.x - targetRect.x,
+        y: rect.y - targetRect.y,
+      };
+      this.target = target.ref;
+      this.target_margin = target_margin;
+      this.mousepoint_margin = { x: 0, y: 0 };
+      let movingpoint = { ...self.localPosition };
+      //固定補正
+      this.movingpoint = {
+        x: this.fixHorizontal ? 0 : movingpoint.x,
+        y: this.fixVertical ? 0 : movingpoint.y,
+      };
+      //expandから経過時間を設定
+      this.params = {
+        position: this.movingpoint,
+        expand: self.expand,
+      };
     }
   },
   beforeDestroy() {
@@ -214,8 +212,6 @@ export default {
         );
         this.movingpoint = movingpoint;
         this.movepoint_start = null;
-        //最後追加を削除
-        dragStore.clearLastItem();
       }
     },
     mouseMove(e) {

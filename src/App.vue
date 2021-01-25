@@ -17,11 +17,10 @@
         v-slot="{ params }"
       >
         <DraggableItem
-          v-for="(item, index) in params.lists"
-          :key="index"
-          :itemId="item"
+          v-for="itemId in params.lists"
+          :key="itemId"
+          :itemId="itemId"
           :listId="params.listId"
-          :lastItem="params.lastItem"
           :limit="params.limit"
           :isTargetDetect="true"
           :fixHorizontal="true"
@@ -36,7 +35,7 @@
               expand,
             }"
             @callback-expand="expandCallback"
-            ><ItemBox :id="item" /></DraggableExpandBox
+            ><ItemBox :id="itemId" /></DraggableExpandBox
         ></DraggableItem>
       </DragTarget>
     </div>
@@ -76,8 +75,9 @@ export default {
           id: 100,
           items: [
             {
-              id: 1001,
-              localPosition: { x: 0, y: 10 },
+              itemId: 10001,
+              targetId: 100,
+              localPosition: { x: 0, y: 20 },
               expand: { x: 0, y: 30 },
             },
           ],
@@ -101,9 +101,9 @@ export default {
     addNew() {
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
-        targetId: 102,
-        localPosition: { x: 0, y: 30 },
-        expand: { x: 0, y: 50 },
+        targetId: 102, //対象のターゲット
+        localPosition: { x: 0, y: 30 }, //ボックスの位置
+        expand: { x: 0, y: 50 }, //ボックスの高さ
       });
     },
   },
