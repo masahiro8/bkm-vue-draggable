@@ -164,13 +164,16 @@ export default {
       const margin = { ...this.mousepoint_margin };
       const point = { ...this.movingpoint };
 
-      let top = !this.fitGridY
-        ? point.y - margin.y
-        : fitGrid(this.fitGridY, point.y - margin.y);
+      let top = point.y - margin.y;
+      let left = point.x - margin.x;
 
-      let left = !this.fitGridX
-        ? point.x - margin.x
-        : fitGrid(this.fitGridX, point.x - margin.x);
+      // let top = !this.fitGridY
+      //   ? point.y - margin.y
+      //   : fitGrid(this.fitGridY, point.y - margin.y);
+
+      // let left = !this.fitGridX
+      //   ? point.x - margin.x
+      //   : fitGrid(this.fitGridX, point.x - margin.x);
 
       return `left:${left}px;top:${top}px;`;
     },
@@ -198,7 +201,10 @@ export default {
         dragStore.putOnTarget({
           itemId: this.id,
           targetId: hit.id,
-          localPosition: this.movingpoint,
+          localPosition: {
+            x: this.movingpoint.x - this.mousepoint_margin.x,
+            y: this.movingpoint.y - this.mousepoint_margin.y,
+          },
           expand: { x: 0, y: this.updatedExpand },
         });
         this.movepoint_start = null;

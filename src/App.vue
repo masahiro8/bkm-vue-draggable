@@ -10,7 +10,7 @@
         :key="list.id"
         :id="list.id"
         :initItems="list.items"
-        :grid="{ x: 1, y: 8 }"
+        :grid="{ x: 1, y: 1 }"
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
         style="width: 64px; height: 200px"
@@ -80,13 +80,18 @@ export default {
               localPosition: { x: 0, y: 20 },
               expand: { x: 0, y: 30 },
             },
+            {
+              itemId: 10002,
+              targetId: 100,
+              localPosition: { x: 0, y: 80 },
+              expand: { x: 0, y: 30 },
+            },
           ],
         },
         { id: 101 },
         { id: 102 },
         { id: 103 },
         { id: 104 },
-        { id: 105 },
       ],
     };
   },

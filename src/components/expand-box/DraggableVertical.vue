@@ -105,6 +105,7 @@ export default {
     this.$watch(
       () => [this.movingpoint],
       (newValue, oldValue) => {
+        // console.log("update movingpoint", newValue[0], oldValue[0]);
         this.callbackRect();
       },
       {
@@ -119,14 +120,15 @@ export default {
   methods: {
     //frameのサイズを更新
     callbackRect() {
-      this.$emit("set-rect", {
+      const params = {
         x: this.movingpoint.x,
         y: this.movingpoint.y,
         width: this.rect.width,
         height: this.rect.height,
         margin_x: this.mousepoint_margin.x,
         margin_y: this.mousepoint_margin.y,
-      });
+      };
+      this.$emit("set-rect", params);
     },
     getClass() {
       if (this.fixY) return "disabled";
@@ -226,7 +228,8 @@ export default {
 .draggable_vertical {
   user-select: none;
   position: absolute;
-  opacity: 0;
+  opacity: 0.5;
+  background-color: blue;
   width: 100%;
   font-size: 12px;
   z-index: 1;

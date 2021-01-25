@@ -50,11 +50,9 @@ export default {
   },
   computed: {
     frameStyle() {
-      return `top:${this.handleRects.top.y}px;height:${
-        this.handleRects.bottom.y +
-        this.handleRects.bottom.height -
-        this.handleRects.bottom.margin_y
-      }px;`;
+      const height =
+        this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
+      return `top:${this.handleRects.top.y}px;height:${height}px;`;
     },
   },
   mounted() {},
@@ -64,9 +62,7 @@ export default {
       handleRects.bottom = rect;
       this.handleRects = handleRects;
       const expand =
-        this.handleRects.bottom.y +
-        this.handleRects.bottom.height -
-        this.handleRects.bottom.margin_y;
+        this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
       this.$emit("callback-expand", expand);
     },
   },
