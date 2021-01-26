@@ -1,4 +1,4 @@
-import { hitArea } from "../../util/hitArea";
+import { hitArea } from "../util/hitArea";
 
 const _dragStore = () => {
   let callbacks = [];

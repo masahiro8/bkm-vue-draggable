@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { dragStore } from "./DragStore";
+import { dragStore } from "../DragStore";
 export default {
   data: () => {
     return {
@@ -53,6 +53,12 @@ export default {
       }
     );
   },
+  computed: {
+    getStyle() {
+      const height = this.config.hour * this.config.grid15min * 4;
+      return `width:${this.config.targetWidth}px;height:${height}px;`;
+    },
+  },
   methods: {
     init() {
       dragStore.setCallback(({ targets, targetsItems }) => {
@@ -77,16 +83,5 @@ export default {
 .target {
   user-select: none;
   position: relative;
-  background-color: #efefef;
-  &:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-  }
 }
 </style>

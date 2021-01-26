@@ -14,7 +14,7 @@
 <script>
 // import { roundGrid } from "../../util/roundGrid";
 import { hitArea } from "../../util/hitArea";
-import { dragStore } from "./DragStore";
+import { dragStore } from "../DragStore";
 import {
   getTimeFromYpx,
   getEndTime,
@@ -425,18 +425,10 @@ export default {
 .box {
   user-select: none;
   position: absolute;
-  background-color: red;
   width: 100%;
-  font-size: 12px;
   z-index: 1;
   &:hover {
     cursor: move;
-  }
-  &.canmove {
-    background-color: #880000;
-  }
-  &.moving {
-    background-color: #ff8888;
   }
 }
 </style>

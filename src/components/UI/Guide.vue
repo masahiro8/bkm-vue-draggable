@@ -56,12 +56,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "./ui.scss";
 .grid-line {
   position: absolute;
   height: 12px;
   width: 100%;
   right: 0;
-  color: #888;
+  color: #333;
   font-size: 8px;
   text-align: right;
   padding-right: 4px;

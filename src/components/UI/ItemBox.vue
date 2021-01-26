@@ -1,13 +1,13 @@
 <template>
-  <div class="item">
+  <div class="item" :class="getClass">
     <div class="header">
-      <div class="start">{{ getStartTime }} / {{ getEndTime }}</div>
+      <div class="start">{{ getStartTime }} 〜 {{ getEndTime }}</div>
     </div>
     <div class="body"><slot /></div>
   </div>
 </template>
 <script>
-import { dragStore } from "../custom-draggable/DragStore";
+import { dragStore } from "../DragStore";
 import { getEndTime } from "../../util/timeUtil";
 
 export default {
@@ -20,6 +20,9 @@ export default {
     id: {
       type: Number,
     },
+    targetId: {
+      type: Number,
+    },
     startTime: {
       type: Object,
       defaultValue: { h: "00", m: "00" },
@@ -28,10 +31,16 @@ export default {
       type: Object,
       defaultValue: { h: "00", m: "00" },
     },
+    isMoving: {
+      type: Boolean,
+    },
+    isDragging: {
+      type: Boolean,
+    },
   },
   mounted() {
     this.$watch(
-      () => [this.id],
+      () => [this.id, this.targetId],
       (newValue, oldValue) => {
         // console.log("item =", newValue[0]);
         this.params = dragStore.getItemById(newValue[0]);
@@ -40,6 +49,12 @@ export default {
     );
   },
   computed: {
+    getClass() {
+      let style = "";
+      style += this.isMoving ? "isMoving " : "";
+      style += this.isDragging ? "isDragging " : "";
+      return style;
+    },
     getStartTime() {
       if (!this.startTime) return "";
       return `${this.startTime.h}:${this.startTime.m}`;
@@ -55,6 +70,18 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "./ui.scss";
+.item {
+  background-color: $item-background-color;
+  height: 100%;
+  border-radius: 4px;
+  &.isMoving {
+    opacity: 0.5;
+  }
+  &.isDragging {
+    opacity: 0.5;
+  }
+}
 .header {
   display: flex;
   justify-content: space-between;

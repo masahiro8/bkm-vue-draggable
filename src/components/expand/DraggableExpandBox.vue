@@ -6,7 +6,7 @@
     :style="frameStyle"
   >
     <div class="content" :style="frameStyle">
-      <slot :expandTime="expandTime" />
+      <slot :expandTime="expandTime" :isDragging="isDragging" />
     </div>
     <DraggableVertical
       ref="child"
@@ -17,7 +17,6 @@
       @set-rect="setHandleRectBottom"
       @set-enter="setEnter"
     />
-    <div class="expandbox--frame" :class="getClass" :style="frameStyle"></div>
   </div>
 </template>
 <script>
@@ -74,9 +73,6 @@ export default {
       let style = `top:${this.handleRects.top.y}px;height:${_height}px;`;
       return style;
     },
-    getClass() {
-      return this.isDragging || this.isMoving ? "dragging" : null;
-    },
     expandTime() {
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
@@ -127,20 +123,7 @@ export default {
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: #eee;
   pointer-events: none;
-}
-.expandbox--frame {
-  background-color: red;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 0;
-  pointer-events: none;
-  &.dragging {
-    background-color: #ff8888;
-  }
 }
 .content {
   position: relative;

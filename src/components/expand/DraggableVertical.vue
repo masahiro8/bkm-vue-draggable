@@ -245,9 +245,12 @@ export default {
     text-align: center;
     opacity: 1;
     &:before {
-      content: "↓";
+      content: "";
       display: block;
       margin-top: -8px;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(200, 200, 200, 0.2);
     }
     cursor: row-resize;
   }

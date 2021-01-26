@@ -43,14 +43,16 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "./ui.scss";
 .grid-line {
   position: absolute;
   height: 1px;
   width: 100%;
   left: 0;
-  background-color: #e1e1e1;
+  background-color: $grid-color;
+  opacity: 0.5;
   &.min60 {
-    background-color: #aaa;
+    opacity: 1;
   }
 }
 </style>
