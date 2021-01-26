@@ -24,7 +24,7 @@
         :style="getStyle"
         v-slot="{ params }"
       >
-        <div>
+        <div class="grid">
           <Grid
             v-for="item in gridLines"
             :key="item"
@@ -156,6 +156,9 @@ export default {
     const gridlines = [...Array(this.config.hour * 4)].map((item, i) => i + 1);
     this.gridLines = gridlines;
     console.log("gridLines", gridlines);
+    dragStore.setUpdateCallback(({ items }) => {
+      console.log("Published ", items);
+    });
   },
   computed: {
     getLabelStyle() {

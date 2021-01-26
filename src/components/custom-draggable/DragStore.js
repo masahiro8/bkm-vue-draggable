@@ -2,7 +2,7 @@ import { hitArea } from "../../util/hitArea";
 
 const _dragStore = () => {
   let callbacks = [];
-  let initialCallbacks = [];
+  let updateCallbacks = [];
 
   let targets = [];
   let targetsItems = {};
@@ -46,15 +46,7 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({
-    itemId,
-    targetId,
-    localPosition,
-    expand,
-    startTime,
-    endTime
-  }) => {
-    console.log("put ", startTime, endTime);
+  const putOnTarget = ({ itemId, targetId, startTime, endTime }) => {
     //検索
     const find = targetsItems[`${targetId}`].find((item) => {
       return item === itemId;
@@ -87,29 +79,18 @@ const _dragStore = () => {
       allItems.push({
         itemId,
         targetId,
-        localPosition,
         startTime,
-        endTime,
-        expand
+        endTime
       });
     } else {
       //あれば更新
       allItems = allItems.map((item) => {
         return item.itemId === itemId
-          ? { itemId, targetId, localPosition, startTime, endTime, expand }
+          ? { itemId, targetId, startTime, endTime }
           : item;
       });
     }
     publishCallbacks();
-  };
-
-  const publishCallbacks = () => {
-    callbacks.forEach((callback) => {
-      callback({
-        targets,
-        targetsItems
-      });
-    });
   };
 
   const getSelfTarget = ({ itemId }) => {
@@ -138,9 +119,8 @@ const _dragStore = () => {
     });
   };
 
-  //初期設定のコールバック
-  const setInitialCallback = (callback) => {
-    initialCallbacks.push(callback);
+  const getItemById = (id) => {
+    return allItems.find((item) => item.itemId === id);
   };
 
   //変更のコールバック
@@ -148,14 +128,33 @@ const _dragStore = () => {
     callbacks.push(callback);
   };
 
-  const getItemById = (id) => {
-    return allItems.find((item) => item.itemId === id);
+  const setUpdateCallback = (callback) => {
+    updateCallbacks.push(callback);
+  };
+
+  const publishCallbacks = () => {
+    callbacks.forEach((callback) => {
+      callback({
+        targets,
+        targetsItems
+      });
+    });
+    updateCallbacks.forEach((callback) => {
+      const items = Object.keys(targetsItems).map((key) => {
+        return targetsItems[key].map((itemId) => {
+          return getItemById(itemId);
+        });
+      });
+      callback({
+        items: items
+      });
+    });
   };
 
   return {
     setTarget,
     setCallback,
-    setInitialCallback,
+    setUpdateCallback,
     hitTarget,
     putOnTarget,
     getSelfTarget,
