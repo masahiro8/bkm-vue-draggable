@@ -1,10 +1,12 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
     <slot
+      :target="params.target"
       :position="params.position"
       :expand="params.expand"
       :fitGrid="params.fitGrid"
       :isMoving="params.isMoving"
+      :startTime="params.startTime"
       :expandCallback="expandCallback"
     />
   </div>
@@ -13,6 +15,7 @@
 // import { roundGrid } from "../../util/roundGrid";
 import { hitArea } from "../../util/hitArea";
 import { dragStore } from "./DragStore";
+import { getTimeFromPosition } from "../../util/timeUtil";
 
 //ポインター位置を返すラッパー
 const getPointer = (e) => {
@@ -75,6 +78,7 @@ export default {
       },
       timerExpandUpdate: null,
       updatedExpand: 20,
+      start_time: "",
     };
   },
   props: {
@@ -149,8 +153,10 @@ export default {
       };
       //expandから経過時間を設定
       this.params = {
+        target: target.ref,
         position: this.movingpoint,
         expand: self.expand,
+        startTime: this.getStartTime.time,
         fitGrid: {
           x: this.fitGridX,
           y: this.fitGridY,
@@ -163,6 +169,7 @@ export default {
       (newValue, oldValue) => {
         const params = { ...this.params };
         params.isMoving = newValue[0];
+        params.startTime = this.getStartTime.time;
         this.params = params;
       }
     );
@@ -170,13 +177,9 @@ export default {
   beforeDestroy() {
     this.removeDragEvent();
   },
-  methods: {
-    getClass() {
-      if (this.isMove) return "moving";
-      return "";
-    },
-    getStyle() {
-      if (!this.self) return "";
+  computed: {
+    //現在の時間を取得
+    getStartTime() {
       const margin = { ...this.mousepoint_margin };
       const point = { ...this.movingpoint };
 
@@ -188,7 +191,50 @@ export default {
         ? point.x - margin.x
         : fitGrid(this.fitGridX, point.x - margin.x);
 
-      return `left:${left}px;top:${top}px;`;
+      const normalized = this.getNormalizedPosition({
+        x: left * 100,
+        y: top * 100,
+      });
+
+      const time = getTimeFromPosition({
+        pixel: top,
+        grid15min: this.fitGridY,
+      });
+
+      return {
+        //ピクセル
+        pixel: {
+          x: left,
+          y: top,
+        },
+        //正規化
+        normalized,
+        //時間
+        time,
+      };
+    },
+  },
+  methods: {
+    //座標を正規化
+    getNormalizedPosition({ x, y }) {
+      const targetRect = this.target
+        ? this.target.getBoundingClientRect()
+        : null;
+      return targetRect
+        ? {
+            x: x / targetRect.width,
+            y: y / targetRect.height,
+          }
+        : { x: 0, y: 0 };
+    },
+    getClass() {
+      if (this.isMove) return "moving";
+      return "";
+    },
+    getStyle() {
+      if (!this.self) return "";
+      const { normalized } = this.getStartTime;
+      return `left:${normalized.x}%;top:${normalized.y}%;`;
     },
     initial() {},
 
@@ -329,7 +375,7 @@ export default {
   user-select: none;
   position: absolute;
   background-color: red;
-  width: 64px;
+  width: 100%;
   font-size: 12px;
   z-index: 1;
   &:hover {

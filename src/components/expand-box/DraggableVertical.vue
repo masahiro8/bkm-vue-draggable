@@ -105,7 +105,6 @@ export default {
     this.$watch(
       () => [this.movingpoint],
       (newValue, oldValue) => {
-        // console.log("update movingpoint", newValue[0], oldValue[0]);
         this.callbackRect();
       },
       {
@@ -237,18 +236,25 @@ export default {
   user-select: none;
   position: absolute;
   opacity: 0;
-  background-color: blue;
   width: 100%;
   font-size: 12px;
   z-index: 1;
   pointer-events: auto;
 
   &:hover {
+    text-align: center;
+    opacity: 1;
+    &:before {
+      content: "↓";
+      display: block;
+      margin-top: -8px;
+    }
     cursor: row-resize;
   }
 
   &.moving {
   }
+
   &.disabled {
     &:hover {
       cursor: default;

@@ -6,7 +6,7 @@
     :style="frameStyle"
   >
     <div class="content" :style="frameStyle">
-      <slot />
+      <slot :expandTime="expandTime" />
     </div>
     <DraggableVertical
       ref="child"
@@ -26,6 +26,7 @@
 座標の管理だけをする
 */
 import DraggableVertical from "./DraggableVertical";
+import { getTimeFromPosition } from "../../util/timeUtil";
 export default {
   data: () => {
     return {
@@ -33,6 +34,9 @@ export default {
       handleRects: {
         top: { x: null, y: null, width: null, height: null },
         bottom: { x: null, y: null, width: null, height: null },
+      },
+      params: {
+        endTime: { h: "00", m: "00" },
       },
     };
   },
@@ -53,6 +57,9 @@ export default {
       type: Boolean,
       defaultValue: false,
     },
+    target: {
+      type: Element,
+    },
   },
   components: {
     DraggableVertical,
@@ -60,22 +67,46 @@ export default {
   computed: {
     frameStyle() {
       //グリッドのサイズにまるめる
-      const fitGrid = (gridSize, value) => {
-        return Math.floor(value / gridSize) * gridSize;
-      };
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
-      const _height = fitGrid(this.fitGrid.y, height);
+      const _height = this.getFitGrid(this.fitGrid.y, height);
+
+      //ボックスの中はローカル領域なのでピクセルで指定しないといけない
       let style = `top:${this.handleRects.top.y}px;height:${_height}px;`;
       return style;
     },
     getClass() {
-      console.log("isMoving || isDragging", this.isMoving);
       return this.isDragging || this.isMoving ? "dragging" : null;
+    },
+    expandTime() {
+      //グリッドのサイズにまるめる
+      const height =
+        this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
+      const _height = this.getFitGrid(this.fitGrid.y, height);
+      const time = getTimeFromPosition({
+        pixel: _height,
+        grid15min: this.fitGrid.y,
+      });
+      return time;
     },
   },
   mounted() {},
   methods: {
+    getFitGrid(gridSize, value) {
+      return Math.floor(value / gridSize) * gridSize;
+    },
+    //座標を正規化
+    getNormalizedPosition({ y, height }) {
+      const targetRect = this.target
+        ? this.target.getBoundingClientRect()
+        : null;
+      return targetRect
+        ? {
+            height: height / targetRect.height,
+            y: y / targetRect.height,
+          }
+        : { x: 0, y: 0 };
+    },
     setEnter(val) {
       this.isDragging = val;
     },
