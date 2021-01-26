@@ -113,6 +113,14 @@ export default {
         deep: true,
       }
     );
+
+    //状態を通知
+    this.$watch(
+      () => [this.isEnter, this.isMove],
+      (newValue, oldValue) => {
+        this.$emit("set-enter", newValue[1]);
+      }
+    );
   },
   beforeDestroy() {
     this.removeDragEvent();

@@ -4,6 +4,7 @@
       :position="params.position"
       :expand="params.expand"
       :fitGrid="params.fitGrid"
+      :isMoving="params.isMoving"
       :expandCallback="expandCallback"
     />
   </div>
@@ -156,6 +157,15 @@ export default {
         },
       };
     }
+
+    this.$watch(
+      () => [this.isMove],
+      (newValue, oldValue) => {
+        const params = { ...this.params };
+        params.isMoving = newValue[0];
+        this.params = params;
+      }
+    );
   },
   beforeDestroy() {
     this.removeDragEvent();

@@ -28,13 +28,14 @@
           :fitGridX="params.grid.x"
           :fitGridY="params.grid.y"
           :fit0="params.fit0"
-          v-slot="{ position, expand, expandCallback, fitGrid }"
+          v-slot="{ position, expand, expandCallback, fitGrid, isMoving }"
           ><DraggableExpandBox
             :initialPosition="{
               position,
               expand,
             }"
             :fitGrid="fitGrid"
+            :isMoving="isMoving"
             @callback-expand="expandCallback"
             ><ItemBox :id="itemId" /></DraggableExpandBox
         ></DraggableItem>

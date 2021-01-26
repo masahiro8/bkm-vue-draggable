@@ -15,8 +15,9 @@
       :fitGridY="8"
       :forceHeight="16"
       @set-rect="setHandleRectBottom"
+      @set-enter="setEnter"
     />
-    <div class="expandbox--frame" :style="frameStyle"></div>
+    <div class="expandbox--frame" :class="getClass" :style="frameStyle"></div>
   </div>
 </template>
 <script>
@@ -28,6 +29,7 @@ import DraggableVertical from "./DraggableVertical";
 export default {
   data: () => {
     return {
+      isDragging: false,
       handleRects: {
         top: { x: null, y: null, width: null, height: null },
         bottom: { x: null, y: null, width: null, height: null },
@@ -47,6 +49,10 @@ export default {
         expand: { x: 0, y: 50 },
       },
     },
+    isMoving: {
+      type: Boolean,
+      defaultValue: false,
+    },
   },
   components: {
     DraggableVertical,
@@ -60,11 +66,19 @@ export default {
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
       const _height = fitGrid(this.fitGrid.y, height);
-      return `top:${this.handleRects.top.y}px;height:${_height}px;`;
+      let style = `top:${this.handleRects.top.y}px;height:${_height}px;`;
+      return style;
+    },
+    getClass() {
+      console.log("isMoving || isDragging", this.isMoving);
+      return this.isDragging || this.isMoving ? "dragging" : null;
     },
   },
   mounted() {},
   methods: {
+    setEnter(val) {
+      this.isDragging = val;
+    },
     setHandleRectBottom(rect) {
       let handleRects = { ...this.handleRects };
       handleRects.bottom = rect;
@@ -94,6 +108,9 @@ export default {
   width: 100%;
   z-index: 0;
   pointer-events: none;
+  &.dragging {
+    background-color: #ff8888;
+  }
 }
 .content {
   position: relative;
