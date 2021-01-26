@@ -56,7 +56,7 @@ export default {
   computed: {
     getStyle() {
       const height = this.config.hour * this.config.grid15min * 4;
-      return `width:${this.config.targetWidth}px;height:${height}px;`;
+      return `min-width:${this.config.targetWidth}px;height:${height}px;`;
     },
   },
   methods: {
@@ -83,5 +83,6 @@ export default {
 .target {
   user-select: none;
   position: relative;
+  flex: 1;
 }
 </style>

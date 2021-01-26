@@ -1,81 +1,79 @@
 <template>
-  <div id="app">
-    <ScheduleFrame>
-      <!-- スケジュールヘッダー -->
-      <template v-slot:headerLabel> </template>
-      <!-- スケジュールラベル -->
-      <template v-slot:bodyLabel>
-        <!-- 時間表示 -->
-        <GuideFrame :config="config" />
-      </template>
-      <!-- スケジュール表 -->
-      <template v-slot:bodyMain>
-        <DragTarget
-          v-for="(list, index) in lists"
-          :key="list.id"
-          :id="list.id"
-          :initItems="list.items"
-          :grid="{ x: 1, y: config.grid15min }"
-          :fit0="{ x: true, y: false }"
-          :limit="{ vertical: true, horizontal: false }"
-          :style="getStyle"
-          v-slot="{ params }"
+  <ScheduleFrame>
+    <!-- スケジュールヘッダー -->
+    <template v-slot:headerLabel>
+      <ScheduleHeader :config="config" :lists="lists" />
+    </template>
+    <!-- スケジュールラベル -->
+    <template v-slot:bodyLabel>
+      <!-- 時間表示 -->
+      <GuideFrame :config="config" />
+    </template>
+    <!-- スケジュール表 -->
+    <template v-slot:bodyMain>
+      <DragTarget
+        v-for="(list, index) in lists"
+        :key="list.id"
+        :id="list.id"
+        :initItems="list.items"
+        :grid="{ x: 1, y: config.grid15min }"
+        :fit0="{ x: true, y: false }"
+        :limit="{ vertical: true, horizontal: false }"
+        :style="getStyle"
+        v-slot="{ params }"
+      >
+        <!-- フレーム内の後ろに表示 -->
+        <ListBox :id="list.id" :last="index === lists.length - 1"></ListBox>
+        <!-- 背景のグリッド線 -->
+        <GridFrame :config="config" />
+        <!-- スケジュール表示 -->
+        <DraggableItem
+          v-for="itemId in params.lists"
+          :key="itemId"
+          :itemId="itemId"
+          :listId="params.listId"
+          :limit="params.limit"
+          :isTargetDetect="true"
+          :fixHorizontal="true"
+          :fixVertical="false"
+          :fitGridX="params.grid.x"
+          :fitGridY="params.grid.y"
+          :fit0="params.fit0"
+          v-slot="{
+            target,
+            position,
+            expand,
+            expandCallback,
+            fitGrid,
+            isMoving,
+            startTime,
+          }"
         >
-          <!-- フレーム内の後ろに表示 -->
-          <ListBox :id="list.id" :last="index === lists.length - 1"></ListBox>
-          <!-- 背景のグリッド線 -->
-          <GridFrame :config="config" />
-          <!-- スケジュール表示 -->
-          <DraggableItem
-            v-for="itemId in params.lists"
-            :key="itemId"
-            :itemId="itemId"
-            :listId="params.listId"
-            :limit="params.limit"
-            :isTargetDetect="true"
-            :fixHorizontal="true"
-            :fixVertical="false"
-            :fitGridX="params.grid.x"
-            :fitGridY="params.grid.y"
-            :fit0="params.fit0"
-            v-slot="{
-              target,
+          <!-- スケジュール内の予定 -->
+          <DraggableExpandBox
+            :initialPosition="{
               position,
               expand,
-              expandCallback,
-              fitGrid,
-              isMoving,
-              startTime,
             }"
+            :target="target"
+            :fitGrid="fitGrid"
+            :isMoving="isMoving"
+            @callback-expand="expandCallback"
+            v-slot="{ expandTime, isDragging }"
           >
-            <!-- スケジュール内の予定 -->
-            <DraggableExpandBox
-              :initialPosition="{
-                position,
-                expand,
-              }"
-              :target="target"
-              :fitGrid="fitGrid"
+            <!-- アイテム内の表示UI -->
+            <ItemBox
+              :id="itemId"
               :isMoving="isMoving"
-              @callback-expand="expandCallback"
-              v-slot="{ expandTime, isDragging }"
-            >
-              <!-- アイテム内の表示UI -->
-              <ItemBox
-                :id="itemId"
-                :isMoving="isMoving"
-                :isDragging="isDragging"
-                :targetId="params.listId"
-                :startTime="startTime"
-                :expandTime="expandTime"
-              /> </DraggableExpandBox
-          ></DraggableItem>
-        </DragTarget>
-      </template>
-    </ScheduleFrame>
-    <!-- ターゲットにドラッグ&ドロップして位置を変更できる -->
-    <div style="display: flex"></div>
-  </div>
+              :isDragging="isDragging"
+              :targetId="params.listId"
+              :startTime="startTime"
+              :expandTime="expandTime"
+            /> </DraggableExpandBox
+        ></DraggableItem>
+      </DragTarget>
+    </template>
+  </ScheduleFrame>
 </template>
 
 <script>
@@ -87,6 +85,7 @@ import ListBox from "../UI/ListBox";
 import GridFrame from "../UI/GridFrame";
 import GuideFrame from "../UI/GuideFrame";
 import ScheduleFrame from "../UI/ScheduleFrame";
+import ScheduleHeader from "./ScheduleHeader";
 
 export default {
   name: "Scheduler",
@@ -108,6 +107,7 @@ export default {
     DragTarget,
     DraggableExpandBox,
     ScheduleFrame,
+    ScheduleHeader,
     ItemBox,
     ListBox,
     GridFrame,
@@ -116,7 +116,7 @@ export default {
   computed: {
     getStyle() {
       const height = this.config.hour * this.config.grid15min * 4;
-      return `width:${this.config.targetWidth}px;height:${height}px;`;
+      return `min-width:${this.config.targetWidth}px;height:${height}px;`;
     },
   },
 };
