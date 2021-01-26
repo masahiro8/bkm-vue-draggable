@@ -46,7 +46,15 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({ itemId, targetId, localPosition, expand }) => {
+  const putOnTarget = ({
+    itemId,
+    targetId,
+    localPosition,
+    expand,
+    startTime,
+    endTime
+  }) => {
+    console.log("put ", startTime, endTime);
     //検索
     const find = targetsItems[`${targetId}`].find((item) => {
       return item === itemId;
@@ -76,12 +84,19 @@ const _dragStore = () => {
 
     if (!result) {
       //なければ追加
-      allItems.push({ itemId, targetId, localPosition, expand });
+      allItems.push({
+        itemId,
+        targetId,
+        localPosition,
+        startTime,
+        endTime,
+        expand
+      });
     } else {
       //あれば更新
       allItems = allItems.map((item) => {
         return item.itemId === itemId
-          ? { itemId, targetId, localPosition, expand }
+          ? { itemId, targetId, localPosition, startTime, endTime, expand }
           : item;
       });
     }

@@ -15,7 +15,11 @@
 // import { roundGrid } from "../../util/roundGrid";
 import { hitArea } from "../../util/hitArea";
 import { dragStore } from "./DragStore";
-import { getTimeFromPosition } from "../../util/timeUtil";
+import {
+  getTimeFromYpx,
+  getEndTime,
+  getYpxFromTime,
+} from "../../util/timeUtil";
 
 //ポインター位置を返すラッパー
 const getPointer = (e) => {
@@ -78,7 +82,7 @@ export default {
       },
       timerExpandUpdate: null,
       updatedExpand: 20,
-      start_time: "",
+      expandTime: { h: null, m: null },
     };
   },
   props: {
@@ -145,7 +149,38 @@ export default {
       this.target = target.ref;
       this.target_margin = target_margin;
       this.mousepoint_margin = { x: 0, y: 0 };
-      let movingpoint = { ...self.localPosition };
+
+      console.log("self.startTime,self.endTime", self.startTime, self.endTime);
+
+      //時間から座標に変換
+      const time = {
+        h: self.startTime.split(":")[0],
+        m: self.startTime.split(":")[1],
+      };
+
+      //時間から座標に変換
+      const localPosition = {
+        x: 0,
+        y: getYpxFromTime({ time: time, grid15min: this.fitGridY }),
+      };
+      // let movingpoint = { ...self.localPosition };//座標をそのまま取得
+      let movingpoint = { ...localPosition };
+
+      //時間から座標に変換
+      const endtime = {
+        h: self.endTime.split(":")[0],
+        m: self.endTime.split(":")[1],
+      };
+
+      const expandPosition = {
+        x: 0,
+        y:
+          getYpxFromTime({
+            time: endtime,
+            grid15min: this.fitGridY,
+          }) - localPosition.y,
+      };
+
       //固定補正
       this.movingpoint = {
         x: this.fixHorizontal ? 0 : movingpoint.x,
@@ -155,7 +190,7 @@ export default {
       this.params = {
         target: target.ref,
         position: this.movingpoint,
-        expand: self.expand,
+        expand: expandPosition,
         startTime: this.getStartTime.time,
         fitGrid: {
           x: this.fitGridX,
@@ -196,7 +231,7 @@ export default {
         y: top * 100,
       });
 
-      const time = getTimeFromPosition({
+      const time = getTimeFromYpx({
         pixel: top,
         grid15min: this.fitGridY,
       });
@@ -239,11 +274,35 @@ export default {
     initial() {},
 
     //DraggableExpandBoxから高さを受け取る
-    expandCallback(value) {
+    expandCallback({ expand, expandTime }) {
       clearTimeout(this.timerExpandUpdate);
       this.timerExpandUpdate = setTimeout(() => {
-        this.updatedExpand = value;
+        this.updatedExpand = expand;
+        this.expandTime = expandTime;
+        //登録
+        this.putOnTarget(this.listId);
       }, 200);
+    },
+
+    //ストアに登録
+    putOnTarget(targetId) {
+      const endtime = getEndTime({
+        startTime: this.getStartTime.time,
+        expandTime: this.expandTime,
+      });
+      //所属先を変更
+      dragStore.putOnTarget({
+        itemId: this.id,
+        targetId: targetId,
+        startTime: `${`${this.getStartTime.time.h}`.padStart(
+          2,
+          "0"
+        )}:${`${this.getStartTime.time.m}`.padStart(2, "0")}`,
+        endTime: `${`${endtime.h.padStart(2, "0")}`}:${`${endtime.m.padStart(
+          2,
+          "0"
+        )}`}`,
+      });
     },
 
     //エリアヒット検出 >> ドロップ先を検出して登録
@@ -257,15 +316,7 @@ export default {
       });
       if (hit) {
         //所属先を変更
-        dragStore.putOnTarget({
-          itemId: this.id,
-          targetId: hit.id,
-          localPosition: {
-            x: this.movingpoint.x - this.mousepoint_margin.x,
-            y: this.movingpoint.y - this.mousepoint_margin.y,
-          },
-          expand: { x: 0, y: this.updatedExpand },
-        });
+        this.putOnTarget(hit.id);
         this.movepoint_start = null;
       } else {
         //元に戻す

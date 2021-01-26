@@ -53,7 +53,8 @@
             isMoving,
             startTime,
           }"
-          ><DraggableExpandBox
+        >
+          <DraggableExpandBox
             :initialPosition="{
               position,
               expand,
@@ -63,10 +64,12 @@
             :isMoving="isMoving"
             @callback-expand="expandCallback"
             v-slot="{ expandTime }"
-            ><ItemBox
+          >
+            <ItemBox
               :id="itemId"
               :startTime="startTime"
-              :expandTime="expandTime" /></DraggableExpandBox
+              :expandTime="expandTime"
+            /> </DraggableExpandBox
         ></DraggableItem>
       </DragTarget>
     </div>
@@ -119,18 +122,22 @@ export default {
             {
               itemId: 10001,
               targetId: 100,
-              localPosition: { x: 0, y: 20 },
-              expand: { x: 0, y: 30 },
-            },
-            {
-              itemId: 10002,
-              targetId: 100,
-              localPosition: { x: 0, y: 80 },
-              expand: { x: 0, y: 30 },
+              startTime: "12:00",
+              endTime: "15:00",
             },
           ],
         },
-        { id: 101 },
+        {
+          id: 101,
+          items: [
+            {
+              itemId: 10002,
+              targetId: 101,
+              startTime: "10:00",
+              endTime: "11:00",
+            },
+          ],
+        },
         { id: 102 },
         { id: 103 },
         { id: 104 },
@@ -165,8 +172,8 @@ export default {
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
         targetId: 102, //対象のターゲット
-        localPosition: { x: 0, y: 30 }, //ボックスの位置
-        expand: { x: 0, y: 50 }, //ボックスの高さ
+        startTime: "12:00",
+        endTime: "15:00",
       });
     },
   },

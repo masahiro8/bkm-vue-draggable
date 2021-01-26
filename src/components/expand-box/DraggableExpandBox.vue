@@ -26,7 +26,7 @@
 座標の管理だけをする
 */
 import DraggableVertical from "./DraggableVertical";
-import { getTimeFromPosition } from "../../util/timeUtil";
+import { getTimeFromYpx } from "../../util/timeUtil";
 export default {
   data: () => {
     return {
@@ -66,10 +66,9 @@ export default {
   },
   computed: {
     frameStyle() {
-      //グリッドのサイズにまるめる
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
-      const _height = this.getFitGrid(this.fitGrid.y, height);
+      const _height = this.getFitGrid(this.fitGrid.y, height); //グリッドのサイズにまるめる
 
       //ボックスの中はローカル領域なのでピクセルで指定しないといけない
       let style = `top:${this.handleRects.top.y}px;height:${_height}px;`;
@@ -79,11 +78,10 @@ export default {
       return this.isDragging || this.isMoving ? "dragging" : null;
     },
     expandTime() {
-      //グリッドのサイズにまるめる
       const height =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
-      const _height = this.getFitGrid(this.fitGrid.y, height);
-      const time = getTimeFromPosition({
+      const _height = this.getFitGrid(this.fitGrid.y, height); //グリッドのサイズにまるめる
+      const time = getTimeFromYpx({
         pixel: _height,
         grid15min: this.fitGrid.y,
       });
@@ -116,7 +114,8 @@ export default {
       this.handleRects = handleRects;
       const expand =
         this.handleRects.bottom.y - this.handleRects.bottom.margin_y;
-      this.$emit("callback-expand", expand);
+      const expandTime = this.expandTime;
+      this.$emit("callback-expand", { expand, expandTime });
     },
   },
 };

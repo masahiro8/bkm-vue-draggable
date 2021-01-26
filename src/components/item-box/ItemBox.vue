@@ -8,6 +8,8 @@
 </template>
 <script>
 import { dragStore } from "../custom-draggable/DragStore";
+import { getEndTime } from "../../util/timeUtil";
+
 export default {
   data: () => {
     return {
@@ -43,13 +45,11 @@ export default {
       return `${this.startTime.h}:${this.startTime.m}`;
     },
     getEndTime() {
-      if (!this.startTime || !this.expandTime) return "";
-      const startMin = +this.startTime.h * 60 + +this.startTime.m;
-      const totalMin = +this.expandTime.h * 60 + +this.expandTime.m;
-      const endMin = startMin + totalMin;
-      const h = Math.floor(endMin / 60);
-      const m = endMin / 60 - h;
-      return `${`${h}`.padStart(2, "0")}:${`${m * 60}`.padStart(2, "0")}`;
+      const time = getEndTime({
+        startTime: this.startTime,
+        expandTime: this.expandTime,
+      });
+      return `${time.h}:${time.m}`;
     },
   },
 };
