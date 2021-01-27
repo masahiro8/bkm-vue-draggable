@@ -64,9 +64,6 @@ export default {
     itemId: {
       type: Number,
     },
-    listId: {
-      type: Number,
-    },
     date:{
       type:String,
       defaultValue:null
@@ -118,6 +115,7 @@ export default {
 
     //新規ドロップの検知
     const target = dragStore.getSelfTarget({ itemId: this.id });
+
     const targetRect = target ? target.ref.getBoundingClientRect() : null;
     if (targetRect) {
       let rect = this.$refs.self.getBoundingClientRect();
@@ -128,8 +126,6 @@ export default {
       this.target = target.ref;
       this.target_margin = target_margin;
       this.mousepoint_margin = { x: 0, y: 0 };
-
-      console.log("self.startTime,self.endTime", self.startTime, self.endTime);
 
       //時間から座標に変換
       const time = {
@@ -259,12 +255,12 @@ export default {
         this.updatedExpand = expand;
         this.expandTime = expandTime;
         //登録
-        this.putOnTarget(this.listId,this.date);
+        this.putOnTarget(this.date);
       }, 200);
     },
 
     //ストアに登録
-    putOnTarget(targetId,date) {
+    putOnTarget(date) {
       const _startTime = this.getStartTime.time;
       const _endtime = getEndTime({
         startTime: this.getStartTime.time,
@@ -280,10 +276,10 @@ export default {
         2,
         "0"
       )}`}:${`${_endtime.m.padStart(2, "0")}`}`;
+
       //所属先を変更
       dragStore.putOnTarget({
         itemId: this.id,
-        targetId: targetId,
         date,
         startTime,
         endTime,
@@ -299,9 +295,10 @@ export default {
         width: selfRect.width,
         height: selfRect.height,
       });
+
       if (hit) {
         //所属先を変更
-        this.putOnTarget(hit.id,hit.date);
+        this.putOnTarget(hit.date);
         this.movepoint_start = null;
       } else {
         //元に戻す

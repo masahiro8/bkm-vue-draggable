@@ -20,8 +20,8 @@ export default {
     id: {
       type: Number,
     },
-    targetId: {
-      type: Number,
+    date: {
+      type: String,
     },
     startTime: {
       type: Object,
@@ -40,9 +40,8 @@ export default {
   },
   mounted() {
     this.$watch(
-      () => [this.id, this.targetId],
+      () => [this.id],
       (newValue) => {
-        // console.log("item =", newValue[0]);
         this.params = dragStore.getItemById(newValue[0]);
       },
       { immediate: true }

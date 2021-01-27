@@ -10,7 +10,7 @@ const _dragStore = () => {
 
   const setTarget = ({ id, date, ref, items }) => {
     const find = targets.find((t) => {
-      return t.id === id;
+      return t.date === date;
     });
     if (!find) {
       targets.push({
@@ -18,13 +18,13 @@ const _dragStore = () => {
         date,
         ref: ref,
       });
-      targetsItems[`${id}`] = [];
+      targetsItems[`${date}`] = [];
     }
     if (items && items.length) {
       allItems = allItems.concat(items);
-      targetsItems[`${id}`] = items.map((item) => item.itemId);
-      publishCallbacks();
+      targetsItems[`${date}`] = items.map((item) => item.itemId);
     }
+    publishCallbacks();
   };
 
   const hitTarget = (itemRect) => {
@@ -47,20 +47,20 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({ itemId, targetId, date, startTime, endTime }) => {
+  const putOnTarget = ({ itemId, date, startTime, endTime }) => {
     //検索
-    const find = targetsItems[`${targetId}`].find((item) => {
+    const find = targetsItems[`${date}`].find((item) => {
       return item === itemId;
     });
 
     //なかったら追加
     if (!find) {
-      targetsItems[`${targetId}`].push(itemId);
+      targetsItems[`${date}`].push(itemId);
 
       //他のターゲットから削除
       Object.keys(targetsItems).forEach((key) => {
         //他のリスト
-        if (targetId !== +key) {
+        if (date !== key) {
           const index = targetsItems[key].indexOf(itemId);
           //みつかれば削除
           if (index > -1) {
@@ -79,7 +79,6 @@ const _dragStore = () => {
       //なければ追加
       allItems.push({
         itemId,
-        targetId,
         startTime,
         endTime,
         date,
@@ -88,7 +87,7 @@ const _dragStore = () => {
       //あれば更新
       allItems = allItems.map((item) => {
         return item.itemId === itemId
-          ? { itemId, targetId, startTime, endTime, date }
+          ? { itemId, startTime, endTime, date }
           : item;
       });
     }
@@ -96,29 +95,16 @@ const _dragStore = () => {
   };
 
   const getSelfTarget = ({ itemId }) => {
-    const id = Object.keys(targetsItems).find((key) => {
+    const date = Object.keys(targetsItems).find((key) => {
       return targetsItems[key].indexOf(itemId) > -1;
     });
-    if (id) {
+    if (date) {
       const find = targets.find((t) => {
-        return t.id === +id;
+        return t.date === date;
       });
       return find ? find : null;
     }
     return null;
-  };
-
-  const getTargets = () => {
-    return {
-      targets,
-      targetsItems,
-    };
-  };
-
-  const getTarget = ({ targetId }) => {
-    return targets.find((t) => {
-      return t.id === targetId;
-    });
   };
 
   const getItemById = (id) => {
@@ -142,14 +128,16 @@ const _dragStore = () => {
       });
     });
     updateCallbacks.forEach((callback) => {
-      const items = Object.keys(targetsItems).map((key) => {
-        return targetsItems[key].map((itemId) => {
+      const schedule = Object.keys(targetsItems).map((key) => {
+        const items = targetsItems[key].map((itemId) => {
           return getItemById(itemId);
         });
+        return {
+          date: key,
+          items,
+        };
       });
-      callback({
-        items: items,
-      });
+      callback({ schedule });
     });
   };
 
@@ -160,8 +148,6 @@ const _dragStore = () => {
     hitTarget,
     putOnTarget,
     getSelfTarget,
-    getTargets,
-    getTarget,
     getItemById,
   };
 };

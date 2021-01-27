@@ -1,21 +1,11 @@
 <template>
   <div class="list" :class="last ? 'last' : null">
-    <div class="header">
-      <div class="label">{{ label }}</div>
-    </div>
     <div class="body"><slot /></div>
   </div>
 </template>
 <script>
 export default {
   props: {
-    label: {
-      type: String,
-      defaultValue: "",
-    },
-    id: {
-      type: Number,
-    },
     last: {
       type: Boolean,
     },

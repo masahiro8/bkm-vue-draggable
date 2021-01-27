@@ -19,20 +19,16 @@ export default {
     };
   },
   props: {
-    id: {
-      type: Number,
-    },
     date:{
       type: String,
       defaultValue:null
     },
+    lists:{
+      type:Array,
+    },
     grid: {
       type: Object,
       defaultValue: { x: 1, y: 1 },
-    },
-    //まるっととってくる
-    listParams: {
-      type: Object,
     },
     //x=0,y=0に固定するかフラグ
     fit0: {
@@ -51,14 +47,14 @@ export default {
     },
   },
   mounted() {
+    this.init();
     if (this.isClickToAdd) this.addEvent();
     this.$watch(
-      () => [this.id],
-      (newValue) => {
-        if (newValue[0] && !this.flag) {
-          this.flag = true;
-          this.init();
-        }
+      () => [this.date,this.lists],
+      () => {
+        this.$nextTick(()=>{
+            this.update();
+          });
       },
       {
         immediate: true,
@@ -75,23 +71,30 @@ export default {
     },
   },
   methods: {
-    init() {
+    init(){
       dragStore.setCallback(({ targetsItems }) => {
         this.params = {
-          listId: this.id,
-          lists: targetsItems[this.id],
+          lists: targetsItems[this.date],
           grid: this.grid,
           fit0: this.fit0,
           limit: this.limit,
         };
       });
+    },
+    update() {
+      const list = this.lists.find(list=>{
+        return list.date === this.date;
+      });
+
+      if(!list) return;
+
       dragStore.setTarget({
-        id: this.id,
         date: this.date,
         ref: this.$refs.self,
-        items: this.listParams.items,
+        items: ("items" in list)?list.items:[],
       });
     },
+    
     //マウスクリックで新規予定の作成
     mouseClick(e) {
       const rect = this.self.getBoundingClientRect();
@@ -112,7 +115,6 @@ export default {
       const endTime = roundTo15min(`${_endTime.h}:${_endTime.m}`);
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
-        targetId: this.id, //対象のターゲット
         date: this.date,
         startTime: startTime.hm,
         endTime: endTime.hm,

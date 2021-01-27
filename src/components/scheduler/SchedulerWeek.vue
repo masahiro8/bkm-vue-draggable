@@ -12,11 +12,10 @@
     <!-- スケジュール表 -->
     <template v-slot:bodyMain>
       <DragTarget
-        v-for="(list, index) in lists"
-        :key="list.id"
-        :id="list.id"
-        :date="list.date"
-        :listParams="list"
+        v-for="(date, index) in week"
+        :key="index"
+        :date="date"
+        :lists="lists"
         :grid="{ x: 1, y: config.grid15min }"
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
@@ -25,7 +24,7 @@
         v-slot="{ params }"
       >
         <!-- フレーム内の後ろに表示 -->
-        <ListBox :id="list.id" :last="index === lists.length - 1"></ListBox>
+        <ListBox :last="index === lists.length - 1"></ListBox>
         <!-- 背景のグリッド線 -->
         <GridFrame :config="config" />
         <!-- スケジュール表示 -->
@@ -33,8 +32,7 @@
           v-for="itemId in params.lists"
           :key="itemId"
           :itemId="itemId"
-          :listId="params.listId"
-          :date="list.date"
+          :date="date"
           :limit="params.limit"
           :isTargetDetect="true"
           :fixHorizontal="true"
@@ -69,7 +67,7 @@
               :id="itemId"
               :isMoving="isMoving"
               :isDragging="isDragging"
-              :targetId="params.listId"
+              :date="date"
               :startTime="startTime"
               :expandTime="expandTime"
             /> </DraggableExpandBox

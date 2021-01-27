@@ -45,8 +45,8 @@ export default {
       throw new Error();
     }
 
-    dragStore.setUpdateCallback(({ items }) => {
-      console.log("Published ", items);
+    dragStore.setUpdateCallback(({ schedule }) => {
+      console.log("Published ", schedule);
     });
     this.setBodyOverflowHidden(true);
   },
