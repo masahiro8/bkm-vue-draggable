@@ -5,6 +5,8 @@
 </template>
 <script>
 import { dragStore } from "../DragStore";
+import { getTimeFromYpx, roundTo15min } from "../util/timeUtil";
+
 export default {
   data: () => {
     return {
@@ -24,9 +26,9 @@ export default {
       type: Object,
       defaultValue: { x: 1, y: 1 },
     },
-    initItems: {
-      type: Array,
-      defaultValue: [],
+    //まるっととってくる
+    listParams: {
+      type: Object,
     },
     //x=0,y=0に固定するかフラグ
     fit0: {
@@ -38,8 +40,14 @@ export default {
       type: Object,
       defaultValue: { vertical: true, horizontal: false },
     },
+    //クリックして新規作成
+    isClickToAdd: {
+      type: Boolean,
+      default: true,
+    },
   },
   mounted() {
+    if (this.isClickToAdd) this.addEvent();
     this.$watch(
       () => [this.id],
       (newValue, oldValue) => {
@@ -52,6 +60,9 @@ export default {
         immediate: true,
       }
     );
+  },
+  destroyed() {
+    this.removeEvent();
   },
   computed: {
     getStyle() {
@@ -73,8 +84,40 @@ export default {
       dragStore.setTarget({
         id: this.id,
         ref: this.$refs.self,
-        items: this.initItems,
+        items: this.listParams.items,
       });
+    },
+    //マウスクリックで新規予定の作成
+    mouseClick(e) {
+      const rect = this.self.getBoundingClientRect();
+      const point = { x: e.clientX, y: e.clientY };
+      const localPoint = {
+        x: point.x - rect.x,
+        y: point.y - rect.y,
+      };
+      const _startTime = getTimeFromYpx({
+        pixel: localPoint.y,
+        grid15min: this.grid.y,
+      });
+      const _endTime = getTimeFromYpx({
+        pixel: localPoint.y + this.grid.y * 2,
+        grid15min: this.grid.y,
+      });
+      const startTime = roundTo15min(`${_startTime.h}:${_startTime.m}`);
+      const endTime = roundTo15min(`${_endTime.h}:${_endTime.m}`);
+      dragStore.putOnTarget({
+        itemId: Math.floor(Math.random() * 999),
+        targetId: this.id, //対象のターゲット
+        startTime: startTime.hm,
+        endTime: endTime.hm,
+      });
+    },
+    addEvent() {
+      this.self = this.$refs.self;
+      this.self.addEventListener("click", this.mouseClick);
+    },
+    removeEvent() {
+      this.self.removeEventListener("click", this.mouseClick);
     },
   },
 };
@@ -84,5 +127,6 @@ export default {
   user-select: none;
   position: relative;
   flex: 1;
+  pointer-events: all;
 }
 </style>

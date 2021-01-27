@@ -20,6 +20,7 @@
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
         :style="getStyle"
+        :isClickToAdd="config.isClickToAdd"
         v-slot="{ params }"
       >
         <!-- フレーム内の後ろに表示 -->

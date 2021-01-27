@@ -208,10 +208,15 @@ export default {
     mouseLeave(e) {
       this.isEnter = false;
     },
+    mouseClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
 
     addDragEvent() {
       this.self = this.$refs.self;
       this.rect = this.$refs.self.getBoundingClientRect();
+      this.self.addEventListener("click", this.mouseClick);
       this.self.addEventListener("mouseenter", this.mouseEnter);
       this.self.addEventListener("mouseleave", this.mouseLeave);
       this.self.addEventListener("mouseout", this.mouseOut);
@@ -221,6 +226,7 @@ export default {
     },
     removeDragEvent() {
       this.self = this.$refs.self;
+      this.self.removeEventListener("click", this.mouseClick);
       this.self.removeEventListener("mouseenter", this.mouseEnter);
       this.self.removeEventListener("mouseleave", this.mouseLeave);
       this.self.removeEventListener("mouseout", this.mouseOut);

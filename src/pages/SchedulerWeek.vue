@@ -3,14 +3,14 @@
     <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide> Side Menu </template>
     <template v-slot:pageBodyMain
-      ><Scheduler :config="config" :lists="lists"
+      ><SchedulerWeek :config="config" :lists="lists"
     /></template>
   </PageFrame>
 </template>
 <script>
-import { dragStore } from "../components/DragStore";
-import PageFrame from "../components/UI/PageFrame";
-import Scheduler from "../components/scheduler/Scheduler";
+import { dragStore } from "../components/scheduler/DragStore";
+import PageFrame from "./UI/PageFrame";
+import SchedulerWeek from "../components/scheduler/SchedulerWeek";
 import { CONFIG_SCHEDULER } from "../statics/config";
 
 export default {
@@ -18,42 +18,22 @@ export default {
     return {
       config: CONFIG_SCHEDULER,
       gridLines: [],
-      lists: [
-        {
-          id: 100,
-          label: "100",
-          items: [
-            {
-              itemId: 10001,
-              targetId: 100,
-              startTime: "12:00",
-              endTime: "15:00",
-            },
-          ],
-        },
-        {
-          id: 101,
-          label: "101",
-          items: [
-            {
-              itemId: 10002,
-              targetId: 101,
-              startTime: "10:00",
-              endTime: "11:00",
-            },
-          ],
-        },
-        { id: 102, label: "102" },
-        { id: 103, label: "103" },
-        { id: 104, label: "104" },
-      ],
+      lists: [],
     };
   },
   components: {
     PageFrame,
-    Scheduler,
+    SchedulerWeek,
   },
-  mounted() {
+  async mounted() {
+    const res = await fetch("/json/schedule.json");
+    if (res.ok) {
+      const response = await res.json();
+      this.lists = response.schedule;
+    } else {
+      throw new Error();
+    }
+
     dragStore.setUpdateCallback(({ items }) => {
       console.log("Published ", items);
     });

@@ -282,22 +282,27 @@ export default {
 
     //ストアに登録
     putOnTarget(targetId) {
-      const endtime = getEndTime({
+      const _startTime = this.getStartTime.time;
+      const _endtime = getEndTime({
         startTime: this.getStartTime.time,
         expandTime: this.expandTime,
       });
+
+      const startTime = `${`${_startTime.h}`.padStart(
+        2,
+        "0"
+      )}:${`${_startTime.m}`.padStart(2, "0")}`;
+
+      const endTime = `${`${_endtime.h.padStart(
+        2,
+        "0"
+      )}`}:${`${_endtime.m.padStart(2, "0")}`}`;
       //所属先を変更
       dragStore.putOnTarget({
         itemId: this.id,
         targetId: targetId,
-        startTime: `${`${this.getStartTime.time.h}`.padStart(
-          2,
-          "0"
-        )}:${`${this.getStartTime.time.m}`.padStart(2, "0")}`,
-        endTime: `${`${endtime.h.padStart(2, "0")}`}:${`${endtime.m.padStart(
-          2,
-          "0"
-        )}`}`,
+        startTime,
+        endTime,
       });
     },
 
@@ -396,9 +401,14 @@ export default {
     mouseLeave(e) {
       this.isEnter = false;
     },
+    mouseClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
 
     addDragEvent() {
       this.self = this.$refs.self;
+      this.self.addEventListener("click", this.mouseClick);
       this.self.addEventListener("mouseenter", this.mouseEnter);
       this.self.addEventListener("mouseleave", this.mouseLeave);
       this.self.addEventListener("mouseout", this.mouseOut);
@@ -407,6 +417,7 @@ export default {
       window.addEventListener("mouseup", this.mouseUp);
     },
     removeDragEvent() {
+      this.self.removeEventListener("click", this.mouseClick);
       this.self.removeEventListener("mouseenter", this.mouseEnter);
       this.self.removeEventListener("mouseleave", this.mouseLeave);
       this.self.removeEventListener("mouseout", this.mouseOut);
