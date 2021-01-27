@@ -8,13 +8,14 @@
         :key="item.id"
         :style="'min-width:' + config.targetWidth + 'px;'"
       >
-        <ScheduleLabel :item="item" />
+        <ScheduleLabel :label="getLabel(item.date)" />
       </div>
     </div>
   </div>
 </template>
 <script>
-import ScheduleLabel from "../UI/ScheduleLabel";
+import ScheduleLabel from "./UI/ScheduleLabel";
+import { getLangDateFromDateFormat } from "./util/timeUtil";
 export default {
   components: {
     ScheduleLabel,
@@ -25,6 +26,15 @@ export default {
     },
     lists: {
       type: Array,
+    },
+  },
+  methods: {
+    getLabel(date) {
+      const label = getLangDateFromDateFormat({
+        lang: "ja",
+        date: date,
+      });
+      return `${label.dd}(${label.dayofweek})`;
     },
   },
 };

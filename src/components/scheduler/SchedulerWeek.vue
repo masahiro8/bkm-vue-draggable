@@ -1,5 +1,5 @@
 <template>
-  <ScheduleFrame>
+  <ScheduleLayout>
     <!-- スケジュールヘッダー -->
     <template v-slot:headerLabel>
       <ScheduleHeader :config="config" :lists="lists" />
@@ -15,7 +15,7 @@
         v-for="(list, index) in lists"
         :key="list.id"
         :id="list.id"
-        :initItems="list.items"
+        :listParams="list"
         :grid="{ x: 1, y: config.grid15min }"
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
@@ -73,18 +73,18 @@
         ></DraggableItem>
       </DragTarget>
     </template>
-  </ScheduleFrame>
+  </ScheduleLayout>
 </template>
 
 <script>
-import DraggableItem from "../draggable/DraggableItem";
-import DragTarget from "../draggable/DragTarget";
-import DraggableExpandBox from "../expand/DraggableExpandBox";
-import ItemBox from "../UI/ItemBox";
-import ListBox from "../UI/ListBox";
-import GridFrame from "../UI/GridFrame";
-import GuideFrame from "../UI/GuideFrame";
-import ScheduleFrame from "../UI/ScheduleFrame";
+import DraggableItem from "./draggable/DraggableItem";
+import DragTarget from "./draggable/DragTarget";
+import DraggableExpandBox from "./expand/DraggableExpandBox";
+import ItemBox from "./UI/ItemBox";
+import ListBox from "./UI/ListBox";
+import GridFrame from "./UI/GridFrame";
+import GuideFrame from "./UI/GuideFrame";
+import ScheduleLayout from "./UI/ScheduleLayout";
 import ScheduleHeader from "./ScheduleHeader";
 
 export default {
@@ -106,7 +106,7 @@ export default {
     DraggableItem,
     DragTarget,
     DraggableExpandBox,
-    ScheduleFrame,
+    ScheduleLayout,
     ScheduleHeader,
     ItemBox,
     ListBox,

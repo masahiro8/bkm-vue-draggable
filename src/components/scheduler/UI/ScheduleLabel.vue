@@ -1,16 +1,14 @@
 <template>
   <div class="schedulelabel">
-    <div class="schedulelabel--date">{{ item.label }}</div>
-    <div class="schedulelabel--sub"></div>
-    <div class="schedulelabel--sub"></div>
+    <div class="schedulelabel--date">{{ label }}</div>
   </div>
 </template>
 <script>
 export default {
   name: "ScheduleLabel",
   props: {
-    item: {
-      type: Object,
+    label: {
+      type: String,
     },
   },
 };
@@ -30,7 +28,7 @@ export default {
     width: 1px;
     background-color: $grid-color;
   }
-  &:after {
+  /* &:after {
     content: "";
     display: block;
     position: absolute;
@@ -39,13 +37,13 @@ export default {
     width: 100%;
     height: 1px;
     background-color: $grid-color;
-  }
+  } */
 }
 .schedulelabel--date,
 .schedulelabel--sub {
   height: 42px;
   position: relative;
-  &:after {
+  /* &:after {
     content: "";
     display: block;
     position: absolute;
@@ -54,6 +52,6 @@ export default {
     width: 100%;
     height: 1px;
     background-color: $grid-color;
-  }
+  } */
 }
 </style>
