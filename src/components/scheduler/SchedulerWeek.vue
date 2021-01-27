@@ -2,7 +2,7 @@
   <ScheduleLayout>
     <!-- スケジュールヘッダー -->
     <template v-slot:headerLabel>
-      <ScheduleHeader :config="config" :lists="lists" />
+      <ScheduleHeader :config="config" :week="week" :lists="lists" />
     </template>
     <!-- スケジュールラベル -->
     <template v-slot:bodyLabel>
@@ -98,6 +98,9 @@ export default {
   props: {
     config: {
       type: Object,
+    },
+    week: {
+      type: Array,
     },
     lists: {
       type: Array,

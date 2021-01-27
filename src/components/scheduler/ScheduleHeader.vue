@@ -4,11 +4,11 @@
     <div class="headerLabel--labels">
       <div
         class="headerLabel--label"
-        v-for="item in lists"
-        :key="item.id"
+        v-for="(date, index) in week"
+        :key="index"
         :style="'min-width:' + config.targetWidth + 'px;'"
       >
-        <ScheduleLabel :label="getLabel(item.date)" />
+        <ScheduleLabel :label="getLabel(date)" />
       </div>
     </div>
   </div>
@@ -23,6 +23,9 @@ export default {
   props: {
     config: {
       type: Object,
+    },
+    week: {
+      type: Array,
     },
     lists: {
       type: Array,

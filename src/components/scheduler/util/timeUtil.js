@@ -61,10 +61,10 @@ const getLangDateFromDateFormat = ({ lang, date }) => {
 
   if (lang === "ja") {
     const dayOfWeekStrJP = ["日", "月", "火", "水", "木", "金", "土"];
-    const ndate = new Date(_date[0], _date[1], _date[2]);
+    const ndate = new Date(_date[0], +_date[1] - 1, _date[2]);
     const year = ndate.getFullYear();
     const month = ndate.getMonth();
-    const day = ndate.getDay();
+    const day = ndate.getDate();
     const dayofweekindex = ndate.getDay();
     return {
       yyyymmdd: `${year}年${month}月${day}日`,
@@ -89,10 +89,61 @@ const roundTo15min = (time) => {
   };
 };
 
+/**
+ * 日付からその週を取得
+ * @param //yyyy-mm-dd
+ */
+const getWeekFromDate = (date) => {
+  let _today;
+
+  if (date) {
+    const _ndate = date.split("-");
+    _today = new Date(_ndate[0], _ndate[1], _ndate[2]);
+  } else {
+    _today = new Date();
+  }
+
+  const today = {
+    year: _today.getFullYear(),
+    month: _today.getMonth() + 1,
+    day: _today.getDate(),
+    dayofweek: _today.getDay()
+  };
+
+  const _monday = new Date(
+    today.year,
+    today.month - 1,
+    today.day - today.dayofweek
+  );
+  const monday = {
+    year: _monday.getFullYear(),
+    month: _monday.getMonth() + 1,
+    day: _monday.getDate(),
+    dayofweek: _monday.getDay()
+  };
+
+  const _weekDay = [...new Array(7)].map((n, index) => {
+    const d = new Date(monday.year, monday.month - 1, monday.day + index);
+    const data = {
+      year: `${d.getFullYear()}`,
+      month: `${d.getMonth() + 1}`.padStart(2, "0"),
+      day: `${d.getDate()}`.padStart(2, "0"),
+      dayofweek: d.getDay()
+    };
+    return data;
+  });
+
+  const weekDay = _weekDay
+    .sort((day) => day.dayofweek)
+    .map((day) => `${day.year}-${day.month}-${day.day}`);
+  return weekDay;
+};
+
 export {
   getTimeFromYpx,
   getEndTime,
   getYpxFromTime,
   getLangDateFromDateFormat,
-  roundTo15min
+  roundTo15min,
+  getWeekFromDate
 };

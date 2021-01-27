@@ -3,7 +3,7 @@
     <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide> Side Menu </template>
     <template v-slot:pageBodyMain
-      ><SchedulerWeek :config="config" :lists="lists"
+      ><SchedulerWeek :config="config" :week="week" :lists="lists"
     /></template>
   </PageFrame>
 </template>
@@ -11,6 +11,7 @@
 import { dragStore } from "../components/scheduler/DragStore";
 import PageFrame from "./UI/PageFrame";
 import SchedulerWeek from "../components/scheduler/SchedulerWeek";
+import { getWeekFromDate } from "../components/scheduler/util/timeUtil";
 import { CONFIG_SCHEDULER } from "../statics/config";
 
 export default {
@@ -19,6 +20,7 @@ export default {
       config: CONFIG_SCHEDULER,
       gridLines: [],
       lists: [],
+      week: [],
     };
   },
   components: {
@@ -26,6 +28,15 @@ export default {
     SchedulerWeek,
   },
   async mounted() {
+    //日付をロード
+    const { year, month, day } = this.$route.query;
+    const weekDate = getWeekFromDate(
+      year && month && day ? `${year}-${month}-${day}` : null
+    );
+    this.week = weekDate;
+    console.log(weekDate);
+
+    //スケジュールをロード
     const res = await fetch("/json/schedule.json");
     if (res.ok) {
       const response = await res.json();
