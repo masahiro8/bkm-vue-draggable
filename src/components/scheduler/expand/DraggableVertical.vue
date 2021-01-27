@@ -9,7 +9,7 @@
   </div>
 </template>
 <script>
-import { hitArea } from "../../util/hitArea";
+import { hitArea } from "../util/hitArea";
 
 //ポインター位置を返すラッパー
 const getPointer = (e, type) => {
@@ -112,6 +112,14 @@ export default {
         deep: true,
       }
     );
+
+    //状態を通知
+    this.$watch(
+      () => [this.isEnter, this.isMove],
+      (newValue, oldValue) => {
+        this.$emit("set-enter", newValue[1]);
+      }
+    );
   },
   beforeDestroy() {
     this.removeDragEvent();
@@ -119,14 +127,15 @@ export default {
   methods: {
     //frameのサイズを更新
     callbackRect() {
-      this.$emit("set-rect", {
+      const params = {
         x: this.movingpoint.x,
         y: this.movingpoint.y,
         width: this.rect.width,
         height: this.rect.height,
         margin_x: this.mousepoint_margin.x,
         margin_y: this.mousepoint_margin.y,
-      });
+      };
+      this.$emit("set-rect", params);
     },
     getClass() {
       if (this.fixY) return "disabled";
@@ -199,10 +208,15 @@ export default {
     mouseLeave(e) {
       this.isEnter = false;
     },
+    mouseClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
 
     addDragEvent() {
       this.self = this.$refs.self;
       this.rect = this.$refs.self.getBoundingClientRect();
+      this.self.addEventListener("click", this.mouseClick);
       this.self.addEventListener("mouseenter", this.mouseEnter);
       this.self.addEventListener("mouseleave", this.mouseLeave);
       this.self.addEventListener("mouseout", this.mouseOut);
@@ -212,6 +226,7 @@ export default {
     },
     removeDragEvent() {
       this.self = this.$refs.self;
+      this.self.removeEventListener("click", this.mouseClick);
       this.self.removeEventListener("mouseenter", this.mouseEnter);
       this.self.removeEventListener("mouseleave", this.mouseLeave);
       this.self.removeEventListener("mouseout", this.mouseOut);
@@ -231,11 +246,24 @@ export default {
   font-size: 12px;
   z-index: 1;
   pointer-events: auto;
+
   &:hover {
+    text-align: center;
+    opacity: 1;
+    &:before {
+      content: "";
+      display: block;
+      margin-top: -8px;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(200, 200, 200, 0.2);
+    }
     cursor: row-resize;
   }
+
   &.moving {
   }
+
   &.disabled {
     &:hover {
       cursor: default;

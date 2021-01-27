@@ -1,22 +1,14 @@
-import { hitArea } from "../../util/hitArea";
+import { hitArea } from "./util/hitArea";
 
 const _dragStore = () => {
   let callbacks = [];
-  let initialCallbacks = [];
+  let updateCallbacks = [];
 
   let targets = [];
   let targetsItems = {};
-  let initialTargetItems = {};
+  let allItems = [];
 
-  let lastPutItem = {
-    id: null,
-    targetId: null,
-    position: { x: null, y: null }
-  };
-
-  let prevCallbackValues = "";
-
-  const setTarget = ({ id, ref }) => {
+  const setTarget = ({ id, ref, items }) => {
     const find = targets.find((t) => {
       return t.id === id;
     });
@@ -26,7 +18,11 @@ const _dragStore = () => {
         ref: ref
       });
       targetsItems[`${id}`] = [];
-      initialTargetItems[`${id}`] = [];
+    }
+    if (items && items.length) {
+      allItems = allItems.concat(items);
+      targetsItems[`${id}`] = items.map((item) => item.itemId);
+      publishCallbacks();
     }
   };
 
@@ -49,16 +45,8 @@ const _dragStore = () => {
     return hits[0];
   };
 
-  //配列でアイテムをまとめてターゲットに設定
-  const setItemsOnTarget = ({ targetId, items }) => {
-    initialTargetItems[`${targetId}`] = items;
-    initialCallbacks.forEach((callback) => {
-      callback(initialTargetItems);
-    });
-  };
-
   //ターゲットに追加
-  const putOnTarget = ({ itemId, targetId, position, margin }) => {
+  const putOnTarget = ({ itemId, targetId, startTime, endTime }) => {
     //検索
     const find = targetsItems[`${targetId}`].find((item) => {
       return item === itemId;
@@ -66,12 +54,6 @@ const _dragStore = () => {
 
     //なかったら追加
     if (!find) {
-      lastPutItem = {
-        id: itemId,
-        targetId,
-        position,
-        margin
-      };
       targetsItems[`${targetId}`].push(itemId);
 
       //他のターゲットから削除
@@ -85,25 +67,30 @@ const _dragStore = () => {
           }
         }
       });
+    }
+
+    //全アイテムを検索
+    const result = allItems.find((item) => {
+      return item.itemId === itemId;
+    });
+
+    if (!result) {
+      //なければ追加
+      allItems.push({
+        itemId,
+        targetId,
+        startTime,
+        endTime
+      });
     } else {
-      lastPutItem = {
-        id: null,
-        targetId: null,
-        position: { x: null, y: null },
-        margin: { x: null, y: null }
-      };
+      //あれば更新
+      allItems = allItems.map((item) => {
+        return item.itemId === itemId
+          ? { itemId, targetId, startTime, endTime }
+          : item;
+      });
     }
     publishCallbacks();
-  };
-
-  const publishCallbacks = () => {
-    callbacks.forEach((callback) => {
-      callback({
-        targets,
-        targetsItems,
-        lastPutItem
-      });
-    });
   };
 
   const getSelfTarget = ({ itemId }) => {
@@ -125,15 +112,15 @@ const _dragStore = () => {
       targetsItems
     };
   };
+
   const getTarget = ({ targetId }) => {
     return targets.find((t) => {
       return t.id === targetId;
     });
   };
 
-  //初期設定のコールバック
-  const setInitialCallback = (callback) => {
-    initialCallbacks.push(callback);
+  const getItemById = (id) => {
+    return allItems.find((item) => item.itemId === id);
   };
 
   //変更のコールバック
@@ -141,26 +128,39 @@ const _dragStore = () => {
     callbacks.push(callback);
   };
 
-  const clearLastItem = () => {
-    lastPutItem = {
-      id: null,
-      targetId: null,
-      position: { x: null, y: null }
-    };
-    publishCallbacks();
+  const setUpdateCallback = (callback) => {
+    updateCallbacks.push(callback);
+  };
+
+  const publishCallbacks = () => {
+    callbacks.forEach((callback) => {
+      callback({
+        targets,
+        targetsItems
+      });
+    });
+    updateCallbacks.forEach((callback) => {
+      const items = Object.keys(targetsItems).map((key) => {
+        return targetsItems[key].map((itemId) => {
+          return getItemById(itemId);
+        });
+      });
+      callback({
+        items: items
+      });
+    });
   };
 
   return {
     setTarget,
     setCallback,
-    setInitialCallback,
+    setUpdateCallback,
     hitTarget,
     putOnTarget,
     getSelfTarget,
     getTargets,
     getTarget,
-    clearLastItem,
-    setItemsOnTarget
+    getItemById
   };
 };
 

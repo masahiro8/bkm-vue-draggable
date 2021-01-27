@@ -1,12 +1,21 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    <slot />
+    <slot
+      :target="params.target"
+      :position="params.position"
+      :expand="params.expand"
+      :fitGrid="params.fitGrid"
+      :isMoving="params.isMoving"
+      :startTime="params.startTime"
+      :expandCallback="expandCallback"
+    />
   </div>
 </template>
 <script>
 // import { roundGrid } from "../../util/roundGrid";
-import { hitArea } from "../../util/hitArea";
-import { dragStore } from "./DragStore";
+import { hitArea } from "../util/hitArea";
+import { dragStore } from "../DragStore";
+import { getTimeFromYpx, getEndTime, getYpxFromTime } from "../util/timeUtil";
 
 //ポインター位置を返すラッパー
 const getPointer = (e) => {
@@ -50,6 +59,7 @@ const detectInTargetRect = (selfRect, targetRect, limit) => {
 export default {
   data: () => {
     return {
+      id: null,
       self: null,
       rect: null,
       isMove: false,
@@ -62,6 +72,13 @@ export default {
       hitarea: false,
       target: null,
       target_margin: null,
+      params: {
+        expand: { x: 0, y: 20 },
+        fitGrid: { x: 1, y: 1 },
+      },
+      timerExpandUpdate: null,
+      updatedExpand: 20,
+      expandTime: { h: null, m: null },
     };
   },
   props: {
@@ -71,18 +88,11 @@ export default {
     listId: {
       type: Number,
     },
-    //最後に追加されたアイテム
-    lastItem: {
-      type: Object,
-    },
     //ターゲット追加をするか
     isTargetDetect: {
       type: Boolean,
       defaultValue: false,
     },
-    // canDropTargets: {
-    //   type: Array,
-    // },
     //x方向の移動を固定
     fixHorizontal: {
       type: Boolean,
@@ -120,47 +130,87 @@ export default {
     //idが無い場合はdragStoreに登録
     this.id = this.itemId;
 
+    //自分を取得
+    const self = dragStore.getItemById(this.id);
+
     //新規ドロップの検知
-    if (this.id === this.lastItem.id) {
-      const target = dragStore.getSelfTarget({ itemId: this.id });
-      const targetRect = target ? target.ref.getBoundingClientRect() : null;
-      if (targetRect) {
-        let rect = this.$refs.self.getBoundingClientRect();
-        const target_margin = {
-          x: rect.x - targetRect.x,
-          y: rect.y - targetRect.y,
-        };
-        this.mousepoint = this.lastItem.position
-          ? {
-              x: this.lastItem.position.x - this.lastItem.margin.x,
-              y: this.lastItem.position.y - this.lastItem.margin.y,
-            }
-          : { x: targetRect.x, y: targetRect.y };
-        this.target = target.ref;
-        this.target_margin = target_margin;
-        this.mousepoint_margin = { x: 0, y: 0 };
-        const movingpoint = convertToLocalPoint(
-          this.mousepoint,
-          targetRect || { x: 0, y: 0, width: 0, height: 0 }
-        );
-        //固定補正
-        this.movingpoint = {
-          x: this.fixHorizontal ? 0 : movingpoint.x,
-          y: this.fixVertical ? 0 : movingpoint.y,
-        };
-      }
+    const target = dragStore.getSelfTarget({ itemId: this.id });
+    const targetRect = target ? target.ref.getBoundingClientRect() : null;
+    if (targetRect) {
+      let rect = this.$refs.self.getBoundingClientRect();
+      const target_margin = {
+        x: rect.x - targetRect.x,
+        y: rect.y - targetRect.y,
+      };
+      this.target = target.ref;
+      this.target_margin = target_margin;
+      this.mousepoint_margin = { x: 0, y: 0 };
+
+      console.log("self.startTime,self.endTime", self.startTime, self.endTime);
+
+      //時間から座標に変換
+      const time = {
+        h: self.startTime.split(":")[0],
+        m: self.startTime.split(":")[1],
+      };
+
+      //時間から座標に変換
+      const localPosition = {
+        x: 0,
+        y: getYpxFromTime({ time: time, grid15min: this.fitGridY }),
+      };
+      // let movingpoint = { ...self.localPosition };//座標をそのまま取得
+      let movingpoint = { ...localPosition };
+
+      //時間から座標に変換
+      const endtime = {
+        h: self.endTime.split(":")[0],
+        m: self.endTime.split(":")[1],
+      };
+
+      const expandPosition = {
+        x: 0,
+        y:
+          getYpxFromTime({
+            time: endtime,
+            grid15min: this.fitGridY,
+          }) - localPosition.y,
+      };
+
+      //固定補正
+      this.movingpoint = {
+        x: this.fixHorizontal ? 0 : movingpoint.x,
+        y: this.fixVertical ? 0 : movingpoint.y,
+      };
+      //expandから経過時間を設定
+      this.params = {
+        target: target.ref,
+        position: this.movingpoint,
+        expand: expandPosition,
+        startTime: this.getStartTime.time,
+        fitGrid: {
+          x: this.fitGridX,
+          y: this.fitGridY,
+        },
+      };
     }
+
+    this.$watch(
+      () => [this.isMove],
+      (newValue, oldValue) => {
+        const params = { ...this.params };
+        params.isMoving = newValue[0];
+        params.startTime = this.getStartTime.time;
+        this.params = params;
+      }
+    );
   },
   beforeDestroy() {
     this.removeDragEvent();
   },
-  methods: {
-    getClass() {
-      if (this.isMove) return "moving";
-      return "";
-    },
-    getStyle() {
-      if (!this.self) return "";
+  computed: {
+    //現在の時間を取得
+    getStartTime() {
       const margin = { ...this.mousepoint_margin };
       const point = { ...this.movingpoint };
 
@@ -172,9 +222,89 @@ export default {
         ? point.x - margin.x
         : fitGrid(this.fitGridX, point.x - margin.x);
 
-      return `left:${left}px;top:${top}px;`;
+      const normalized = this.getNormalizedPosition({
+        x: left * 100,
+        y: top * 100,
+      });
+
+      const time = getTimeFromYpx({
+        pixel: top,
+        grid15min: this.fitGridY,
+      });
+
+      return {
+        //ピクセル
+        pixel: {
+          x: left,
+          y: top,
+        },
+        //正規化
+        normalized,
+        //時間
+        time,
+      };
+    },
+  },
+  methods: {
+    //座標を正規化
+    getNormalizedPosition({ x, y }) {
+      const targetRect = this.target
+        ? this.target.getBoundingClientRect()
+        : null;
+      return targetRect
+        ? {
+            x: x / targetRect.width,
+            y: y / targetRect.height,
+          }
+        : { x: 0, y: 0 };
+    },
+    getClass() {
+      if (this.isMove) return "moving";
+      return "";
+    },
+    getStyle() {
+      if (!this.self) return "";
+      const { normalized } = this.getStartTime;
+      return `left:${normalized.x}%;top:${normalized.y}%;`;
     },
     initial() {},
+
+    //DraggableExpandBoxから高さを受け取る
+    expandCallback({ expand, expandTime }) {
+      clearTimeout(this.timerExpandUpdate);
+      this.timerExpandUpdate = setTimeout(() => {
+        this.updatedExpand = expand;
+        this.expandTime = expandTime;
+        //登録
+        this.putOnTarget(this.listId);
+      }, 200);
+    },
+
+    //ストアに登録
+    putOnTarget(targetId) {
+      const _startTime = this.getStartTime.time;
+      const _endtime = getEndTime({
+        startTime: this.getStartTime.time,
+        expandTime: this.expandTime,
+      });
+
+      const startTime = `${`${_startTime.h}`.padStart(
+        2,
+        "0"
+      )}:${`${_startTime.m}`.padStart(2, "0")}`;
+
+      const endTime = `${`${_endtime.h.padStart(
+        2,
+        "0"
+      )}`}:${`${_endtime.m.padStart(2, "0")}`}`;
+      //所属先を変更
+      dragStore.putOnTarget({
+        itemId: this.id,
+        targetId: targetId,
+        startTime,
+        endTime,
+      });
+    },
 
     //エリアヒット検出 >> ドロップ先を検出して登録
     detectTarget({ x, y }) {
@@ -187,15 +317,7 @@ export default {
       });
       if (hit) {
         //所属先を変更
-        dragStore.putOnTarget({
-          itemId: this.id,
-          targetId: hit.id,
-          position: { x, y },
-          margin: {
-            x: x - selfRect.x,
-            y: y - selfRect.y,
-          },
-        });
+        this.putOnTarget(hit.id);
         this.movepoint_start = null;
       } else {
         //元に戻す
@@ -207,8 +329,6 @@ export default {
         );
         this.movingpoint = movingpoint;
         this.movepoint_start = null;
-        //最後追加を削除
-        dragStore.clearLastItem();
       }
     },
     mouseMove(e) {
@@ -281,9 +401,14 @@ export default {
     mouseLeave(e) {
       this.isEnter = false;
     },
+    mouseClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
 
     addDragEvent() {
       this.self = this.$refs.self;
+      this.self.addEventListener("click", this.mouseClick);
       this.self.addEventListener("mouseenter", this.mouseEnter);
       this.self.addEventListener("mouseleave", this.mouseLeave);
       this.self.addEventListener("mouseout", this.mouseOut);
@@ -292,6 +417,7 @@ export default {
       window.addEventListener("mouseup", this.mouseUp);
     },
     removeDragEvent() {
+      this.self.removeEventListener("click", this.mouseClick);
       this.self.removeEventListener("mouseenter", this.mouseEnter);
       this.self.removeEventListener("mouseleave", this.mouseLeave);
       this.self.removeEventListener("mouseout", this.mouseOut);
@@ -306,18 +432,10 @@ export default {
 .box {
   user-select: none;
   position: absolute;
-  background-color: red;
-  width: 64px;
-  font-size: 12px;
+  width: 100%;
   z-index: 1;
   &:hover {
     cursor: move;
-  }
-  &.canmove {
-    background-color: #880000;
-  }
-  &.moving {
-    background-color: #ff8888;
   }
 }
 </style>
