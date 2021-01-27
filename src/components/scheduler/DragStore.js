@@ -8,14 +8,15 @@ const _dragStore = () => {
   let targetsItems = {};
   let allItems = [];
 
-  const setTarget = ({ id, ref, items }) => {
+  const setTarget = ({ id, date, ref, items }) => {
     const find = targets.find((t) => {
       return t.id === id;
     });
     if (!find) {
       targets.push({
         id,
-        ref: ref
+        date,
+        ref: ref,
       });
       targetsItems[`${id}`] = [];
     }
@@ -32,13 +33,13 @@ const _dragStore = () => {
       return hitArea(
         {
           x: itemRect.x + itemRect.width / 2,
-          y: itemRect.y + itemRect.height / 2
+          y: itemRect.y + itemRect.height / 2,
         },
         {
           x: rect.x,
           y: rect.y,
           width: rect.width,
-          height: rect.height
+          height: rect.height,
         }
       );
     });
@@ -46,7 +47,7 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({ itemId, targetId, startTime, endTime }) => {
+  const putOnTarget = ({ itemId, targetId, date, startTime, endTime }) => {
     //検索
     const find = targetsItems[`${targetId}`].find((item) => {
       return item === itemId;
@@ -80,13 +81,14 @@ const _dragStore = () => {
         itemId,
         targetId,
         startTime,
-        endTime
+        endTime,
+        date,
       });
     } else {
       //あれば更新
       allItems = allItems.map((item) => {
         return item.itemId === itemId
-          ? { itemId, targetId, startTime, endTime }
+          ? { itemId, targetId, startTime, endTime, date }
           : item;
       });
     }
@@ -109,7 +111,7 @@ const _dragStore = () => {
   const getTargets = () => {
     return {
       targets,
-      targetsItems
+      targetsItems,
     };
   };
 
@@ -136,7 +138,7 @@ const _dragStore = () => {
     callbacks.forEach((callback) => {
       callback({
         targets,
-        targetsItems
+        targetsItems,
       });
     });
     updateCallbacks.forEach((callback) => {
@@ -146,7 +148,7 @@ const _dragStore = () => {
         });
       });
       callback({
-        items: items
+        items: items,
       });
     });
   };
@@ -160,7 +162,7 @@ const _dragStore = () => {
     getSelfTarget,
     getTargets,
     getTarget,
-    getItemById
+    getItemById,
   };
 };
 

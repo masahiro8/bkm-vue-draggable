@@ -57,14 +57,6 @@ export default {
     setBodyOverflowHidden(b) {
       document.querySelector("body").style.overflow = b ? "hidden" : "auto";
     },
-    addNew() {
-      dragStore.putOnTarget({
-        itemId: Math.floor(Math.random() * 999),
-        targetId: 102, //対象のターゲット
-        startTime: "12:00",
-        endTime: "15:00",
-      });
-    },
   },
 };
 </script>

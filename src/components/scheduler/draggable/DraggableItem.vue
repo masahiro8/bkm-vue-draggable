@@ -67,6 +67,10 @@ export default {
     listId: {
       type: Number,
     },
+    date:{
+      type:String,
+      defaultValue:null
+    },
     //ターゲット追加をするか
     isTargetDetect: {
       type: Boolean,
@@ -255,12 +259,12 @@ export default {
         this.updatedExpand = expand;
         this.expandTime = expandTime;
         //登録
-        this.putOnTarget(this.listId);
+        this.putOnTarget(this.listId,this.date);
       }, 200);
     },
 
     //ストアに登録
-    putOnTarget(targetId) {
+    putOnTarget(targetId,date) {
       const _startTime = this.getStartTime.time;
       const _endtime = getEndTime({
         startTime: this.getStartTime.time,
@@ -280,6 +284,7 @@ export default {
       dragStore.putOnTarget({
         itemId: this.id,
         targetId: targetId,
+        date,
         startTime,
         endTime,
       });
@@ -296,7 +301,7 @@ export default {
       });
       if (hit) {
         //所属先を変更
-        this.putOnTarget(hit.id);
+        this.putOnTarget(hit.id,hit.date);
         this.movepoint_start = null;
       } else {
         //元に戻す

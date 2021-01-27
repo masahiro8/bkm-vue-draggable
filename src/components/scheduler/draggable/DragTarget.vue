@@ -22,6 +22,10 @@ export default {
     id: {
       type: Number,
     },
+    date:{
+      type: String,
+      defaultValue:null
+    },
     grid: {
       type: Object,
       defaultValue: { x: 1, y: 1 },
@@ -83,6 +87,7 @@ export default {
       });
       dragStore.setTarget({
         id: this.id,
+        date: this.date,
         ref: this.$refs.self,
         items: this.listParams.items,
       });
@@ -108,6 +113,7 @@ export default {
       dragStore.putOnTarget({
         itemId: Math.floor(Math.random() * 999),
         targetId: this.id, //対象のターゲット
+        date: this.date,
         startTime: startTime.hm,
         endTime: endTime.hm,
       });
