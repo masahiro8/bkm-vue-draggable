@@ -9,7 +9,7 @@
   </div>
 </template>
 <script>
-import { hitArea } from "../../util/hitArea";
+import { hitArea } from "../util/hitArea";
 
 //ポインター位置を返すラッパー
 const getPointer = (e, type) => {

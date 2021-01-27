@@ -13,13 +13,9 @@
 </template>
 <script>
 // import { roundGrid } from "../../util/roundGrid";
-import { hitArea } from "../../util/hitArea";
+import { hitArea } from "../util/hitArea";
 import { dragStore } from "../DragStore";
-import {
-  getTimeFromYpx,
-  getEndTime,
-  getYpxFromTime,
-} from "../../util/timeUtil";
+import { getTimeFromYpx, getEndTime, getYpxFromTime } from "../util/timeUtil";
 
 //ポインター位置を返すラッパー
 const getPointer = (e) => {

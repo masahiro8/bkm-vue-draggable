@@ -8,7 +8,7 @@
 </template>
 <script>
 import { dragStore } from "../DragStore";
-import { getEndTime } from "../../util/timeUtil";
+import { getEndTime } from "../util/timeUtil";
 
 export default {
   data: () => {

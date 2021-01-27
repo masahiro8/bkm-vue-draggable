@@ -25,7 +25,7 @@
 座標の管理だけをする
 */
 import DraggableVertical from "./DraggableVertical";
-import { getTimeFromYpx } from "../../util/timeUtil";
+import { getTimeFromYpx } from "../util/timeUtil";
 export default {
   data: () => {
     return {
