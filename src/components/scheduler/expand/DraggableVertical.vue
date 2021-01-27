@@ -12,7 +12,7 @@
 import { hitArea } from "../util/hitArea";
 
 //ポインター位置を返すラッパー
-const getPointer = (e, type) => {
+const getPointer = (e) => {
   // const scrollTop = type === "child" ? e.clientY : e.clientY + window.scrollY;
   return { x: e.clientX, y: e.clientY };
 };
@@ -104,7 +104,7 @@ export default {
     //座標を更新
     this.$watch(
       () => [this.movingpoint],
-      (newValue, oldValue) => {
+      () => {
         this.callbackRect();
       },
       {
@@ -116,7 +116,7 @@ export default {
     //状態を通知
     this.$watch(
       () => [this.isEnter, this.isMove],
-      (newValue, oldValue) => {
+      (newValue) => {
         this.$emit("set-enter", newValue[1]);
       }
     );
@@ -202,10 +202,10 @@ export default {
       e.stopPropagation();
       this.isEnter = true;
     },
-    mouseOut(e) {
+    mouseOut() {
       this.isEnter = false;
     },
-    mouseLeave(e) {
+    mouseLeave() {
       this.isEnter = false;
     },
     mouseClick(e) {

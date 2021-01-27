@@ -50,7 +50,7 @@ export default {
     if (this.isClickToAdd) this.addEvent();
     this.$watch(
       () => [this.id],
-      (newValue, oldValue) => {
+      (newValue) => {
         if (newValue[0] && !this.flag) {
           this.flag = true;
           this.init();
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     init() {
-      dragStore.setCallback(({ targets, targetsItems }) => {
+      dragStore.setCallback(({ targetsItems }) => {
         this.params = {
           listId: this.id,
           lists: targetsItems[this.id],

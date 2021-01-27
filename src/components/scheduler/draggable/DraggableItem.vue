@@ -35,27 +35,6 @@ const fitGrid = (gridSize, value) => {
   return Math.floor(value / gridSize) * gridSize;
 };
 
-//ターゲットの中におさっているか
-const detectInTargetRect = (selfRect, targetRect, limit) => {
-  if (!selfRect || !targetRect) return null;
-  let result = { vertical: null, horizontal: null };
-  if (limit.vertical) {
-    result.vertical = targetRect.y > selfRect.y ? 0 : null;
-    result.vertical =
-      targetRect.y + targetRect.height < selfRect.y + selfRect.height
-        ? targetRect.y + targetRect.height - selfRect.height
-        : null;
-  }
-  if (limit.horizontal) {
-    result.horizontal = targetRect.x > selfRect.x ? 0 : null;
-    result.horizontal =
-      targetRect.x + targetRect.width < selfRect.x + selfRect.width
-        ? targetRect.x + targetRect.width - selfRect.width
-        : null;
-  }
-  return result;
-};
-
 export default {
   data: () => {
     return {
@@ -197,7 +176,7 @@ export default {
 
     this.$watch(
       () => [this.isMove],
-      (newValue, oldValue) => {
+      (newValue) => {
         const params = { ...this.params };
         params.isMoving = newValue[0];
         params.startTime = this.getStartTime.time;
@@ -307,7 +286,7 @@ export default {
     },
 
     //エリアヒット検出 >> ドロップ先を検出して登録
-    detectTarget({ x, y }) {
+    detectTarget() {
       const selfRect = this.$refs.self.getBoundingClientRect();
       const hit = dragStore.hitTarget({
         x: selfRect.x,
@@ -393,12 +372,12 @@ export default {
       e.stopPropagation();
       this.isEnter = true;
     },
-    mouseOut(e) {
+    mouseOut() {
       //mouseOutはこの要素の上に乗ってる要素にポインターが乗った時にも呼ばれるので、
       //座標だけではなく、深度も含めて挙動を監視している
       // this.isEnter = false;
     },
-    mouseLeave(e) {
+    mouseLeave() {
       this.isEnter = false;
     },
     mouseClick(e) {

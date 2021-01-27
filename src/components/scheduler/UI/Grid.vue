@@ -23,7 +23,7 @@ export default {
   mounted() {
     this.$watch(
       () => [this.index],
-      (newValue, oldValue) => {
+      (newValue) => {
         const cal = (val) => {
           const r = val / 4;
           return 0 === r - Math.floor(r) ? true : false;

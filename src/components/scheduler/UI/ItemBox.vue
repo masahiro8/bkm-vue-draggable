@@ -41,7 +41,7 @@ export default {
   mounted() {
     this.$watch(
       () => [this.id, this.targetId],
-      (newValue, oldValue) => {
+      (newValue) => {
         // console.log("item =", newValue[0]);
         this.params = dragStore.getItemById(newValue[0]);
       },
