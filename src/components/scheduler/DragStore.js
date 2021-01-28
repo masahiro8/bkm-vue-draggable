@@ -63,18 +63,8 @@ const _dragStore = () => {
   };
 
   const setAllItems = ({ schedule }) => {
-    //全ての予定を取り出す
-    const items = schedule
-      .filter((scheduleitem) => {
-        return scheduleitem.items;
-      })
-      .map((scheduleitem) => {
-        return scheduleitem.items;
-      })
-      .flat(Infinity);
-
     //クロス検索して更新
-    items.forEach((item) => {
+    schedule.forEach((item) => {
       let arr = pushOrUpdateItem(allItems, item);
       arr = arr.filter((v) => v);
       allItems = arr;
@@ -112,7 +102,7 @@ const _dragStore = () => {
   };
 
   //ターゲットに追加
-  const putOnTarget = ({ itemId, date, startTime, endTime }) => {
+  const putOnTarget = async ({ itemId, date, startTime, endTime }) => {
     //検索
     const find = targetsItemIds[`${date}`].find((item) => {
       return item === itemId;
@@ -134,6 +124,8 @@ const _dragStore = () => {
         }
       });
     }
+
+    if (startTime == "NaN:NaN" || endTime === "NaN:NaN") return;
 
     //全アイテムを検索
     const result = allItems.find((item) => {

@@ -23,6 +23,7 @@
   } from "../components/scheduler/util/timeUtil";
   import { CONFIG_SCHEDULER } from "../statics/config";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
+  import { apiConnect } from "../components/scheduler/util/apiConnect";
 
   export default {
     data: () => {
@@ -68,14 +69,13 @@
         //1週間の日付データ
         this.weekArray = getWeekFromDate(today);
 
-        //スケジュールをロード
-        const res = await fetch("/json/schedule.json");
-        if (res.ok) {
-          const response = await res.json();
-          dragStore.setAllItems({ schedule: response.schedule });
-        } else {
-          throw new Error();
-        }
+        //Firebaseから取得
+        const schedule = await apiConnect.getItems({
+          year: this.todayObject.year,
+          month: this.todayObject.month,
+          day: null,
+        });
+        dragStore.setAllItems({ schedule });
       },
       setBodyOverflowHidden(b) {
         document.querySelector("body").style.overflow = b ? "hidden" : "auto";

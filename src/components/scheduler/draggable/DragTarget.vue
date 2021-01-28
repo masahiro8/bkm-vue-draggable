@@ -6,6 +6,7 @@
 <script>
   import { dragStore } from "../DragStore";
   import { getTimeFromYpx, roundTo15min } from "../util/timeUtil";
+  import { apiConnect } from "../util/apiConnect";
 
   export default {
     data: () => {
@@ -91,7 +92,7 @@
       },
 
       //マウスクリックで新規予定の作成
-      mouseClick(e) {
+      async mouseClick(e) {
         const rect = this.self.getBoundingClientRect();
         const point = { x: e.clientX, y: e.clientY };
         const localPoint = {
@@ -108,12 +109,23 @@
         });
         const startTime = roundTo15min(`${_startTime.h}:${_startTime.m}`);
         const endTime = roundTo15min(`${_endTime.h}:${_endTime.m}`);
-        dragStore.putOnTarget({
-          itemId: Math.floor(Math.random() * 999),
+
+        //Firebaseに新規追加
+        const result = await apiConnect.setItem({
           date: this.date,
           startTime: startTime.hm,
           endTime: endTime.hm,
         });
+        // console.log("result", result);
+        if (result) {
+          //新規追加
+          dragStore.putOnTarget({
+            itemId: +result.id,
+            date: this.date,
+            startTime: startTime.hm,
+            endTime: endTime.hm,
+          });
+        }
       },
       addEvent() {
         if (!this.isClickToAdd) return;
