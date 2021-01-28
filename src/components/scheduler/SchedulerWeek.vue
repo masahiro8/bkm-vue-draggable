@@ -78,66 +78,66 @@
 </template>
 
 <script>
-import DraggableItem from "./draggable/DraggableItem";
-import DragTarget from "./draggable/DragTarget";
-import DraggableExpandBox from "./expand/DraggableExpandBox";
-import ItemBox from "./UI/ItemBox";
-import ListBox from "./UI/ListBox";
-import GridFrame from "./UI/GridFrame";
-import GuideFrame from "./UI/GuideFrame";
-import ScheduleLayout from "./UI/ScheduleLayout";
-import ScheduleHeader from "./ScheduleHeader";
+  import DraggableItem from "./draggable/DraggableItem";
+  import DragTarget from "./draggable/DragTarget";
+  import DraggableExpandBox from "./expand/DraggableExpandBox";
+  import ItemBox from "./UI/ItemBox";
+  import ListBox from "./UI/ListBox";
+  import GridFrame from "./UI/GridFrame";
+  import GuideFrame from "./UI/GuideFrame";
+  import ScheduleLayout from "./UI/ScheduleLayout";
+  import ScheduleHeader from "./ScheduleHeader";
 
-export default {
-  name: "Scheduler",
-  data: () => {
-    return {
-      gridLines: [],
-    };
-  },
-  props: {
-    config: {
-      type: Object,
+  export default {
+    name: "Scheduler",
+    data: () => {
+      return {
+        gridLines: [],
+      };
     },
-    week: {
-      type: Array,
+    props: {
+      config: {
+        type: Object,
+      },
+      week: {
+        type: Array,
+      },
+      lists: {
+        type: Array,
+      },
     },
-    lists: {
-      type: Array,
+    components: {
+      DraggableItem,
+      DragTarget,
+      DraggableExpandBox,
+      ScheduleLayout,
+      ScheduleHeader,
+      ItemBox,
+      ListBox,
+      GridFrame,
+      GuideFrame,
     },
-  },
-  components: {
-    DraggableItem,
-    DragTarget,
-    DraggableExpandBox,
-    ScheduleLayout,
-    ScheduleHeader,
-    ItemBox,
-    ListBox,
-    GridFrame,
-    GuideFrame,
-  },
-  computed: {
-    getStyle() {
-      const height = this.config.hour * this.config.grid15min * 4;
-      return `min-width:${this.config.targetWidth}px;height:${height}px;`;
+    computed: {
+      getStyle() {
+        const height = this.config.hour * this.config.grid15min * 4;
+        return `min-width:${this.config.targetWidth}px;height:${height}px;`;
+      },
     },
-  },
-};
+  };
 </script>
 
 <style>
-.timeframe {
-  height: 400px;
-  width: 200px;
-  margin: 16px;
-}
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  .timeframe {
+    height: 400px;
+    width: 200px;
+    margin: 16px;
+  }
+  #app {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+  }
 </style>

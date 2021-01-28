@@ -14,43 +14,43 @@
   </div>
 </template>
 <script>
-import ScheduleLabel from "./UI/ScheduleLabel";
-import { getLangDateFromDateFormat } from "./util/timeUtil";
-export default {
-  components: {
-    ScheduleLabel,
-  },
-  props: {
-    config: {
-      type: Object,
+  import ScheduleLabel from "./UI/ScheduleLabel";
+  import { getLangDateFromDateFormat } from "./util/timeUtil";
+  export default {
+    components: {
+      ScheduleLabel,
     },
-    week: {
-      type: Array,
+    props: {
+      config: {
+        type: Object,
+      },
+      week: {
+        type: Array,
+      },
+      lists: {
+        type: Array,
+      },
     },
-    lists: {
-      type: Array,
+    methods: {
+      getLabel(date) {
+        const label = getLangDateFromDateFormat({
+          lang: "ja",
+          date: date,
+        });
+        return `${label.dd}(${label.dayofweek})`;
+      },
     },
-  },
-  methods: {
-    getLabel(date) {
-      const label = getLangDateFromDateFormat({
-        lang: "ja",
-        date: date,
-      });
-      return `${label.dd}(${label.dayofweek})`;
-    },
-  },
-};
+  };
 </script>
 <style lang="scss" scoped>
-.headerLabel {
-  display: flex;
-}
-.headerLabel--labels {
-  display: flex;
-  width: 100%;
-}
-.headerLabel--label {
-  flex: 1;
-}
+  .headerLabel {
+    display: flex;
+  }
+  .headerLabel--labels {
+    display: flex;
+    width: 100%;
+  }
+  .headerLabel--label {
+    flex: 1;
+  }
 </style>

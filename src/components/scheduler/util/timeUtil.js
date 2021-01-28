@@ -13,7 +13,7 @@ const getTimeFromYpx = ({ pixel, grid15min }) => {
     const r = val / 4;
     return {
       h: `${Math.floor(r)}`.padStart(2, "0"),
-      m: `${Math.ceil((r - Math.floor(r)) * MIN_RATE * 100)}`.padStart(2, "0")
+      m: `${Math.ceil((r - Math.floor(r)) * MIN_RATE * 100)}`.padStart(2, "0"),
     };
   };
   const index = pixel / grid15min;
@@ -36,7 +36,7 @@ const getEndTime = ({ startTime, expandTime }) => {
   const m = endMin / 60 - h;
   return {
     h: `${h}`.padStart(2, "0"),
-    m: `${m * 60}`.padStart(2, "0")
+    m: `${m * 60}`.padStart(2, "0"),
   };
 };
 
@@ -70,9 +70,62 @@ const getLangDateFromDateFormat = ({ lang, date }) => {
       yyyymmdd: `${year}年${month}月${day}日`,
       mmdd: `${month}月${day}日`,
       dd: `${day}日`,
-      dayofweek: `${dayOfWeekStrJP[dayofweekindex]}`
+      dayofweek: `${dayOfWeekStrJP[dayofweekindex]}`,
     };
   }
+};
+
+/**
+ *
+ * 日付文字列からオブジェクトに変換
+ * @param {String} date // 2020-01-22
+ */
+const getDateObjectFromString = (date) => {
+  let _today;
+
+  if (date) {
+    const _ndate = date.split("-");
+    _today = new Date(_ndate[0], _ndate[1], _ndate[2]);
+  } else {
+    _today = new Date();
+  }
+
+  return getDateObjectFromDateFormat(_today);
+};
+
+/**
+ *
+ * 日付オブジェクトから文字列に変換
+ * @param {Object} param0
+ */
+const getDateStringFromObject = ({ year, month, day }) => {
+  if (year && month && day) {
+    return `${year}-${month}-${day}`;
+  } else {
+    return null;
+  }
+};
+
+/**
+ * DateからObjectを返す
+ * @param {Date} dateFormat
+ */
+const getDateObjectFromDateFormat = (dateFormat) => {
+  return {
+    year: dateFormat.getFullYear(),
+    month: dateFormat.getMonth() + 1,
+    day: dateFormat.getDate(),
+    dayofweek: dateFormat.getDay(),
+  };
+};
+
+/**
+ * DateからStringを返す
+ * @param {Date} dateFormat
+ */
+const getDateStringFromDateFormat = (dateFormat) => {
+  const today = getDateObjectFromDateFormat(dateFormat);
+  return getDateStringFromObject(today);
 };
 
 /**
@@ -85,7 +138,7 @@ const roundTo15min = (time) => {
   return {
     h: _time[0],
     m: min,
-    hm: `${_time[0]}:${min}`
+    hm: `${_time[0]}:${min}`,
   };
 };
 
@@ -94,33 +147,15 @@ const roundTo15min = (time) => {
  * @param //yyyy-mm-dd
  */
 const getWeekFromDate = (date) => {
-  let _today;
-
-  if (date) {
-    const _ndate = date.split("-");
-    _today = new Date(_ndate[0], _ndate[1], _ndate[2]);
-  } else {
-    _today = new Date();
-  }
-
-  const today = {
-    year: _today.getFullYear(),
-    month: _today.getMonth() + 1,
-    day: _today.getDate(),
-    dayofweek: _today.getDay()
-  };
+  //Objectに変換
+  const today = getDateObjectFromString(date);
 
   const _monday = new Date(
     today.year,
     today.month - 1,
     today.day - today.dayofweek
   );
-  const monday = {
-    year: _monday.getFullYear(),
-    month: _monday.getMonth() + 1,
-    day: _monday.getDate(),
-    dayofweek: _monday.getDay()
-  };
+  const monday = getDateObjectFromDateFormat(_monday);
 
   const _weekDay = [...new Array(7)].map((n, index) => {
     const d = new Date(monday.year, monday.month - 1, monday.day + index);
@@ -128,7 +163,7 @@ const getWeekFromDate = (date) => {
       year: `${d.getFullYear()}`,
       month: `${d.getMonth() + 1}`.padStart(2, "0"),
       day: `${d.getDate()}`.padStart(2, "0"),
-      dayofweek: d.getDay()
+      dayofweek: d.getDay(),
     };
     return data;
   });
@@ -140,10 +175,14 @@ const getWeekFromDate = (date) => {
 };
 
 export {
+  roundTo15min,
   getTimeFromYpx,
   getEndTime,
   getYpxFromTime,
   getLangDateFromDateFormat,
-  roundTo15min,
-  getWeekFromDate
+  getWeekFromDate,
+  getDateObjectFromString,
+  getDateStringFromObject,
+  getDateObjectFromDateFormat,
+  getDateStringFromDateFormat,
 };
