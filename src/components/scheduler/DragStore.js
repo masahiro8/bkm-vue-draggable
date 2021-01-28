@@ -129,6 +129,10 @@ const _dragStore = () => {
     }
   };
 
+  const updateItem = async ({ itemId, date, startTime, endTime }) => {
+    return await apiConnect.updateItem({ itemId, date, startTime, endTime });
+  };
+
   //ターゲットに追加
   const putOnTarget = async ({ itemId, date, startTime, endTime }) => {
     //検索
@@ -170,16 +174,27 @@ const _dragStore = () => {
       });
     } else {
       //あれば更新
-      allItems = allItems.map((item) => {
-        return item.itemId === itemId
-          ? {
-              itemId,
-              startTime,
-              endTime,
-              date,
-            }
-          : item;
-      });
+      //変更があった場合だけ更新
+      if (
+        result.itemId !== itemId ||
+        result.date !== date ||
+        result.startTime !== startTime ||
+        result.endTime !== endTime
+      ) {
+        const result = await updateItem({ itemId, date, startTime, endTime });
+        if (result) {
+          allItems = allItems.map((item) => {
+            return item.itemId === itemId
+              ? {
+                  itemId,
+                  startTime,
+                  endTime,
+                  date,
+                }
+              : item;
+          });
+        }
+      }
     }
     publishCallbacks();
   };
