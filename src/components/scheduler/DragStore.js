@@ -5,7 +5,7 @@ const _dragStore = () => {
   let updateCallbacks = [];
 
   let targets = [];
-  let targetsItems = {};
+  let targetsItemIds = {};
   let allItems = [];
 
   const setTarget = ({ id, date, ref }) => {
@@ -19,7 +19,7 @@ const _dragStore = () => {
         date,
         ref: ref,
       });
-      targetsItems[`${date}`] = [];
+      targetsItemIds[`${date}`] = [];
     } else {
       //更新
       targets = targets.map((target) => {
@@ -37,6 +37,31 @@ const _dragStore = () => {
     // publishCallbacks();
   };
 
+  /**
+   *
+   * 配列に存在する場合は更新、ない場合は追加
+   * @param {*} arr
+   * @param {*} item
+   */
+  const pushOrUpdateItem = (arr, item) => {
+    let _arr = [...arr];
+    const result = _arr.find((tItem) => {
+      return tItem.itemId === item.itemId;
+    });
+    if (result) {
+      //allItemsにあれば書き換え
+      _arr = _arr.map((tItem) => {
+        if (tItem.itemId === item.itemId) {
+          return item;
+        }
+      });
+    } else {
+      //allItemsになければ追加
+      _arr.push(item);
+    }
+    return _arr;
+  };
+
   const setAllItems = ({ schedule }) => {
     //全ての予定を取り出す
     const items = schedule
@@ -50,21 +75,18 @@ const _dragStore = () => {
 
     //クロス検索して更新
     items.forEach((item) => {
-      const result = allItems.find((tItem) => {
-        return tItem.itemId === item.itemId;
-      });
-      if (result) {
-        //あれば書き換え
-        allItems = allItems.map((tItem) => {
-          if (tItem.itemId === item.itemId) {
-            return item;
-          }
+      let arr = pushOrUpdateItem(allItems, item);
+      arr = arr.filter((v) => v);
+      allItems = arr;
+
+      Object.keys(targetsItemIds).map((key) => {
+        const result = targetsItemIds[key].find((itemid) => {
+          return item.itemId === itemid;
         });
-      } else {
-        //なければ追加
-        allItems.push(item);
-      }
-      allItems = allItems.filter((v) => v);
+        if (!result && item.date === key) {
+          targetsItemIds[key].push(item.itemId);
+        }
+      });
     });
 
     publishCallbacks();
@@ -92,22 +114,22 @@ const _dragStore = () => {
   //ターゲットに追加
   const putOnTarget = ({ itemId, date, startTime, endTime }) => {
     //検索
-    const find = targetsItems[`${date}`].find((item) => {
+    const find = targetsItemIds[`${date}`].find((item) => {
       return item === itemId;
     });
 
     //なかったら追加
     if (!find) {
-      targetsItems[`${date}`].push(itemId);
+      targetsItemIds[`${date}`].push(itemId);
 
       //他のターゲットから削除
-      Object.keys(targetsItems).forEach((key) => {
+      Object.keys(targetsItemIds).forEach((key) => {
         //他のリスト
         if (date !== key) {
-          const index = targetsItems[key].indexOf(itemId);
+          const index = targetsItemIds[key].indexOf(itemId);
           //みつかれば削除
           if (index > -1) {
-            targetsItems[key].splice(index, 1);
+            targetsItemIds[key].splice(index, 1);
           }
         }
       });
@@ -130,7 +152,12 @@ const _dragStore = () => {
       //あれば更新
       allItems = allItems.map((item) => {
         return item.itemId === itemId
-          ? { itemId, startTime, endTime, date }
+          ? {
+              itemId,
+              startTime,
+              endTime,
+              date,
+            }
           : item;
       });
     }
@@ -138,8 +165,8 @@ const _dragStore = () => {
   };
 
   const getSelfTarget = ({ itemId }) => {
-    const date = Object.keys(targetsItems).find((key) => {
-      return targetsItems[key].indexOf(itemId) > -1;
+    const date = Object.keys(targetsItemIds).find((key) => {
+      return targetsItemIds[key].indexOf(itemId) > -1;
     });
     if (date) {
       const find = targets.find((t) => {
@@ -155,8 +182,7 @@ const _dragStore = () => {
   };
 
   const getItemsIdFromDate = (dateString) => {
-    // console.log(dateString, targetsItems, targetsItems[dateString]);
-    return targetsItems[dateString];
+    return targetsItemIds[dateString];
   };
 
   const getAllItemsFromDate = (dateString) => {
@@ -178,13 +204,12 @@ const _dragStore = () => {
     callbacks.forEach((callback) => {
       callback({
         targets,
-        targetsItems,
         allItems,
       });
     });
     updateCallbacks.forEach((callback) => {
-      const schedule = Object.keys(targetsItems).map((key) => {
-        const items = targetsItems[key].map((itemId) => {
+      const schedule = Object.keys(targetsItemIds).map((key) => {
+        const items = targetsItemIds[key].map((itemId) => {
           return getItemById(itemId);
         });
         return {
