@@ -14,7 +14,6 @@ const hitArea = (point, area) => {
 
 // 矩形同士の当たり判定を検出する。
 const hitRect = (rect1, rect2) => {
-  // console.log(rect1, rect2);
   if (!rect1 || !rect2) return null;
   const horizontal =
     rect2.x < rect1.x + rect1.width && rect1.x < rect2.x + rect2.width;

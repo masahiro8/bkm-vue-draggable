@@ -1,4 +1,5 @@
 import { hitArea } from "./util/hitArea";
+import { apiConnect } from "./util/apiConnect";
 
 const _dragStore = () => {
   let callbacks = [];
@@ -99,6 +100,33 @@ const _dragStore = () => {
       );
     });
     return hits[0];
+  };
+
+  const addNew = async ({ date, startTime, endTime }) => {
+    //Firebaseに新規追加
+    const result = await apiConnect.setItem({
+      date,
+      startTime,
+      endTime,
+    });
+    if (result) {
+      //新規追加
+      putOnTarget({
+        itemId: +result.id,
+        date,
+        startTime,
+        endTime,
+      });
+    }
+  };
+
+  const deleteItem = async ({ itemId }) => {
+    const result = await apiConnect.deleteItem(itemId);
+    if (result) {
+      //削除
+      allItems = allItems.filter((item) => item.itemId !== itemId);
+      publishCallbacks();
+    }
   };
 
   //ターゲットに追加
@@ -224,6 +252,8 @@ const _dragStore = () => {
     getItemById,
     getItemsIdFromDate,
     getAllItemsFromDate,
+    addNew,
+    deleteItem,
   };
 };
 

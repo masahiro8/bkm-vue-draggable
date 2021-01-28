@@ -6,7 +6,6 @@
 <script>
   import { dragStore } from "../DragStore";
   import { getTimeFromYpx, roundTo15min } from "../util/timeUtil";
-  import { apiConnect } from "../util/apiConnect";
 
   export default {
     data: () => {
@@ -111,21 +110,11 @@
         const endTime = roundTo15min(`${_endTime.h}:${_endTime.m}`);
 
         //Firebaseに新規追加
-        const result = await apiConnect.setItem({
+        dragStore.addNew({
           date: this.date,
           startTime: startTime.hm,
           endTime: endTime.hm,
         });
-        // console.log("result", result);
-        if (result) {
-          //新規追加
-          dragStore.putOnTarget({
-            itemId: +result.id,
-            date: this.date,
-            startTime: startTime.hm,
-            endTime: endTime.hm,
-          });
-        }
       },
       addEvent() {
         if (!this.isClickToAdd) return;

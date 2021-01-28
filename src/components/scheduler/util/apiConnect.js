@@ -27,12 +27,18 @@ const _fbConnect = () => {
     return result;
   };
 
+  const deleteItem = async (itemId) => {
+    const result = await Reserves().deleteReserve({ id: `${itemId}` });
+    return result;
+  };
+
   initialized || init();
 
   return {
     init,
     setItem,
     getItems,
+    deleteItem,
   };
 };
 
@@ -58,19 +64,21 @@ const wrapper = (server) => {
         const { date, id, end_time, start_time } = item;
         return {
           date,
+          delete: item["delete"], //lintエラーになるので
           itemId: +id,
           startTime: start_time,
           endTime: end_time,
         };
       })
       .filter((item) => {
-        return item.startTime !== "NaN:NaN" || item.endTime !== "NaN:NaN";
+        return item.delete === false;
       });
     return _items;
   };
   return {
     setItem: connecter.setItem,
     getItems,
+    deleteItem: connecter.deleteItem,
   };
 };
 

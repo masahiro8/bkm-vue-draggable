@@ -30,7 +30,6 @@
           this.today.day
         );
         ndate.setDate(ndate.getDate() + n);
-        console.log(ndate);
         const dateObject = getDateObjectFromDateFormat(ndate);
         this.$emit("updateDate", dateObject);
       },

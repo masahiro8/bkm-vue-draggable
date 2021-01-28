@@ -1,5 +1,8 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
+    <div class="delete">
+      <button @click="deleteItem">delete</button>
+    </div>
     <slot
       :target="params.target"
       :position="params.position"
@@ -311,6 +314,13 @@
           this.movepoint_start = null;
         }
       },
+
+      deleteItem(e) {
+        console.log("delete");
+        dragStore.deleteItem({ itemId: this.itemId });
+        e.stopPropagation();
+      },
+
       mouseMove(e) {
         e.stopPropagation();
         if (!this.self || !this.isMove) return;
@@ -416,6 +426,16 @@
     z-index: 1;
     &:hover {
       cursor: move;
+    }
+  }
+
+  .delete {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    button: {
+      pointer-events: all;
     }
   }
 </style>
