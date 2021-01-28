@@ -2,7 +2,7 @@
   <ScheduleLayout>
     <!-- スケジュールヘッダー -->
     <template v-slot:headerLabel>
-      <ScheduleHeader :config="config" :week="week" :lists="lists" />
+      <ScheduleHeader :config="config" :week="week" />
     </template>
     <!-- スケジュールラベル -->
     <template v-slot:bodyLabel>
@@ -15,7 +15,6 @@
         v-for="(date, index) in week"
         :key="index"
         :date="date"
-        :lists="lists"
         :grid="{ x: 1, y: config.grid15min }"
         :fit0="{ x: true, y: false }"
         :limit="{ vertical: true, horizontal: false }"
@@ -24,7 +23,7 @@
         v-slot="{ params }"
       >
         <!-- フレーム内の後ろに表示 -->
-        <ListBox :last="index === lists.length - 1"></ListBox>
+        <ListBox :last="index === week.length - 1"></ListBox>
         <!-- 背景のグリッド線 -->
         <GridFrame :config="config" />
         <!-- スケジュール表示 -->

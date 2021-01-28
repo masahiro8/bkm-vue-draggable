@@ -8,22 +8,65 @@ const _dragStore = () => {
   let targetsItems = {};
   let allItems = [];
 
-  const setTarget = ({ id, date, ref, items }) => {
+  const setTarget = ({ id, date, ref }) => {
     const find = targets.find((t) => {
       return t.date === date;
     });
     if (!find) {
+      //追加
       targets.push({
         id,
         date,
         ref: ref,
       });
       targetsItems[`${date}`] = [];
+    } else {
+      //更新
+      targets = targets.map((target) => {
+        if (target.date === date) {
+          return {
+            id,
+            date,
+            ref: ref,
+          };
+        } else {
+          return target;
+        }
+      });
     }
-    if (items && items.length) {
-      allItems = allItems.concat(items);
-      targetsItems[`${date}`] = items.map((item) => item.itemId);
-    }
+    // publishCallbacks();
+  };
+
+  const setAllItems = ({ schedule }) => {
+    //全ての予定を取り出す
+    const items = schedule
+      .filter((scheduleitem) => {
+        return scheduleitem.items;
+      })
+      .map((scheduleitem) => {
+        return scheduleitem.items;
+      })
+      .flat(Infinity);
+
+    //クロス検索して更新
+    items.forEach((item) => {
+      const result = allItems.find((tItem) => {
+        return tItem.itemId === item.itemId;
+      });
+      if (result) {
+        //あれば書き換え
+        allItems = allItems.map((tItem) => {
+          if (tItem.itemId === item.itemId) {
+            return item;
+          }
+        });
+      } else {
+        //なければ追加
+        allItems.push(item);
+      }
+      allItems = allItems.filter((v) => v);
+    });
+
     publishCallbacks();
   };
 
@@ -111,6 +154,17 @@ const _dragStore = () => {
     return allItems.find((item) => item.itemId === id);
   };
 
+  const getItemsIdFromDate = (dateString) => {
+    // console.log(dateString, targetsItems, targetsItems[dateString]);
+    return targetsItems[dateString];
+  };
+
+  const getAllItemsFromDate = (dateString) => {
+    return allItems.filter((item) => {
+      return item.date == dateString;
+    });
+  };
+
   //変更のコールバック
   const setCallback = (callback) => {
     callbacks.push(callback);
@@ -125,6 +179,7 @@ const _dragStore = () => {
       callback({
         targets,
         targetsItems,
+        allItems,
       });
     });
     updateCallbacks.forEach((callback) => {
@@ -143,12 +198,15 @@ const _dragStore = () => {
 
   return {
     setTarget,
+    setAllItems,
     setCallback,
     setUpdateCallback,
     hitTarget,
     putOnTarget,
     getSelfTarget,
     getItemById,
+    getItemsIdFromDate,
+    getAllItemsFromDate,
   };
 };
 

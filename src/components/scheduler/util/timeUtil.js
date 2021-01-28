@@ -85,12 +85,17 @@ const getDateObjectFromString = (date) => {
 
   if (date) {
     const _ndate = date.split("-");
-    _today = new Date(_ndate[0], _ndate[1], _ndate[2]);
+    _today = new Date(_ndate[0], _ndate[1] - 1, _ndate[2]);
   } else {
     _today = new Date();
   }
 
-  return getDateObjectFromDateFormat(_today);
+  return {
+    year: _today.getFullYear(),
+    month: _today.getMonth() + 1,
+    day: _today.getDate(),
+    dayofweek: _today.getDay(),
+  };
 };
 
 /**
@@ -150,15 +155,20 @@ const getWeekFromDate = (date) => {
   //Objectに変換
   const today = getDateObjectFromString(date);
 
-  const _monday = new Date(
-    today.year,
-    today.month - 1,
-    today.day - today.dayofweek
-  );
-  const monday = getDateObjectFromDateFormat(_monday);
+  //正常月からjs月に変換してNewする
+  const sundateDate = new Date(today.year, today.month - 1, today.day);
+  sundateDate.setDate(sundateDate.getDate() - today.dayofweek);
+
+  const sunday = {
+    year: sundateDate.getFullYear(),
+    month: sundateDate.getMonth() + 1, //js月から正常月に変換
+    day: sundateDate.getDate(),
+    dayofweek: sundateDate.getDay(),
+  };
 
   const _weekDay = [...new Array(7)].map((n, index) => {
-    const d = new Date(monday.year, monday.month - 1, monday.day + index);
+    const d = new Date(sunday.year, sunday.month - 1, sunday.day);
+    d.setDate(d.getDate() + index);
     const data = {
       year: `${d.getFullYear()}`,
       month: `${d.getMonth() + 1}`.padStart(2, "0"),

@@ -27,9 +27,6 @@
       week: {
         type: Array,
       },
-      lists: {
-        type: Array,
-      },
     },
     methods: {
       getLabel(date) {

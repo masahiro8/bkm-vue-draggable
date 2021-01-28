@@ -48,23 +48,9 @@
       const todayObject = getDateObjectFromString(today);
       this.todayObject = todayObject;
 
-      //1週間の日付データ
-      const weekDate = getWeekFromDate(today);
-      this.weekArray = weekDate;
-      console.log(weekDate);
+      this.loadData(today);
 
-      //スケジュールをロード
-      const res = await fetch("/json/schedule.json");
-      if (res.ok) {
-        const response = await res.json();
-        this.lists = response.schedule;
-      } else {
-        throw new Error();
-      }
-
-      dragStore.setUpdateCallback(({ schedule }) => {
-        console.log("Published ", schedule);
-      });
+      dragStore.setUpdateCallback(() => {});
       this.setBodyOverflowHidden(true);
     },
     destroyed() {
@@ -72,17 +58,25 @@
     },
     methods: {
       //選択日を更新
-      updateDate(val) {
-        const today = getDateStringFromObject(val);
-
-        //1週間の日付データ
-        const weekDate = getWeekFromDate(today);
-        this.weekArray = weekDate;
+      async updateDate(val) {
+        //選択日
         this.todayObject = val;
-
-        console.log(today, val);
+        const today = getDateStringFromObject(val);
+        this.loadData(today);
       },
-      updateWeeks() {},
+      async loadData(today) {
+        //1週間の日付データ
+        this.weekArray = getWeekFromDate(today);
+
+        //スケジュールをロード
+        const res = await fetch("/json/schedule.json");
+        if (res.ok) {
+          const response = await res.json();
+          dragStore.setAllItems({ schedule: response.schedule });
+        } else {
+          throw new Error();
+        }
+      },
       setBodyOverflowHidden(b) {
         document.querySelector("body").style.overflow = b ? "hidden" : "auto";
       },
