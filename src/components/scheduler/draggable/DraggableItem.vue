@@ -298,7 +298,7 @@
           height: selfRect.height,
         });
 
-        if (hit) {
+        if (hit.date) {
           //所属先を変更
           this.putOnTarget(hit.date);
           this.movepoint_start = null;
@@ -316,7 +316,6 @@
       },
 
       deleteItem(e) {
-        console.log("delete");
         dragStore.deleteItem({ itemId: this.itemId });
         e.stopPropagation();
       },

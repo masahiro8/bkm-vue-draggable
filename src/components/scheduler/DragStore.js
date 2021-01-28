@@ -38,6 +38,11 @@ const _dragStore = () => {
     // publishCallbacks();
   };
 
+  const resetTargets = () => {
+    targets = [];
+    targetsItemIds = {};
+  };
+
   /**
    *
    * 配列に存在する場合は更新、ない場合は追加
@@ -269,6 +274,7 @@ const _dragStore = () => {
     getAllItemsFromDate,
     addNew,
     deleteItem,
+    resetTargets,
   };
 };
 

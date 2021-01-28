@@ -68,6 +68,7 @@
       async loadData(today) {
         //1週間の日付データ
         this.weekArray = getWeekFromDate(today);
+        dragStore.resetTargets();
 
         //Firebaseから取得
         const schedule = await apiConnect.getItems({
