@@ -98,6 +98,24 @@ const getDateObjectFromString = (date) => {
   };
 };
 
+const getToday = () => {
+  const d = new Date();
+  return {
+    year: `${d.getFullYear()}`,
+    month: `${d.getMonth() + 1}`.padStart(2, "0"),
+    day: `${d.getDate()}`.padStart(2, "0"),
+    dayofweek: d.getDay(),
+  };
+};
+
+const convertPadStartedObject = ({ year, month, day }) => {
+  return {
+    year: `${year}`,
+    month: `${month}`.padStart(2, "0"),
+    day: `${day}`.padStart(2, "0"),
+  };
+};
+
 /**
  *
  * 日付オブジェクトから文字列に変換
@@ -105,9 +123,11 @@ const getDateObjectFromString = (date) => {
  */
 const getDateStringFromObject = ({ year, month, day }) => {
   if (year && month && day) {
-    return `${year}-${month}-${day}`;
+    const converted = convertPadStartedObject({ year, month, day });
+    return `${converted.year}-${converted.month}-${converted.day}`;
   } else {
-    return null;
+    const today = getToday();
+    return `${today.year}-${today.month}-${today.day}`;
   }
 };
 

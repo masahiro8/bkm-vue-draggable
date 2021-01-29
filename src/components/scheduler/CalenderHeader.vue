@@ -1,13 +1,24 @@
 <template>
   <div class="calenderHeader">
-    <div class="calenderHeader--back">
-      <button @click="updateDate(-7)"><img :src="arrow_back" alt="" /></button>
+    <div class="calenderHeader--today">
+      <button @click="onClickToday()">今日</button>
     </div>
-    <div class="calenderHeader--title">{{ getTitle }}</div>
-    <div class="calenderHeader--forward">
-      <button @click="updateDate(7)">
-        <img :src="arrow_forward" alt="" />
-      </button>
+    <div class="calenderHeader--center">
+      <div class="calenderHeader--back">
+        <button @click="updateDate(-numbersOfDays)">
+          <img :src="arrow_back" alt="" />
+        </button>
+      </div>
+      <div class="calenderHeader--title">{{ getTitle }}</div>
+      <div class="calenderHeader--forward">
+        <button @click="updateDate(numbersOfDays)">
+          <img :src="arrow_forward" alt="" />
+        </button>
+      </div>
+    </div>
+    <div class="calenderHeader--tab">
+      <router-link class="tab--item" :to="'week'"> <div>週</div></router-link>
+      <router-link class="tab--item" :to="'day'"><div>日</div></router-link>
     </div>
   </div>
 </template>
@@ -24,6 +35,10 @@
     props: {
       today: {
         type: Object,
+      },
+      numbersOfDays: {
+        type: Number,
+        default: 1,
       },
     },
     computed: {
@@ -42,6 +57,11 @@
         const dateObject = getDateObjectFromDateFormat(ndate);
         this.$emit("updateDate", dateObject);
       },
+      onClickToday() {
+        const ndate = new Date();
+        const dateObject = getDateObjectFromDateFormat(ndate);
+        this.$emit("updateDate", dateObject);
+      },
     },
   };
 </script>
@@ -50,8 +70,46 @@
     width: 100%;
     height: 48px;
     display: flex;
+    justify-content: space-between;
+  }
+
+  .calenderHeader--center {
+    display: flex;
     justify-content: center;
   }
+
+  .calenderHeader--today {
+    button {
+      background: none;
+      border: none;
+      outline: none;
+      padding: 4px 8px;
+      text-decoration: none;
+      color: black;
+      opacity: 0.5;
+      &:hover {
+        cursor: pointer;
+        opacity: 1;
+      }
+    }
+  }
+
+  .calenderHeader--tab {
+    display: flex;
+    height: 32px;
+    padding: 0 16px;
+    .tab--item {
+      padding: 4px 8px;
+      text-decoration: none;
+      color: black;
+      opacity: 0.5;
+      &:hover {
+        cursor: pointer;
+        opacity: 1;
+      }
+    }
+  }
+
   .calenderHeader--title {
     font-weight: 600;
     font-size: 18px;
@@ -59,6 +117,7 @@
     line-height: 36px;
     margin: 0 16px;
   }
+
   .calenderHeader--back,
   .calenderHeader--forward {
     height: 36px;

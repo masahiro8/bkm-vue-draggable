@@ -101,9 +101,6 @@
       week: {
         type: Array,
       },
-      lists: {
-        type: Array,
-      },
     },
     components: {
       DraggableItem,

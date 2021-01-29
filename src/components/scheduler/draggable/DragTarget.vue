@@ -71,6 +71,7 @@
     methods: {
       init() {
         dragStore.setCallback(({ allItems }) => {
+          console.log("setCallback allItems", allItems);
           const items = allItems.filter((item) => {
             return item.date === this.date;
           });

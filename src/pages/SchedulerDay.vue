@@ -6,7 +6,7 @@
       <CalenderHeader
         @updateDate="updateDate"
         :today="todayObject"
-        :numbersOfDays="7"
+        :numbersOfDays="1"
       />
       <SchedulerWeek :config="config" :week="weekArray" />
     </template>
@@ -17,7 +17,6 @@
   import PageFrame from "./UI/PageFrame";
   import SchedulerWeek from "../components/scheduler/SchedulerWeek";
   import {
-    getWeekFromDate,
     getDateStringFromObject,
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
@@ -66,9 +65,10 @@
         this.loadData(today);
       },
       async loadData(today) {
-        //1週間の日付データ
-        this.weekArray = getWeekFromDate(today);
         dragStore.resetTargets();
+
+        //1週間の日付データ
+        this.weekArray = [today];
 
         //Firebaseから取得
         const schedule = await apiConnect.getItems({
