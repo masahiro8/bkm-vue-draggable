@@ -1,7 +1,7 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
     <div class="delete">
-      <button @click="deleteItem">delete</button>
+      <DeleteBtn @onDelete="deleteItem" />
     </div>
     <slot
       :target="params.target"
@@ -18,6 +18,7 @@
   import { hitArea } from "../util/hitArea";
   import { dragStore } from "../DragStore";
   import { getTimeFromYpx, getEndTime, getYpxFromTime } from "../util/timeUtil";
+  import DeleteBtn from "../UI/DeleteBtn";
 
   //ポインター位置を返すラッパー
   const getPointer = (e) => {
@@ -61,6 +62,9 @@
         updatedExpand: 20,
         expandTime: { h: null, m: null },
       };
+    },
+    components: {
+      DeleteBtn,
     },
     props: {
       itemId: {
