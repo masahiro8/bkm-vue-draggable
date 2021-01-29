@@ -9,6 +9,11 @@ export default new Router({
   mode: "history",
   routes: [
     {
+      path: "/",
+      name: "SchedulerWeek",
+      component: SchedulerWeek,
+    },
+    {
       path: "/week",
       name: "SchedulerWeek",
       component: SchedulerWeek,
