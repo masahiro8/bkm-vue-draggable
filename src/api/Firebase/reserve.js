@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { encrypt } from "./util/Encrypt.js";
+import { encrypt } from "../util/Encrypt.js";
 /*
 {
   "id": 10001,

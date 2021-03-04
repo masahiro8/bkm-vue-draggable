@@ -1,4 +1,4 @@
-import { initFirebase, Reserves } from "@/api/api";
+import { initFirebase, Reserves } from "@/api/Firebase/api";
 
 const padStartDate = ({ year, month, day }) => {
   return {
