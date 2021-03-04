@@ -50,3 +50,20 @@ node updateapi.js
 ```
 
 を実行
+
+## 予定コンポーネントの構造
+
+基本的なコンポーネントの構成
+
+```
+<DragTarget> --- 1日の領域
+  <ListBox/> --- 曜日ごとの縦線
+  <GridFrame/> --- 時間のグリッド線
+  <DraggableItem> --- 予定コンポーネント : 予定情報の管理、開始時間位置、移動ドラッグ、を担う
+    <DraggableExpandBox> --- 予定コンポーネントの入れ子 : 終了時間位置、枠の拡大ドラッグ、を担う。値はDraggableItemにコールバックする
+      <ItemBox /> --- 予定内部に表示する領域にラッパー : ここに表示したいものを入れる
+    </DraggableExpandBox>
+  </DraggableItem>
+</DragTarget>
+```
+
