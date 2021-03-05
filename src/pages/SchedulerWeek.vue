@@ -8,7 +8,7 @@
         :today="todayObject"
         :numbersOfDays="7"
       />
-      <SchedulerWeek :config="config" :week="weekArray" />
+      <SchedulerWeek :config="config" :config_reserve_type_ids="config_reserve_type_ids" :week="weekArray" />
     </template>
   </PageFrame>
 </template>
@@ -21,7 +21,7 @@
     getDateStringFromObject,
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER } from "../statics/config";
+  import { CONFIG_SCHEDULER,CONFIG_TYPE_IDS } from "../statics/config";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
 
@@ -29,6 +29,7 @@
     data: () => {
       return {
         config: CONFIG_SCHEDULER,
+        config_reserve_type_ids:CONFIG_TYPE_IDS,
         gridLines: [],
         lists: [],
         weekArray: [],
@@ -51,7 +52,6 @@
 
       this.loadData(today);
 
-      dragStore.setUpdateCallback(() => {});
       this.setBodyOverflowHidden(true);
     },
     destroyed() {

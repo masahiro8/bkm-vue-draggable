@@ -1,5 +1,5 @@
 <template>
-  <div ref="self" class="target">
+  <div ref="self" class="target" :id="randomId">
     <slot :params="params" />
   </div>
 </template>
@@ -16,11 +16,20 @@
           listId: null,
           lastItem: null,
         },
+        randomId:Math.floor(Math.random()*99999)
       };
     },
     props: {
       date: {
         type: String,
+      },
+      //アイテムの属性
+      type_id:{
+        type: Number,
+      },
+      //フレーム番号
+      frame_index:{
+        type: Number
       },
       grid: {
         type: Object,
@@ -66,15 +75,17 @@
       getStyle() {
         const height = this.config.hour * this.config.grid15min * 4;
         return `min-width:${this.config.targetWidth}px;height:${height}px;`;
+        // return `height:${height}px;`;
       },
     },
     methods: {
       init() {
         dragStore.setCallback(({ allItems }) => {
-          console.log("setCallback allItems", allItems);
           const items = allItems.filter((item) => {
-            return item.date === this.date;
+            // console.log("init",item);
+            return item.date === this.date && item.type_id === this.type_id
           });
+
           this.params = {
             lists: items.map((item) => item.itemId),
             grid: this.grid,
@@ -85,8 +96,10 @@
       },
 
       update() {
+        //ストアに自身を登録
         dragStore.setTarget({
           date: this.date,
+          type_id: this.type_id,
           ref: this.$refs.self,
         });
       },
@@ -115,6 +128,7 @@
           date: this.date,
           startTime: startTime.hm,
           endTime: endTime.hm,
+          type_id: this.type_id
         });
       },
       addEvent() {

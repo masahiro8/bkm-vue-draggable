@@ -6,4 +6,13 @@ const CONFIG_SCHEDULER = {
   isClickToAdd: true, //クリックして新規予定の作成
 };
 
-export { CONFIG_SCHEDULER };
+/*
+  予約属性を定義 TODO:最終的にはapiから取得
+*/
+
+const CONFIG_TYPE_IDS = [
+  { type_id: 0, name: "共通" },
+  { type_id: 100, name: "部屋1" },
+];
+
+export { CONFIG_SCHEDULER, CONFIG_TYPE_IDS };

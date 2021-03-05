@@ -3,31 +3,30 @@ import { apiConnect } from "./util/apiConnect";
 
 const _dragStore = () => {
   let callbacks = [];
-  let updateCallbacks = [];
 
   let targets = [];
   let targetsItemIds = {};
   let allItems = [];
 
-  const setTarget = ({ id, date, ref }) => {
+  const setTarget = ({ date, ref, type_id }) => {
     const find = targets.find((t) => {
-      return t.date === date;
+      return t.date === date && t.type_id === type_id;
     });
     if (!find) {
       //追加
       targets.push({
-        id,
         date,
+        type_id,
         ref: ref,
       });
       targetsItemIds[`${date}`] = [];
     } else {
       //更新
       targets = targets.map((target) => {
-        if (target.date === date) {
+        if (target.date === date && target.type_id === type_id) {
           return {
-            id,
             date,
+            type_id,
             ref: ref,
           };
         } else {
@@ -35,7 +34,6 @@ const _dragStore = () => {
         }
       });
     }
-    // publishCallbacks();
   };
 
   const resetTargets = () => {
@@ -90,12 +88,16 @@ const _dragStore = () => {
 
   const hitTarget = (itemRect) => {
     const hits = targets.filter((tgt) => {
+      //エリア
       const rect = tgt.ref.getBoundingClientRect();
+      //点がエリアに入っているか判定
       return hitArea(
+        //点
         {
           x: itemRect.x + itemRect.width / 2,
           y: itemRect.y + itemRect.height / 2,
         },
+        //エリア
         {
           x: rect.x,
           y: rect.y,
@@ -107,12 +109,13 @@ const _dragStore = () => {
     return hits[0];
   };
 
-  const addNew = async ({ date, startTime, endTime }) => {
+  const addNew = async ({ date, startTime, endTime, type_id }) => {
     //Firebaseに新規追加
     const result = await apiConnect.setItem({
       date,
       startTime,
       endTime,
+      type_id,
     });
     if (result) {
       //新規追加
@@ -121,6 +124,7 @@ const _dragStore = () => {
         date,
         startTime,
         endTime,
+        type_id,
       });
     }
   };
@@ -134,12 +138,18 @@ const _dragStore = () => {
     }
   };
 
-  const updateItem = async ({ itemId, date, startTime, endTime }) => {
-    return await apiConnect.updateItem({ itemId, date, startTime, endTime });
+  const updateItem = async ({ itemId, date, startTime, endTime, type_id }) => {
+    return await apiConnect.updateItem({
+      itemId,
+      date,
+      startTime,
+      endTime,
+      type_id,
+    });
   };
 
   //ターゲットに追加
-  const putOnTarget = async ({ itemId, date, startTime, endTime }) => {
+  const putOnTarget = async ({ itemId, date, startTime, endTime, type_id }) => {
     //検索
     const find = targetsItemIds[`${date}`].find((item) => {
       return item === itemId;
@@ -176,6 +186,7 @@ const _dragStore = () => {
         startTime,
         endTime,
         date,
+        type_id,
       });
     } else {
       //あれば更新
@@ -184,9 +195,16 @@ const _dragStore = () => {
         result.itemId !== itemId ||
         result.date !== date ||
         result.startTime !== startTime ||
-        result.endTime !== endTime
+        result.endTime !== endTime ||
+        result.type_id !== type_id
       ) {
-        const result = await updateItem({ itemId, date, startTime, endTime });
+        const result = await updateItem({
+          itemId,
+          date,
+          startTime,
+          endTime,
+          type_id,
+        });
         if (result) {
           allItems = allItems.map((item) => {
             return item.itemId === itemId
@@ -195,6 +213,7 @@ const _dragStore = () => {
                   startTime,
                   endTime,
                   date,
+                  type_id,
                 }
               : item;
           });
@@ -204,13 +223,13 @@ const _dragStore = () => {
     publishCallbacks();
   };
 
-  const getSelfTarget = ({ itemId }) => {
+  const getSelfTarget = ({ itemId, type_id }) => {
     const date = Object.keys(targetsItemIds).find((key) => {
       return targetsItemIds[key].indexOf(itemId) > -1;
     });
     if (date) {
       const find = targets.find((t) => {
-        return t.date === date;
+        return t.date === date && t.type_id === type_id;
       });
       return find ? find : null;
     }
@@ -236,10 +255,6 @@ const _dragStore = () => {
     callbacks.push(callback);
   };
 
-  const setUpdateCallback = (callback) => {
-    updateCallbacks.push(callback);
-  };
-
   const publishCallbacks = () => {
     callbacks.forEach((callback) => {
       callback({
@@ -247,25 +262,12 @@ const _dragStore = () => {
         allItems,
       });
     });
-    updateCallbacks.forEach((callback) => {
-      const schedule = Object.keys(targetsItemIds).map((key) => {
-        const items = targetsItemIds[key].map((itemId) => {
-          return getItemById(itemId);
-        });
-        return {
-          date: key,
-          items,
-        };
-      });
-      callback({ schedule });
-    });
   };
 
   return {
     setTarget,
     setAllItems,
     setCallback,
-    setUpdateCallback,
     hitTarget,
     putOnTarget,
     getSelfTarget,

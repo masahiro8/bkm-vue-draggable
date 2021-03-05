@@ -19,12 +19,13 @@ const _fbConnect = () => {
     initialized = true;
   };
 
-  const setItem = async ({ date, startTime, endTime }) => {
+  const setItem = async ({ date, startTime, endTime, type_id }) => {
     const params = {
       email: "kurokawa@backham",
       reserve_date: date,
       start_time: startTime,
       end_time: endTime,
+      type_id: type_id || 0,
     };
     const result = await Reserves().setNewReserve(params);
     return result;
@@ -36,13 +37,14 @@ const _fbConnect = () => {
     );
     const _items = items
       .map((item) => {
-        const { date, id, end_time, start_time } = item;
+        const { date, id, end_time, start_time, type_id } = item;
         return {
           date,
           delete: item["delete"], //lintエラーになるので
           itemId: +id,
           startTime: start_time,
           endTime: end_time,
+          type_id: type_id || 0,
         };
       })
       .filter((item) => {
@@ -56,14 +58,16 @@ const _fbConnect = () => {
     return result;
   };
 
-  const updateItem = async ({ itemId, date, startTime, endTime }) => {
+  const updateItem = async ({ itemId, date, startTime, endTime, type_id }) => {
     const params = {
       id: itemId,
       email: "kurokawa@backham",
       reserve_date: date,
       start_time: startTime,
       end_time: endTime,
+      type_id: type_id || 0,
     };
+    console.log("------- updateItem", params.type_id);
     const result = await Reserves().updateReserve(params);
     return result;
   };

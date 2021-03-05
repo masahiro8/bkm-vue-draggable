@@ -52,7 +52,7 @@
         mousepoint: null,
         mousedown: false,
         hitarea: false,
-        target: null,
+        target: null,//自分がいるDragTarget
         target_margin: null,
         params: {
           expand: { x: 0, y: 20 },
@@ -68,6 +68,9 @@
     },
     props: {
       itemId: {
+        type: Number,
+      },
+      type_id:{
         type: Number,
       },
       date: {
@@ -120,7 +123,7 @@
       const self = dragStore.getItemById(this.id);
 
       //新規ドロップの検知
-      const target = dragStore.getSelfTarget({ itemId: this.id });
+      const target = dragStore.getSelfTarget({ itemId: this.id, type_id:this.type_id });
 
       const targetRect = target ? target.ref.getBoundingClientRect() : null;
       if (targetRect) {
@@ -261,12 +264,12 @@
           this.updatedExpand = expand;
           this.expandTime = expandTime;
           //登録
-          this.putOnTarget(this.date);
+          this.thisPutOnTarget(this.date,this.type_id);
         }, 200);
       },
 
       //ストアに登録
-      putOnTarget(date) {
+      thisPutOnTarget(date, type_id) {
         const _startTime = this.getStartTime.time;
         const _endtime = getEndTime({
           startTime: this.getStartTime.time,
@@ -289,6 +292,7 @@
           date,
           startTime,
           endTime,
+          type_id
         });
       },
 
@@ -302,9 +306,9 @@
           height: selfRect.height,
         });
 
-        if (hit.date) {
+        if (hit.date && hit.type_id >= 0 ) {
           //所属先を変更
-          this.putOnTarget(hit.date);
+          this.thisPutOnTarget(hit.date,hit.type_id);
           this.movepoint_start = null;
         } else {
           //元に戻す
@@ -342,15 +346,22 @@
 
         this.rect = this.$refs.self.getBoundingClientRect();
         const point = getPointer(e);
+
+        //予定枠内でクリックしているかのチェック
         const hitarea = hitArea(point, this.rect);
         if (hitarea && this.isEnter) {
+
+          //自分のいるターゲットのRect
           const targetRect = this.target.getBoundingClientRect();
+
+          //クリック位置と自身の左上原点との距離の差分？
           this.movingpoint = convertToLocalPoint(
             point,
             targetRect || { x: 0, y: 0, width: 0, height: 0 }
           );
           this.movepoint_start = point;
-          //ドラッグ開始時にマージンを取得する
+
+          //ドラッグ開始時に原点とのマージンを取得する
           this.mousepoint_margin = {
             x: point.x - this.rect.x,
             y: point.y - this.rect.y,

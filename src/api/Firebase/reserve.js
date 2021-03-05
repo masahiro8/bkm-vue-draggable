@@ -67,6 +67,7 @@ export const Reserves = () => {
               start_time: _reserves[key].start_time,
               user_mail: _reserves[key].user_mail,
               delete: _reserves[key].delete,
+              type_id: _reserves[key].type_id || 0,
             };
           });
         resolved(reserves);
@@ -81,7 +82,13 @@ export const Reserves = () => {
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
    */
-  const setNewReserve = ({ reserve_date, start_time, end_time, email }) => {
+  const setNewReserve = ({
+    reserve_date,
+    start_time,
+    end_time,
+    email,
+    type_id,
+  }) => {
     return new Promise((resolved) => {
       const _reserve_date = `${reserve_date}`.split("-");
       const _date = new Date(
@@ -104,6 +111,7 @@ export const Reserves = () => {
         end_time_day: end_time.split(":")[1],
         user_mail: email,
         delete: false,
+        type_id: type_id || 0, //単に予約だけでなく別の属性を設定する場合に仕様 例) 部屋A = 1, 部屋B = 2
       };
       db.ref("reserves/" + id).set(params, (error) => {
         if (error) {
@@ -112,7 +120,7 @@ export const Reserves = () => {
           resolved({ result: true });
         }
       });
-      console.log(params);
+      // console.log(params);
       resolved(params);
     });
   };
@@ -124,7 +132,23 @@ export const Reserves = () => {
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
    */
-  const updateReserve = ({ id, reserve_date, start_time, end_time, email }) => {
+  const updateReserve = ({
+    id,
+    reserve_date,
+    start_time,
+    end_time,
+    email,
+    type_id,
+  }) => {
+    console.log(
+      "updateReserve",
+      id,
+      reserve_date,
+      start_time,
+      end_time,
+      email,
+      type_id
+    );
     return new Promise((resolved) => {
       const _reserve_date = `${reserve_date}`.split("-");
       const params = {
@@ -139,6 +163,7 @@ export const Reserves = () => {
         end_time_hour: end_time.split(":")[0],
         end_time_day: end_time.split(":")[1],
         user_mail: email,
+        type_id: type_id || 0,
       };
       db.ref("reserves/" + id).update(params, (error) => {
         if (error) {
@@ -147,7 +172,7 @@ export const Reserves = () => {
           resolved({ result: true });
         }
       });
-      console.log(params);
+      // console.log(params);
       resolved(params);
     });
   };
