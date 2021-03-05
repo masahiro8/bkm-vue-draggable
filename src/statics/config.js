@@ -11,8 +11,8 @@ const CONFIG_SCHEDULER = {
 */
 
 const CONFIG_TYPE_IDS = [
-  { type_id: 0, name: "共通" },
-  { type_id: 100, name: "部屋1" },
+  { type_id: 100, name: "予定" },
+  { type_id: 101, name: "実績" },
 ];
 
 export { CONFIG_SCHEDULER, CONFIG_TYPE_IDS };

@@ -1,24 +1,12 @@
 <template>
   <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    <div class="delete">
-      <DeleteBtn @onDelete="deleteItem" />
-    </div>
-    <slot
-      :target="params.target"
-      :position="params.position"
-      :expand="params.expand"
-      :fitGrid="params.fitGrid"
-      :isMoving="params.isMoving"
-      :startTime="params.startTime"
-      :expandCallback="expandCallback"
-    />
+    <slot />
   </div>
 </template>
 <script>
   import { hitArea } from "../util/hitArea";
   import { dragStore } from "../DragStore";
-  import { getTimeFromYpx, getEndTime, getYpxFromTime } from "../util/timeUtil";
-  import DeleteBtn from "../UI/DeleteBtn";
+  import { getTimeFromYpx,getEndTime,roundTo15min } from "../util/timeUtil";
 
   //ポインター位置を返すラッパー
   const getPointer = (e) => {
@@ -48,23 +36,16 @@
         isEnter: false,
         movingpoint: null,
         movepoint_start: null,
-        mousepoint_margin: null,
+        mousepoint_margin: { x: 0, y: 0 },
         mousepoint: null,
         mousedown: false,
         hitarea: false,
-        target: null,//自分がいるDragTarget
-        target_margin: null,
         params: {
           expand: { x: 0, y: 20 },
           fitGrid: { x: 1, y: 1 },
         },
-        timerExpandUpdate: null,
-        updatedExpand: 20,
-        expandTime: { h: null, m: null },
+        targetRect: { x: 0, y: 0 },
       };
-    },
-    components: {
-      DeleteBtn,
     },
     props: {
       itemId: {
@@ -111,87 +92,17 @@
         type: Object,
         defaultValue: { vertical: false, horizontal: false },
       },
+      target:{
+        type: HTMLDivElement
+      }
     },
     mounted() {
-      //新しくリストに追加されたItemはmountedで作られるので、ここで検知する
+      // 新しくリストに追加されたItemはmountedで作られるので、ここで検知する
       this.addDragEvent();
 
-      //idが無い場合はdragStoreに登録
+      // idが無い場合はdragStoreに登録
       this.id = this.itemId;
 
-      //自分を取得
-      const self = dragStore.getItemById(this.id);
-
-      //新規ドロップの検知
-      const target = dragStore.getSelfTarget({ itemId: this.id, type_id:this.type_id });
-
-      const targetRect = target ? target.ref.getBoundingClientRect() : null;
-      if (targetRect) {
-        let rect = this.$refs.self.getBoundingClientRect();
-        const target_margin = {
-          x: rect.x - targetRect.x,
-          y: rect.y - targetRect.y,
-        };
-        this.target = target.ref;
-        this.target_margin = target_margin;
-        this.mousepoint_margin = { x: 0, y: 0 };
-
-        //時間から座標に変換
-        const time = {
-          h: self.startTime.split(":")[0],
-          m: self.startTime.split(":")[1],
-        };
-
-        //時間から座標に変換
-        const localPosition = {
-          x: 0,
-          y: getYpxFromTime({ time: time, grid15min: this.fitGridY }),
-        };
-        // let movingpoint = { ...self.localPosition };//座標をそのまま取得
-        let movingpoint = { ...localPosition };
-
-        //時間から座標に変換
-        const endtime = {
-          h: self.endTime.split(":")[0],
-          m: self.endTime.split(":")[1],
-        };
-
-        const expandPosition = {
-          x: 0,
-          y:
-            getYpxFromTime({
-              time: endtime,
-              grid15min: this.fitGridY,
-            }) - localPosition.y,
-        };
-
-        //固定補正
-        this.movingpoint = {
-          x: this.fixHorizontal ? 0 : movingpoint.x,
-          y: this.fixVertical ? 0 : movingpoint.y,
-        };
-        //expandから経過時間を設定
-        this.params = {
-          target: target.ref,
-          position: this.movingpoint,
-          expand: expandPosition,
-          startTime: this.getStartTime.time,
-          fitGrid: {
-            x: this.fitGridX,
-            y: this.fitGridY,
-          },
-        };
-      }
-
-      this.$watch(
-        () => [this.isMove],
-        (newValue) => {
-          const params = { ...this.params };
-          params.isMoving = newValue[0];
-          params.startTime = this.getStartTime.time;
-          this.params = params;
-        }
-      );
     },
     beforeDestroy() {
       this.removeDragEvent();
@@ -210,13 +121,11 @@
           ? point.x - margin.x
           : fitGrid(this.fitGridX, point.x - margin.x);
 
-        const normalized = this.getNormalizedPosition({
-          x: left * 100,
-          y: top * 100,
-        });
+        // console.log("starttime",top,left);
 
+        //時間変換は、親座標を考慮して取得
         const time = getTimeFromYpx({
-          pixel: top,
+          pixel: top - this.targetRect.y,
           grid15min: this.fitGridY,
         });
 
@@ -226,74 +135,60 @@
             x: left,
             y: top,
           },
-          //正規化
-          normalized,
           //時間
           time,
         };
       },
     },
     methods: {
-      //座標を正規化
-      getNormalizedPosition({ x, y }) {
-        const targetRect = this.target
-          ? this.target.getBoundingClientRect()
-          : null;
-        return targetRect
-          ? {
-              x: x / targetRect.width,
-              y: y / targetRect.height,
-            }
-          : { x: 0, y: 0 };
-      },
       getClass() {
         if (this.isMove) return "moving";
         return "";
       },
       getStyle() {
-        if (!this.self) return "";
-        const { normalized } = this.getStartTime;
-        return `left:${normalized.x}%;top:${normalized.y}%;`;
-      },
-      initial() {},
-
-      //DraggableExpandBoxから高さを受け取る
-      expandCallback({ expand, expandTime }) {
-        clearTimeout(this.timerExpandUpdate);
-        this.timerExpandUpdate = setTimeout(() => {
-          this.updatedExpand = expand;
-          this.expandTime = expandTime;
-          //登録
-          this.thisPutOnTarget(this.date,this.type_id);
-        }, 200);
+        const { pixel } = this.getStartTime;
+        return `left:${pixel.x}px;top:${pixel.y}px;`;
       },
 
       //ストアに登録
+      //TODO 挙動があやしい
       thisPutOnTarget(date, type_id) {
         const _startTime = this.getStartTime.time;
         const _endtime = getEndTime({
           startTime: this.getStartTime.time,
-          expandTime: this.expandTime,
+          expandTime: {h:"0",m:"30"},
         });
 
         const startTime = `${`${_startTime.h}`.padStart(
           2,
           "0"
         )}:${`${_startTime.m}`.padStart(2, "0")}`;
-
         const endTime = `${`${_endtime.h.padStart(
           2,
           "0"
         )}`}:${`${_endtime.m.padStart(2, "0")}`}`;
 
-        //所属先を変更
-        dragStore.putOnTarget({
-          itemId: this.id,
+        const __startTime = roundTo15min(startTime);
+        const __endTime = roundTo15min(endTime);
+
+        console.log("put",date, type_id,__startTime,_startTime,startTime,endTime)
+
+        dragStore.addNew({
           date,
-          startTime,
-          endTime,
+          startTime:__startTime.hm,
+          endTime:__endTime.hm,
           type_id
         });
+      },
+
+      reset(){
+        //元に戻す
+        const movingpoint = convertToLocalPoint(
+          this.movepoint_start,
+          this.targetRect
+        );
+        this.movingpoint = movingpoint;
+        this.movepoint_start = null;
       },
 
       //エリアヒット検出 >> ドロップ先を検出して登録
@@ -306,26 +201,11 @@
           height: selfRect.height,
         });
 
-        if (hit.date && hit.type_id >= 0 ) {
-          //所属先を変更
+        if (hit && "date" in hit && hit.type_id >= 0 ) {
+          //新規追加
           this.thisPutOnTarget(hit.date,hit.type_id);
-          this.movepoint_start = null;
-        } else {
-          //元に戻す
-          const target = dragStore.getSelfTarget({ itemId: this.id });
-          const targetRect = target ? target.ref.getBoundingClientRect() : null;
-          const movingpoint = convertToLocalPoint(
-            this.movepoint_start,
-            targetRect
-          );
-          this.movingpoint = movingpoint;
-          this.movepoint_start = null;
         }
-      },
-
-      deleteItem(e) {
-        dragStore.deleteItem({ itemId: this.itemId });
-        e.stopPropagation();
+        this.reset();
       },
 
       mouseMove(e) {
@@ -333,17 +213,18 @@
         if (!this.self || !this.isMove) return;
         const point = getPointer(e);
         this.mousepoint = point;
-        const targetRect = this.target.getBoundingClientRect();
         this.movingpoint = convertToLocalPoint(
           point,
-          targetRect || { x: 0, y: 0, width: 0, height: 0 }
+          this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
         );
       },
+
       mouseDown(e) {
         e.stopPropagation();
         if (!this.self || !this.isEnter) return;
         this.isMove = true;
 
+        this.targetRect = this.target.getBoundingClientRect();
         this.rect = this.$refs.self.getBoundingClientRect();
         const point = getPointer(e);
 
@@ -351,13 +232,10 @@
         const hitarea = hitArea(point, this.rect);
         if (hitarea && this.isEnter) {
 
-          //自分のいるターゲットのRect
-          const targetRect = this.target.getBoundingClientRect();
-
           //クリック位置と自身の左上原点との距離の差分？
           this.movingpoint = convertToLocalPoint(
             point,
-            targetRect || { x: 0, y: 0, width: 0, height: 0 }
+            this.targetRect
           );
           this.movepoint_start = point;
 
@@ -375,10 +253,9 @@
 
         if (this.isMove && this.isEnter) {
           //位置を補正
-          const targetRect = this.target.getBoundingClientRect();
           const localPoint = convertToLocalPoint(
             point,
-            targetRect || { x: 0, y: 0, width: 0, height: 0 }
+            this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
           );
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : localPoint.x,
@@ -436,11 +313,16 @@
   .box {
     user-select: none;
     position: absolute;
-    width: 100%;
+    width: 128px;
+    border:1px solid black;
     z-index: 1;
-    
     &:hover {
       cursor: move;
+    }
+    &.moving{
+      color:red;
+      border:1px solid red;
+      // position: fixed;
     }
   }
 

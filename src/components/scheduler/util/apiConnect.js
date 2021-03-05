@@ -67,7 +67,7 @@ const _fbConnect = () => {
       end_time: endTime,
       type_id: type_id || 0,
     };
-    console.log("------- updateItem", params.type_id);
+    console.log("------- updateItem", itemId, params.type_id);
     const result = await Reserves().updateReserve(params);
     return result;
   };

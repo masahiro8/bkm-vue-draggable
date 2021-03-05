@@ -15,6 +15,7 @@
           lists: [],
           listId: null,
           lastItem: null,
+          targetRef: null
         },
         randomId:Math.floor(Math.random()*99999)
       };
@@ -80,6 +81,7 @@
     },
     methods: {
       init() {
+        this.params.targetRef = this.$refs.self;
         dragStore.setCallback(({ allItems }) => {
           const items = allItems.filter((item) => {
             // console.log("init",item);
@@ -91,6 +93,7 @@
             grid: this.grid,
             fit0: this.fit0,
             limit: this.limit,
+            targetRef: this.$refs.self
           };
         });
       },

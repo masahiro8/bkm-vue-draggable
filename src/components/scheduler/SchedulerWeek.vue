@@ -47,13 +47,11 @@
               :itemId="itemId"
               :type_id="type.type_id"
               :date="date"
-              :limit="params.limit"
               :isTargetDetect="true"
               :fixHorizontal="true"
               :fixVertical="false"
               :fitGridX="params.grid.x"
               :fitGridY="params.grid.y"
-              :fit0="params.fit0"
               v-slot="{
                 target,
                 position,

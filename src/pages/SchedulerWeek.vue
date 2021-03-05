@@ -1,7 +1,28 @@
 <template>
   <PageFrame>
     <template v-slot:pageHeader> Global Header </template>
-    <template v-slot:pageBodySide> Side Menu </template>
+    <template v-slot:pageBodySide>
+      <DragTarget
+        ref="TicketTarget"
+        :type_id="9999"
+        :fit0="{ x: true, y: false }"
+        :limit="{ vertical: true, horizontal: false }"
+        :isClickToAdd="false"
+        v-slot="{ params }"
+      >
+        <DraggableTicket
+          :target="params.targetRef"
+          :itemId="9999"
+          :type_id="9999"
+          :date="null"
+          :isTargetDetect="true"
+          :fixHorizontal="false"
+          :fixVertical="false"
+          :fitGridX="1"
+          :fitGridY="config.grid15min"
+        >TICKET</DraggableTicket>
+      </DragTarget>
+    </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
         @updateDate="updateDate"
@@ -25,6 +46,9 @@
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
 
+  import DragTarget from "../components/scheduler/draggable/DragTarget";
+  import DraggableTicket from "../components/scheduler/draggable/DraggableTicket";
+
   export default {
     data: () => {
       return {
@@ -40,6 +64,8 @@
       PageFrame,
       SchedulerWeek,
       CalenderHeader,
+      DragTarget,
+      DraggableTicket
     },
     async mounted() {
       //日付をロード
