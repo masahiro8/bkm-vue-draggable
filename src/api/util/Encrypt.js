@@ -23,21 +23,28 @@ export const encrypt = (n) => {
       return item.match(/.{1}/g);
     })
     .reverse();
-  return `${id.substr(0, 1)}${req(arr).flat().join("")}`;
+  const r =
+    `${id.substr(0, 1)}${req(arr)
+      .flat()
+      .join("")}` + `${Math.floor(Math.random() * 9999)}`;
+  return r;
 };
 
 //復号化
-export const decrypt = (n) => {
-  const id = `${n}`;
-  const _enc = id
-    .substr(1, id.length)
-    .match(new RegExp(".{" + n.substr(0, 1) + "}", "g"))
-    .map((item) => {
-      return item.match(/.{1}/g);
-    })
-    .reverse();
-  return `${id.substr(0, 1)}${req(_enc).flat().join("")}`;
-};
+//暗号化をいろいろ変えてしまったので復号できなくなったorz
+// export const decrypt = (n) => {
+//   const id = `${n}`;
+//   const _enc = id
+//     .substr(1, id.length)
+//     .match(new RegExp(".{" + n.substr(0, 1) + "}", "g"))
+//     .map((item) => {
+//       return item.match(/.{1}/g);
+//     })
+//     .reverse();
+//   return `${id.substr(0, 1)}${req(_enc)
+//     .flat()
+//     .join("")}`;
+// };
 
 //時間化
 export const dateTime = (n) => {
