@@ -1,5 +1,8 @@
 import firebase from "firebase";
-import { encrypt } from "../util/Encrypt.js";
+import { encrypt } from "./util/Encrypt.js";
+import { ConfigReserve } from "./ConfigReserve.js";
+import { DAY_OF_WEEK } from "./statics.js";
+
 /*
 {
   "id": 10001,
@@ -75,12 +78,106 @@ export const Reserves = () => {
     });
   };
 
+  const getReservableTime = async ({ year, month, day }) => {
+    //曜日設定から取得
+    const getFreeTimeFrameFromConfigDayOfWeek = async ({
+      year,
+      month,
+      day,
+      currentReserve,
+    }) => {
+      const _date = new Date(+year, +month - 1, +day);
+      const day_index = _date.getDay();
+      const weeks = Object.values(DAY_OF_WEEK);
+      //曜日を特定
+      const _day = weeks.find((d) => {
+        return d.index === day_index;
+      });
+
+      //曜日設定を取得
+      const configDayOfWeek = await ConfigReserve().getDayOfWeek(_day.id);
+      if (!configDayOfWeek.active) return null;
+
+      //予約がない場合
+      if (!currentReserve) return configDayOfWeek.detail;
+
+      //絞り込み
+      return configDayOfWeek.detail.filter((time_frame) => {
+        const reserved = currentReserve.find((reserve) => {
+          return time_frame.active && time_frame.start === reserve.start_time;
+        });
+        return !reserved;
+      });
+    };
+
+    const getFreeTimeFrameFromConfigDate = async ({
+      year,
+      month,
+      day,
+      currentReserve,
+    }) => {
+      //日付設定を取得
+      const configDate = await ConfigReserve().getDate({
+        year,
+        month,
+        day,
+      });
+
+      //ない、もしくは非アクティブ
+      if (!configDate || !configDate.active) return null;
+
+      //予約がない場合
+      if (!currentReserve) return configDate.detail;
+
+      //絞り込み
+      return configDate.detail.filter((time_frame) => {
+        const reserved = currentReserve.find((reserve) => {
+          return time_frame.active && time_frame.start === reserve.start_time;
+        });
+        return !reserved;
+      });
+    };
+
+    //予約状況を取得
+    const currentReserve = await getReserves({
+      year,
+      month,
+      day,
+    });
+
+    //日付から取得
+    const free_time_frame_date = await getFreeTimeFrameFromConfigDate({
+      year,
+      month,
+      day,
+      currentReserve,
+    });
+
+    //曜日設定から取得
+    const free_time_frame_day = await getFreeTimeFrameFromConfigDayOfWeek({
+      year,
+      month,
+      day,
+      currentReserve,
+    });
+
+    let free_time_frame = free_time_frame_date || free_time_frame_day;
+
+    return new Promise((resolved) => {
+      resolved({
+        active: free_time_frame ? true : false,
+        detail: free_time_frame,
+      });
+    });
+  };
+
   /**
    * 予約を登録
    * @param {string} date 日付形式 2020-12-31
    * @param {string} start_time 時間形式 10:30
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
+   * @param {number} type_id 枠のid
    */
   const setNewReserve = ({
     reserve_date,
@@ -131,6 +228,7 @@ export const Reserves = () => {
    * @param {string} start_time 時間形式 10:30
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
+   * @param {number} type_id 枠のid
    */
   const updateReserve = ({
     id,
@@ -194,5 +292,6 @@ export const Reserves = () => {
     setNewReserve,
     updateReserve,
     deleteReserve,
+    getReservableTime,
   };
 };
