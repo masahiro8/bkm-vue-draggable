@@ -22,4 +22,15 @@ const hitRect = (rect1, rect2) => {
   return horizontal && vertical;
 };
 
-export { hitArea, hitRect };
+//nピクセル内側にヒット判定をする
+const hitAreaInner = (point, area, n) => {
+  const inner_area = {
+    x: area.x + n,
+    y: area.y + n,
+    width: area.width - n * 2,
+    height: area.height - n * 2,
+  };
+  return hitArea(point, inner_area);
+};
+
+export { hitArea, hitAreaInner, hitRect };

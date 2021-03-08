@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-  import { hitArea } from "../util/hitArea";
+  import { hitArea,hitAreaInner } from "../util/hitArea";
   import { dragStore } from "../DragStore";
   import { getTimeFromYpx,getEndTime,roundTo15min } from "../util/timeUtil";
 
@@ -34,6 +34,7 @@
         rect: null,
         isMove: false,
         isEnter: false,
+        isHover: false,
         movingpoint: null,
         movepoint_start: null,
         mousepoint_margin: { x: 0, y: 0 },
@@ -142,8 +143,10 @@
     },
     methods: {
       getClass() {
-        if (this.isMove) return "moving";
-        return "";
+        let _class = '';
+        if (this.isMove) _class+="moving ";
+        if (this.isHover) _class+="hover ";
+        return _class;
       },
       getStyle() {
         const { pixel } = this.getStartTime;
@@ -208,10 +211,20 @@
         this.reset();
       },
 
+      hitInnerArea(e){
+         //2pixel内側で判定する
+        const inner_pixel = 6;
+        const point = getPointer(e);
+        this.rect = this.$refs.self.getBoundingClientRect();
+        this.isHover = hitAreaInner(point,this.rect,inner_pixel);
+      },
+
       mouseMove(e) {
         e.stopPropagation();
-        if (!this.self || !this.isMove) return;
-        const point = getPointer(e);
+        this.hitInnerArea(e);
+        
+        if (!this.self || !this.isMove ) return;
+         const point = getPointer(e);
         this.mousepoint = point;
         this.movingpoint = convertToLocalPoint(
           point,
@@ -221,13 +234,11 @@
 
       mouseDown(e) {
         e.stopPropagation();
-        if (!this.self || !this.isEnter) return;
+
+        if (!this.self || !this.isEnter || !this.isHover) return;
         this.isMove = true;
-
         this.targetRect = this.target.getBoundingClientRect();
-        this.rect = this.$refs.self.getBoundingClientRect();
         const point = getPointer(e);
-
         //予定枠内でクリックしているかのチェック
         const hitarea = hitArea(point, this.rect);
         if (hitarea && this.isEnter) {
@@ -317,7 +328,9 @@
     border:1px solid black;
     z-index: 1;
     &:hover {
-      cursor: move;
+    }
+    &.hover{ 
+        cursor: move;
     }
     &.moving{
       color:red;
