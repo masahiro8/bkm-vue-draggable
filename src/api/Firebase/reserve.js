@@ -71,6 +71,7 @@ export const Reserves = () => {
               user_mail: _reserves[key].user_mail,
               delete: _reserves[key].delete,
               type_id: _reserves[key].type_id || 0,
+              tag_id: _reserves[key].tag_id || 0,
             };
           });
         resolved(reserves);
@@ -178,6 +179,7 @@ export const Reserves = () => {
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
    * @param {number} type_id 枠のid
+   * @param {number} tag_id タグのid
    */
   const setNewReserve = ({
     reserve_date,
@@ -185,6 +187,7 @@ export const Reserves = () => {
     end_time,
     email,
     type_id,
+    tag_id,
   }) => {
     return new Promise((resolved) => {
       const _reserve_date = `${reserve_date}`.split("-");
@@ -209,6 +212,7 @@ export const Reserves = () => {
         user_mail: email,
         delete: false,
         type_id: type_id || 0, //単に予約だけでなく別の属性を設定する場合に仕様 例) 部屋A = 1, 部屋B = 2
+        tag_id: tag_id || 0,
       };
       db.ref("reserves/" + id).set(params, (error) => {
         if (error) {
@@ -229,6 +233,7 @@ export const Reserves = () => {
    * @param {string} end_time 時間形式 10:30
    * @param {string} user_mail メール
    * @param {number} type_id 枠のid
+   * @param {number} tag_id タグのid
    */
   const updateReserve = ({
     id,
@@ -237,6 +242,7 @@ export const Reserves = () => {
     end_time,
     email,
     type_id,
+    tag_id,
   }) => {
     console.log(
       "updateReserve",
@@ -245,7 +251,8 @@ export const Reserves = () => {
       start_time,
       end_time,
       email,
-      type_id
+      type_id,
+      tag_id
     );
     return new Promise((resolved) => {
       const _reserve_date = `${reserve_date}`.split("-");
@@ -262,6 +269,7 @@ export const Reserves = () => {
         end_time_day: end_time.split(":")[1],
         user_mail: email,
         type_id: type_id || 0,
+        tag_id: tag_id,
       };
       db.ref("reserves/" + id).update(params, (error) => {
         if (error) {

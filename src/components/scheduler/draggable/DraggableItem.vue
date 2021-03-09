@@ -42,6 +42,7 @@
     data: () => {
       return {
         id: null,
+        tag_id:null,
         self: null,
         rect: null,
         isMove: false,
@@ -61,6 +62,7 @@
         timerExpandUpdate: null,
         updatedExpand: 20,
         expandTime: { h: null, m: null },
+        tags:null,
       };
     },
     components: {
@@ -135,6 +137,7 @@
         this.target = target.ref;
         this.target_margin = target_margin;
         this.mousepoint_margin = { x: 0, y: 0 };
+        this.tag_id = self.tag_id;
 
         //時間から座標に変換
         const time = {
@@ -181,6 +184,8 @@
             y: this.fitGridY,
           },
         };
+
+        this.tags = dragStore.getTags();
       }
 
       this.$watch(
@@ -251,9 +256,19 @@
         return "";
       },
       getStyle() {
+        let style = "";
         if (!this.self) return "";
+        if(this.tag_id && this.tags) {
+          const _tag = this.tags.find( tag => {
+            return tag.ticketId === this.tag_id;
+          })
+          style += `background-color:${_tag.color};`;
+        }else{
+          style += `background-color:#888;`;
+        }
         const { normalized } = this.getStartTime;
-        return `left:${normalized.x}%;top:${normalized.y}%;`;
+        style += `left:${normalized.x}%;top:${normalized.y}%;`;
+        return style;
       },
       initial() {},
 
@@ -292,7 +307,8 @@
           date,
           startTime,
           endTime,
-          type_id
+          type_id,
+          tag_id:this.tag_id
         });
       },
 
@@ -324,8 +340,8 @@
       },
 
       deleteItem(e) {
-        dragStore.deleteItem({ itemId: this.itemId });
         e.stopPropagation();
+        dragStore.deleteItem({ itemId: this.itemId });
       },
 
       mouseMove(e) {

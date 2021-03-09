@@ -1,6 +1,7 @@
 <template>
-  <div ref="self" class="box" :class="getClass()" :style="getStyle()">
-    <slot />
+  <div ref="self" class="ticket" :class="getClass()" :style="getStyle()">
+    <div class="ticket__bar" :style="getBarColor(ticket.color)"></div>
+    <div class="ticket__title">{{ticket.title}}</div>
   </div>
 </template>
 <script>
@@ -49,8 +50,8 @@
       };
     },
     props: {
-      ticketId: {
-        type: Number,
+      ticket: {
+        type: Object,
       },
       index:{
         type: Number,
@@ -139,6 +140,9 @@
         const { pixel } = this.getStartTime;
         return this.isMove?`left:${pixel.x}px;top:${pixel.y}px;`: `left:${pixel.x}px;`;
       },
+      getBarColor(color){
+        return `background-color:${color}`;
+      },
 
       //ストアに登録
       thisPutOnTarget(date, type_id) {
@@ -159,14 +163,12 @@
 
         const __startTime = roundTo15min(startTime);
         const __endTime = roundTo15min(endTime);
-
-        console.log("put",date, type_id,__startTime,_startTime,startTime,endTime)
-
         dragStore.addNew({
           date,
           startTime:__startTime.hm,
           endTime:__endTime.hm,
-          type_id
+          type_id,
+          tag_id: this.ticket.ticketId || 0
         });
       },
 
@@ -183,6 +185,7 @@
       //エリアヒット検出 >> ドロップ先を検出して登録
       detectTarget() {
         const selfRect = this.$refs.self.getBoundingClientRect();
+        //ドロップ先のタイプ
         const hit = dragStore.hitTarget({
           x: selfRect.x,
           y: selfRect.y,
@@ -315,19 +318,29 @@
 
   $height:26px;
 
-  .box {
+  .ticket {
     user-select: none;
     position: absolute;
     width: 128px;
-    height:$height;
-    border:1px solid black;
+    height:$height - 1;
     z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F8F8F8;
+    border-bottom:2px solid white;
+    z-index: 1;
+
     &.hover{ 
       cursor: move;
+      box-shadow:0 1px 3px rgba(0,0,0,.3);
+      border-bottom: none;
+      z-index: 2;
     }
     &.moving{
-      color:red;
-      border:1px solid red;
+      box-shadow:0 1px 3px rgba(0,0,0,.3);
+      border-bottom: none;
+      z-index: 3;
     }
     @for $index from 10 through 0 {
       &:nth-child(#{$index}) {
@@ -335,14 +348,14 @@
       }
     }
   }
-
-  .delete {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    right: 0;
-    button: {
-      pointer-events: all;
-    }
+  .ticket__bar{
+    width: 4px;
+    height:100%;
+  }
+  .ticket__title {
+    flex: 1;
+    font-size: 10px;
+    text-align: left;
+    text-indent: 1em;
   }
 </style>

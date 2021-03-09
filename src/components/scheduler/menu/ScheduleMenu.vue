@@ -13,7 +13,7 @@
         :key="ticket.ticketId"
         :index="index"
         :target="params.targetRef"
-        :ticketId="ticket.ticketId"
+        :ticket="ticket"
         :fitGridY="CONFIG.grid15min"
       >{{ticket.title}}</DraggableTicket>
     </DragTarget>
@@ -23,15 +23,13 @@
 import { CONFIG_SCHEDULER } from "@/statics/config";
 import DragTarget from "../draggable/DragTarget";
 import DraggableTicket from "../draggable/DraggableTicket";
+import { dragStore } from "../DragStore";
+
 export default {
   data: () => {
       return {
         CONFIG: CONFIG_SCHEDULER,
-        TICKETS:[
-          {ticketId:90000,title:"設計", color:"#ffff00"},
-          {ticketId:90001,title:"資料作成", color:"#ff8800"},
-          {ticketId:90002,title:"調書作成", color:"#ff0000"}
-        ]
+        TICKETS:dragStore.getTags()
       };
     },
   components:{

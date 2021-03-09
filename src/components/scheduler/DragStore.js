@@ -1,6 +1,12 @@
 import { hitArea } from "./util/hitArea";
 import { apiConnect } from "./util/apiConnect";
 
+const TAGS = [
+  { ticketId: 90000, title: "設計", color: "#ffff00" },
+  { ticketId: 90001, title: "資料作成", color: "#ff8800" },
+  { ticketId: 90002, title: "調書作成", color: "#ff0000" },
+];
+
 const _dragStore = () => {
   let callbacks = [];
 
@@ -109,13 +115,15 @@ const _dragStore = () => {
     return hits[0];
   };
 
-  const addNew = async ({ date, startTime, endTime, type_id }) => {
+  const addNew = async ({ date, startTime, endTime, type_id, tag_id }) => {
+    console.log("AddNew = ", tag_id);
     //Firebaseに新規追加
     const result = await apiConnect.setItem({
       date,
       startTime,
       endTime,
       type_id,
+      tag_id,
     });
     if (result) {
       //新規追加
@@ -125,6 +133,7 @@ const _dragStore = () => {
         startTime,
         endTime,
         type_id,
+        tag_id,
       });
     }
   };
@@ -138,18 +147,34 @@ const _dragStore = () => {
     }
   };
 
-  const updateItem = async ({ itemId, date, startTime, endTime, type_id }) => {
+  const updateItem = async ({
+    itemId,
+    date,
+    startTime,
+    endTime,
+    type_id,
+    tag_id,
+  }) => {
     return await apiConnect.updateItem({
       itemId,
       date,
       startTime,
       endTime,
       type_id,
+      tag_id,
     });
   };
 
   //ターゲットに追加
-  const putOnTarget = async ({ itemId, date, startTime, endTime, type_id }) => {
+  const putOnTarget = async ({
+    itemId,
+    date,
+    startTime,
+    endTime,
+    type_id,
+    tag_id,
+  }) => {
+    console.log("------- putOnTarget", tag_id);
     //検索
     const find = targetsItemIds[`${date}`].find((item) => {
       return item === itemId;
@@ -187,6 +212,7 @@ const _dragStore = () => {
         endTime,
         date,
         type_id,
+        tag_id,
       });
     } else {
       //あれば更新
@@ -196,7 +222,8 @@ const _dragStore = () => {
         result.date !== date ||
         result.startTime !== startTime ||
         result.endTime !== endTime ||
-        result.type_id !== type_id
+        result.type_id !== type_id ||
+        result.tag_id !== tag_id
       ) {
         const result = await updateItem({
           itemId,
@@ -204,6 +231,7 @@ const _dragStore = () => {
           startTime,
           endTime,
           type_id,
+          tag_id,
         });
         if (result) {
           allItems = allItems.map((item) => {
@@ -214,6 +242,7 @@ const _dragStore = () => {
                   endTime,
                   date,
                   type_id,
+                  tag_id,
                 }
               : item;
           });
@@ -264,6 +293,11 @@ const _dragStore = () => {
     });
   };
 
+  //TODO 最終的にapiから取得する
+  const getTags = () => {
+    return TAGS;
+  };
+
   return {
     setTarget,
     setAllItems,
@@ -277,6 +311,7 @@ const _dragStore = () => {
     addNew,
     deleteItem,
     resetTargets,
+    getTags,
   };
 };
 

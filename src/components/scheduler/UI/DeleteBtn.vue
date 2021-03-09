@@ -13,7 +13,7 @@
     methods: {
       onclick(e) {
         e.stopPropagation();
-        this.$emit("onDelete");
+        this.$emit("onDelete",e);
       },
     },
   };

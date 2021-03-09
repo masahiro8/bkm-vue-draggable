@@ -1,7 +1,9 @@
 <template>
   <PageFrame>
     <template v-slot:pageHeader> Global Header </template>
-    <template v-slot:pageBodySide> Side Menu </template>
+    <template v-slot:pageBodySide>
+      <ScheduleMenu />
+    </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
         @updateDate="updateDate"
@@ -23,6 +25,7 @@
   import { CONFIG_SCHEDULER,CONFIG_TYPE_IDS } from "../statics/config";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
+  import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";
 
   export default {
     data: () => {
@@ -39,6 +42,7 @@
       PageFrame,
       SchedulerWeek,
       CalenderHeader,
+      ScheduleMenu
     },
     async mounted() {
       //日付をロード

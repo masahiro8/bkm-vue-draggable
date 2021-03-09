@@ -71,7 +71,8 @@ export default {
 <style lang="scss" scoped>
 @import "./ui.scss";
 .item {
-  background-color: $item-background-color;
+  // background-color: $item-background-color;
+  background-color: transparent;
   height: 100%;
   border-radius: 4px;
   &.isMoving {

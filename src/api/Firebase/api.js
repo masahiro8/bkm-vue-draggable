@@ -7,13 +7,12 @@ import { DAY_OF_WEEK } from "./statics";
 
 function initFirebase() {
   const firebaseConfig = {
-    apiKey: "AIzaSyAHFgp5NbVzb9X38XShElfc9OT1xPGtDOs",
-    authDomain: "mahou-c71dd.firebaseapp.com",
-    projectId: "mahou-c71dd",
-    storageBucket: "mahou-c71dd.appspot.com",
-    messagingSenderId: "681706806651",
-    appId: "1:681706806651:web:bff86251c25e98d36871de",
-    measurementId: "G-WYGVNV114R",
+    apiKey: "AIzaSyBAJSp0ezkRg8wlVnu66y5jiTBDaFuPW4o",
+    authDomain: "kts-workflow.firebaseapp.com",
+    projectId: "kts-workflow",
+    storageBucket: "kts-workflow.appspot.com",
+    messagingSenderId: "130531488837",
+    appId: "1:130531488837:web:bf07c5032350d9d0ec9f2c",
   };
   if (firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
