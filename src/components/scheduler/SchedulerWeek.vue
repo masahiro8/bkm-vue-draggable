@@ -2,7 +2,11 @@
   <ScheduleLayout>
     <!-- スケジュールヘッダー -->
     <template v-slot:headerLabel>
-      <ScheduleHeader :config="config" :week="week" />
+      <ScheduleHeader
+        :config="config"
+        :config_reserve_type_ids="config_reserve_type_ids"
+        :week="week" 
+      />
     </template>
     <!-- スケジュールラベル -->
     <template v-slot:bodyLabel>

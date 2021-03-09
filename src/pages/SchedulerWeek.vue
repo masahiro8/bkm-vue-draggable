@@ -2,26 +2,7 @@
   <PageFrame>
     <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide>
-      <DragTarget
-        ref="TicketTarget"
-        :type_id="9999"
-        :fit0="{ x: true, y: false }"
-        :limit="{ vertical: true, horizontal: false }"
-        :isClickToAdd="false"
-        v-slot="{ params }"
-      >
-        <DraggableTicket
-          :target="params.targetRef"
-          :itemId="9999"
-          :type_id="9999"
-          :date="null"
-          :isTargetDetect="true"
-          :fixHorizontal="false"
-          :fixVertical="false"
-          :fitGridX="1"
-          :fitGridY="config.grid15min"
-        >TICKET</DraggableTicket>
-      </DragTarget>
+      <ScheduleMenu />
     </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
@@ -29,7 +10,13 @@
         :today="todayObject"
         :numbersOfDays="7"
       />
-      <SchedulerWeek :config="config" :config_reserve_type_ids="config_reserve_type_ids" :week="weekArray" />
+      <div class="week__main">
+        <SchedulerWeek
+          :config="config"
+          :config_reserve_type_ids="config_reserve_type_ids"
+          :week="weekArray"
+        />
+      </div>
     </template>
   </PageFrame>
 </template>
@@ -45,9 +32,7 @@
   import { CONFIG_SCHEDULER,CONFIG_TYPE_IDS } from "../statics/config";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
-
-  import DragTarget from "../components/scheduler/draggable/DragTarget";
-  import DraggableTicket from "../components/scheduler/draggable/DraggableTicket";
+  import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";
 
   export default {
     data: () => {
@@ -64,8 +49,7 @@
       PageFrame,
       SchedulerWeek,
       CalenderHeader,
-      DragTarget,
-      DraggableTicket
+      ScheduleMenu,
     },
     async mounted() {
       //日付をロード
@@ -110,4 +94,9 @@
     },
   };
 </script>
-<style lang="scss"></style>
+<style lang="scss" scoped>
+  .week__main{
+    width:100%;
+    overflow-x: auto;
+  }
+</style>

@@ -6,7 +6,7 @@
         class="headerLabel--label"
         v-for="(date, index) in week"
         :key="index"
-        :style="'min-width:' + config.targetWidth + 'px;'"
+        :style="'min-width:' + (config.targetWidth * config_reserve_type_ids.length) + 'px;'"
       >
         <ScheduleLabel :label="getLabel(date)" />
       </div>
@@ -23,6 +23,9 @@
     props: {
       config: {
         type: Object,
+      },
+      config_reserve_type_ids:{
+        type: Array,
       },
       week: {
         type: Array,
@@ -45,7 +48,6 @@
   }
   .headerLabel--labels {
     display: flex;
-    width: 100%;
   }
   .headerLabel--label {
     flex: 1;

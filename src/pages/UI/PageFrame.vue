@@ -27,6 +27,8 @@ export default {};
   width: 180px;
 }
 .pageBody--main {
-  flex: 1;
+  position: absolute;
+  left: 180px;
+  width: calc(100% - 180px);
 }
 </style>

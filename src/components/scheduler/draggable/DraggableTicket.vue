@@ -49,20 +49,11 @@
       };
     },
     props: {
-      itemId: {
+      ticketId: {
         type: Number,
       },
-      type_id:{
+      index:{
         type: Number,
-      },
-      date: {
-        type: String,
-        defaultValue: null,
-      },
-      //ターゲット追加をするか
-      isTargetDetect: {
-        type: Boolean,
-        defaultValue: false,
       },
       //x方向の移動を固定
       fixHorizontal: {
@@ -88,10 +79,6 @@
       fit0: {
         type: Object,
         defaultValue: { x: false, y: false },
-      },
-      limit: {
-        type: Object,
-        defaultValue: { vertical: false, horizontal: false },
       },
       target:{
         type: HTMLDivElement
@@ -150,11 +137,10 @@
       },
       getStyle() {
         const { pixel } = this.getStartTime;
-        return `left:${pixel.x}px;top:${pixel.y}px;`;
+        return this.isMove?`left:${pixel.x}px;top:${pixel.y}px;`: `left:${pixel.x}px;`;
       },
 
       //ストアに登録
-      //TODO 挙動があやしい
       thisPutOnTarget(date, type_id) {
         const _startTime = this.getStartTime.time;
         const _endtime = getEndTime({
@@ -211,8 +197,8 @@
         this.reset();
       },
 
+      //nピクセル内側で判定する
       hitInnerArea(e){
-         //2pixel内側で判定する
         const inner_pixel = 6;
         const point = getPointer(e);
         this.rect = this.$refs.self.getBoundingClientRect();
@@ -280,6 +266,7 @@
         }
         this.mousedown = false;
         this.isMove = false;
+        this.isEnter = false;
       },
       mouseEnter(e) {
         e.stopPropagation();
@@ -291,7 +278,11 @@
         // this.isEnter = false;
       },
       mouseLeave() {
-        this.isEnter = false;
+        // mouseLeaveを検知してisEnter = falseにすると、
+        // グリッド固定してチケットを動かしている時、mouseUpのタイミングで
+        // チケット外になっている可能性があるため、falseにはしないで、
+        // mouseUp内で確実にチケットを設置してからfalseにする
+        //this.isEnter = false;
       },
       mouseClick(e) {
         e.stopPropagation();
@@ -321,21 +312,27 @@
   };
 </script>
 <style lang="scss" scoped>
+
+  $height:26px;
+
   .box {
     user-select: none;
     position: absolute;
     width: 128px;
+    height:$height;
     border:1px solid black;
     z-index: 1;
-    &:hover {
-    }
     &.hover{ 
-        cursor: move;
+      cursor: move;
     }
     &.moving{
       color:red;
       border:1px solid red;
-      // position: fixed;
+    }
+    @for $index from 10 through 0 {
+      &:nth-child(#{$index}) {
+        top: $height * $index;
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div clss="scheduler">
     <div ref="header" class="header">
       <div class="headerLabel">
         <slot name="headerLabel"></slot>
@@ -49,20 +49,19 @@
   };
 </script>
 <style lang="scss" scoped>
-  .header {
+  .scheduler{
   }
   .body {
-    display: flex;
-    overflow: scroll;
+    display: inline-flex;
+    overflow-x: visible;
+    overflow-y: scroll;
     position: relative;
   }
   .header {
-    display: flex;
+    display: inline-flex;
     margin-bottom: 8px;
   }
   .headerLabel {
-    display: flex;
-    width: 100%;
     box-shadow: 0 2px 2px rgba(104, 85, 85, 0.2);
   }
   .bodyLabel {
@@ -70,6 +69,5 @@
   }
   .bodyMain {
     display: flex;
-    width: 100%;
   }
 </style>
