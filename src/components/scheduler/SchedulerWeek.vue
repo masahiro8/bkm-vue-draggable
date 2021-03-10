@@ -45,49 +45,50 @@
             <!-- 背景のグリッド線 -->
             <GridFrame :config="config" />
             <!-- スケジュール表示 -->
-            <DraggableItem
-              v-for="itemId in params.lists"
-              :key="itemId"
-              :itemId="itemId"
-              :type_id="type.type_id"
-              :date="date"
-              :isTargetDetect="true"
-              :fixHorizontal="true"
-              :fixVertical="false"
-              :fitGridX="params.grid.x"
-              :fitGridY="params.grid.y"
-              v-slot="{
-                target,
-                position,
-                expand,
-                expandCallback,
-                fitGrid,
-                isMoving,
-                startTime,
-              }"
-            >
-              <!-- スケジュール内の予定 -->
-              <DraggableExpandBox
-                :initialPosition="{
+              <DraggableItem
+                v-for="item in params.lists"
+                :key="item['itemId']"
+                :itemId="item['itemId']"
+                :item="item"
+                :type_id="type.type_id"
+                :date="date"
+                :isTargetDetect="true"
+                :fixHorizontal="true"
+                :fixVertical="false"
+                :fitGridX="params.grid.x"
+                :fitGridY="params.grid.y"
+                v-slot="{
+                  target,
                   position,
                   expand,
+                  expandCallback,
+                  fitGrid,
+                  isMoving,
+                  startTime,
                 }"
-                :target="target"
-                :fitGrid="fitGrid"
-                :isMoving="isMoving"
-                @callback-expand="expandCallback"
-                v-slot="{ expandTime, isDragging }"
               >
-                <!-- アイテム内の表示UI -->
-                <ItemBox
-                  :id="itemId"
+                <!-- スケジュール内の予定 -->
+                <DraggableExpandBox
+                  :initialPosition="{
+                    position,
+                    expand,
+                  }"
+                  :target="target"
+                  :fitGrid="fitGrid"
                   :isMoving="isMoving"
-                  :isDragging="isDragging"
-                  :date="date"
-                  :startTime="startTime"
-                  :expandTime="expandTime"
-                /> </DraggableExpandBox
-            ></DraggableItem>
+                  @callback-expand="expandCallback"
+                  v-slot="{ expandTime, isDragging }"
+                >
+                  <!-- アイテム内の表示UI -->
+                  <ItemBox
+                    :id="item['itemId']"
+                    :isMoving="isMoving"
+                    :isDragging="isDragging"
+                    :date="date"
+                    :startTime="startTime"
+                    :expandTime="expandTime"
+                  /> </DraggableExpandBox
+              ></DraggableItem>
           </DragTarget>
         </TargetFrame>
       </TargetDay>

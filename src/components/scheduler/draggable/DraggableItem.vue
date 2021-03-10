@@ -75,6 +75,9 @@
       type_id:{
         type: Number,
       },
+      item:{
+        type:Object,
+      },
       date: {
         type: String,
         defaultValue: null,
@@ -258,6 +261,8 @@
       getStyle() {
         let style = "";
         if (!this.self) return "";
+
+        //Tagの色を設定
         if(this.tag_id && this.tags) {
           const _tag = this.tags.find( tag => {
             return tag.ticketId === this.tag_id;
@@ -266,8 +271,26 @@
         }else{
           style += `background-color:#888;`;
         }
+
         const { normalized } = this.getStartTime;
         style += `left:${normalized.x}%;top:${normalized.y}%;`;
+
+        //幅を設定
+        if("group_width" in this.item) {
+          const w = this.item.group_width;
+          const l = this.item.group_width * this.item.group_index;
+          style += `width:${w}%;`;
+          //動かしてる時は位置を変更しない
+          if(!this.isMove){
+            style += `left:${l}%`;
+          }
+        }
+
+        //動いてる時
+        if(this.isMove) {
+          style += `z-index:999`;
+        }
+        
         return style;
       },
       initial() {},
@@ -454,9 +477,14 @@
     position: absolute;
     width: 100%;
     z-index: 1;
+    transform:scale(0.94);
+    transition: all .1s ease-in;
+    border-radius:4px;
     
     &:hover {
       cursor: move;
+      transition:none;
+      transform:scale(1.0);
     }
   }
 

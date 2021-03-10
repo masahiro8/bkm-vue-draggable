@@ -48,6 +48,7 @@
   }
   .headerLabel--labels {
     display: flex;
+    flex: 1;
   }
   .headerLabel--label {
     flex: 1;

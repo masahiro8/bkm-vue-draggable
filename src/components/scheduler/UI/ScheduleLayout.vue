@@ -56,18 +56,22 @@
     overflow-x: visible;
     overflow-y: scroll;
     position: relative;
+    min-width:100%;
   }
   .header {
     display: inline-flex;
     margin-bottom: 8px;
+    min-width:100%;
   }
   .headerLabel {
     box-shadow: 0 2px 2px rgba(104, 85, 85, 0.2);
+    flex:1;
   }
   .bodyLabel {
     display: flex;
   }
   .bodyMain {
     display: flex;
+    flex:1;
   }
 </style>

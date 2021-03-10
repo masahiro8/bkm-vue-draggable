@@ -5,15 +5,16 @@
 </template>
 <script>
   import { dragStore } from "../DragStore";
-  import { getTimeFromYpx, roundTo15min } from "../util/timeUtil";
+  import { getTimeFromYpx, roundTo15min, getYpxFromTime } from "../util/timeUtil";
+  import { scheduleTile } from "../util/scheduleTIle";
 
   export default {
     data: () => {
       return {
         flag: false,
         params: {
-          lists: [],
-          listId: null,
+          lists: null,
+          listIds: null,
           lastItem: null,
           targetRef: null
         },
@@ -88,8 +89,35 @@
             return item.date === this.date && item.type_id === this.type_id
           });
 
+          //時間をピクセルに変換
+          const _items = items.map(item=>{
+            let _item = {...item};
+            //時間から座標に変換
+            const start_time = {
+              h: _item.startTime.split(":")[0],
+              m: _item.startTime.split(":")[1],
+            };
+            const end_time = {
+              h: _item.endTime.split(":")[0],
+              m: _item.endTime.split(":")[1],
+            };
+            const _start_time = getYpxFromTime({time:start_time,grid15min: this.grid.y });
+            const _end_time = getYpxFromTime({time:end_time,grid15min: this.grid.y });
+            _item.start = _start_time;
+            _item.end = _end_time;
+            _item.id = item.itemId;
+            return _item;
+          })
+
+          console.log("items " ,[..._items]);
+
+          //時間レイアウトを設定
+          const items_tiled = scheduleTile().sortAll([..._items]);
+          console.log("items_tiled " , [...items_tiled]);
+
           this.params = {
-            lists: items.map((item) => item.itemId),
+            listIds: items_tiled.map((item) => item.itemId),
+            lists: items_tiled,
             grid: this.grid,
             fit0: this.fit0,
             limit: this.limit,
