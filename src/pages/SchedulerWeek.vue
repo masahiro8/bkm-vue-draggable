@@ -29,7 +29,8 @@
     getDateStringFromObject,
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER,CONFIG_TYPE_IDS } from "../statics/config";
+  import { CONFIG_SCHEDULER } from "../components/scheduler/config";
+  import {ScheduleTypes} from "../components/scheduler/store/Schedule";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
   import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";
@@ -38,7 +39,7 @@
     data: () => {
       return {
         config: CONFIG_SCHEDULER,
-        config_reserve_type_ids:CONFIG_TYPE_IDS,
+        config_reserve_type_ids:null,
         gridLines: [],
         lists: [],
         weekArray: [],
@@ -52,6 +53,11 @@
       ScheduleMenu,
     },
     async mounted() {
+      //タイプを取得
+      ScheduleTypes.getCallback(values=>{
+        this.config_reserve_type_ids = values;
+      });
+
       //日付をロード
       const { year, month, day } = this.$route.query;
 

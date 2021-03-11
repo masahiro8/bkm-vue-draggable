@@ -9,7 +9,7 @@ export default {
   props: {
     label: {
       type: String,
-    },
+    }
   },
 };
 </script>
@@ -18,6 +18,7 @@ export default {
 .schedulelabel {
   width: 100%;
   position: relative;
+  transition: all .2s ease-in-out;
   &:before {
     content: "";
     display: block;
@@ -28,30 +29,5 @@ export default {
     width: 1px;
     background-color: $grid-color;
   }
-  /* &:after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 1px;
-    background-color: $grid-color;
-  } */
-}
-.schedulelabel--date,
-.schedulelabel--sub {
-  height: 42px;
-  position: relative;
-  /* &:after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 1px;
-    background-color: $grid-color;
-  } */
 }
 </style>

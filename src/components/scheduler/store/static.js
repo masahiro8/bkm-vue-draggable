@@ -1,0 +1,27 @@
+/*
+  予約属性を定義 TODO:最終的にはapiから取得
+*/
+
+const CONFIG_TYPE_IDS = [
+  { type_id: 100, name: "予定" },
+  { type_id: 101, name: "実績" },
+];
+
+/**
+ * チケット属性
+ */
+const TAGS = [
+  { ticketId: 90000, title: "設計", color: "#eecc00" },
+  { ticketId: 90001, title: "資料作成", color: "#ff8800" },
+  { ticketId: 90002, title: "調書作成", color: "#ff0000" },
+];
+
+/**
+ * スケジュールヘッダーテーブルのラベル
+ */
+const SCHEDULE_HEADER_TABLE_LABELS = [
+  { id: 100, name: "申請" },
+  { id: 101, name: "勤務" },
+];
+
+export { CONFIG_TYPE_IDS, TAGS, SCHEDULE_HEADER_TABLE_LABELS };

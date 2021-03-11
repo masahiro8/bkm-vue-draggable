@@ -6,6 +6,7 @@
         :config="config"
         :config_reserve_type_ids="config_reserve_type_ids"
         :week="week" 
+        :hasTable="true"
       />
     </template>
     <!-- スケジュールラベル -->

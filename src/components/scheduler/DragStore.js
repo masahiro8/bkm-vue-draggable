@@ -1,11 +1,7 @@
 import { hitArea } from "./util/hitArea";
 import { apiConnect } from "./util/apiConnect";
-
-const TAGS = [
-  { ticketId: 90000, title: "設計", color: "#ffff00" },
-  { ticketId: 90001, title: "資料作成", color: "#ff8800" },
-  { ticketId: 90002, title: "調書作成", color: "#ff0000" },
-];
+//Drag & Dropに関連したいデータストア
+import { ScheduleTags } from "./store/Schedule";
 
 const _dragStore = () => {
   let callbacks = [];
@@ -295,7 +291,7 @@ const _dragStore = () => {
 
   //TODO 最終的にapiから取得する
   const getTags = () => {
-    return TAGS;
+    return ScheduleTags.getValues();
   };
 
   return {

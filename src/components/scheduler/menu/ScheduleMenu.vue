@@ -20,7 +20,7 @@
   </div>  
 </template>
 <script>
-import { CONFIG_SCHEDULER } from "@/statics/config";
+import { CONFIG_SCHEDULER } from "../config";
 import DragTarget from "../draggable/DragTarget";
 import DraggableTicket from "../draggable/DraggableTicket";
 import { dragStore } from "../DragStore";

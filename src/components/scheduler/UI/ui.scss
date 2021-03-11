@@ -1,2 +1,19 @@
 $grid-color: #ddd;
-$item-background-color:#f36868;
+$item-background-color: #f36868;
+
+@mixin btn {
+  .btn {
+    height: 36px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    opacity: 0.5;
+    outline: none;
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
+}

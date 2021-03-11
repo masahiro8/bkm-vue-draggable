@@ -480,6 +480,7 @@
     transform:scale(0.94);
     transition: all .1s ease-in;
     border-radius:4px;
+    border:1px solid rgba(255,255,255,.3);
     
     &:hover {
       cursor: move;
