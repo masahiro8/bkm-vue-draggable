@@ -21,9 +21,13 @@
         <div v-if="hasTable">
           <ScheduleHeaderTable :isTableOpen="isTableOpen">
             <!-- 申請 -->
-            <template v-slot:cell1></template>
+            <template v-slot:cell1>
+              <!-- コンポーネントを作って、propsを渡す -->
+            </template>
             <!-- 実績 -->
-            <template v-slot:cell2></template>
+            <template v-slot:cell2>
+              <!-- コンポーネントを作って、propsを渡す -->
+            </template>
           </ScheduleHeaderTable>
         </div>
       </div>

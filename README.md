@@ -22,8 +22,12 @@ src/components/scheduler
 /components/scheduler/UI/ -> デザイン・レイアウトのコンポーネント
 /components/scheduler/draggable/ -> ドラッグ&ドロップと移動の実装部
 /components/scheduler/expand/ -> ドラッグでスケジュール伸縮の実装部
-/components/scheduler/util/ -> 時間変換、api接続などの関数
+/components/scheduler/util/ -> 時間変換、などの関数
+/components/scheduler/util/apiConnect.js -> api接続
+/components/scheduler/store/ ->　Drag&Dropと関係しないスケジューラー情報をラップしてコールバックで返す
 /components/scheduler/assets/ ->　アイコンファイル
+/components/scheduler/config.js -> テーブル設定ファイル - レイアウトなどの調整
+/components/scheduler/statics/ -> キー名やラベルの設定
 /components/scheduler/DragStore.js -> vuex的なストア関数
 /components/scheduler/CalenderHeader.vue
 /components/scheduler/ScheduleHeader.vue
@@ -66,4 +70,3 @@ node updateapi.js
   </DraggableItem>
 </DragTarget>
 ```
-

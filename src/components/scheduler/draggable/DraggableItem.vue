@@ -267,7 +267,11 @@
           const _tag = this.tags.find( tag => {
             return tag.ticketId === this.tag_id;
           })
-          style += `background-color:${_tag.color};`;
+          if(_tag){
+            style += `background-color:${_tag.color};`;
+          } else {
+            style += `background-color:#888;`;
+          }
         }else{
           style += `background-color:#888;`;
         }

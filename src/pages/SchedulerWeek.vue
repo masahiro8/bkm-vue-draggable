@@ -30,7 +30,7 @@
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
   import { CONFIG_SCHEDULER } from "../components/scheduler/config";
-  import {ScheduleTypes} from "../components/scheduler/store/Schedule";
+  import {ScheduleTypes} from "../components/scheduler/store/ScheduleStore";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
   import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";

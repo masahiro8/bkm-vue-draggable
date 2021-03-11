@@ -2,7 +2,7 @@
   予約属性を定義 TODO:最終的にはapiから取得
 */
 
-const CONFIG_TYPE_IDS = [
+const TYPES = [
   { type_id: 100, name: "予定" },
   { type_id: 101, name: "実績" },
 ];
@@ -24,4 +24,4 @@ const SCHEDULE_HEADER_TABLE_LABELS = [
   { id: 101, name: "勤務" },
 ];
 
-export { CONFIG_TYPE_IDS, TAGS, SCHEDULE_HEADER_TABLE_LABELS };
+export { TYPES, TAGS, SCHEDULE_HEADER_TABLE_LABELS };

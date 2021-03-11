@@ -1,7 +1,7 @@
 import { hitArea } from "./util/hitArea";
 import { apiConnect } from "./util/apiConnect";
 //Drag & Dropに関連したいデータストア
-import { ScheduleTags } from "./store/Schedule";
+import { ScheduleTags } from "./store/ScheduleStore";
 
 const _dragStore = () => {
   let callbacks = [];
