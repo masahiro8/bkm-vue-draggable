@@ -112,7 +112,6 @@ const _dragStore = () => {
   };
 
   const addNew = async ({ date, startTime, endTime, type_id, tag_id }) => {
-    console.log("AddNew = ", tag_id);
     //Firebaseに新規追加
     const result = await apiConnect.setItem({
       date,
@@ -170,7 +169,6 @@ const _dragStore = () => {
     type_id,
     tag_id,
   }) => {
-    console.log("------- putOnTarget", tag_id);
     //検索
     const find = targetsItemIds[`${date}`].find((item) => {
       return item === itemId;

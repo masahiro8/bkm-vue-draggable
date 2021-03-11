@@ -66,6 +66,9 @@
       hasTable: {
         type:Boolean,
         defaultValue:false
+      },
+      onchange:{
+        type:Function
       }
     },
     methods: {
@@ -77,6 +80,7 @@
         return `${label.dd}(${label.dayofweek})`;
       },
       toggleTable(v){
+        this.$emit("onChange", v);
         this.isTableOpen = v;
       }
     },

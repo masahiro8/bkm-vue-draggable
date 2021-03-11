@@ -109,11 +109,8 @@
             return _item;
           })
 
-          console.log("items " ,[..._items]);
-
           //時間レイアウトを設定
           const items_tiled = scheduleTile().sortAll([..._items]);
-          console.log("items_tiled " , [...items_tiled]);
 
           this.params = {
             listIds: items_tiled.map((item) => item.itemId),

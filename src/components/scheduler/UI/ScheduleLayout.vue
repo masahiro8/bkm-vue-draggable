@@ -2,7 +2,7 @@
   <div clss="scheduler">
     <div ref="header" class="header">
       <div class="headerLabel">
-        <slot name="headerLabel"></slot>
+        <slot name="headerLabel" :onchange="onChange" ></slot>
       </div>
     </div>
     <div ref="body" class="body" :style="getScrollStyle">
@@ -35,6 +35,11 @@
       },
     },
     methods: {
+      onChange(){
+        setTimeout(()=>{
+          this.windowSizeChange();
+        },200);
+      },
       windowSizeChange() {
         const headerrect = this.$refs.header.getBoundingClientRect();
         this.bodyRect = {
@@ -57,6 +62,7 @@
     overflow-y: scroll;
     position: relative;
     min-width:100%;
+    transition: height .1s ease-out;
   }
   .header {
     display: inline-flex;

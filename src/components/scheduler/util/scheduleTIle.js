@@ -20,7 +20,6 @@ export const scheduleTile = () => {
       if (a[key] > b[key]) return 1;
       return 0;
     });
-    console.log(_list);
     return _list;
   };
 
@@ -85,8 +84,7 @@ export const scheduleTile = () => {
     _list = sortedList([..._list], "start");
     //2.最初に登場するアイテムと時間がかぶるアイテムをグループ化
     const result = getGroups(_list);
-    console.log(result);
-    return _list;
+    return result;
   };
 
   return {

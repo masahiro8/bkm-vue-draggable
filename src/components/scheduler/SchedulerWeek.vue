@@ -1,12 +1,13 @@
 <template>
   <ScheduleLayout>
     <!-- スケジュールヘッダー -->
-    <template v-slot:headerLabel>
+    <template #headerLabel="{ onchange }">
       <ScheduleHeader
         :config="config"
         :config_reserve_type_ids="config_reserve_type_ids"
         :week="week" 
         :hasTable="true"
+        @onChange="onchange"
       />
     </template>
     <!-- スケジュールラベル -->
@@ -115,6 +116,7 @@
     data: () => {
       return {
         gridLines: [],
+        resizeHeader:false,
       };
     },
     props: {
