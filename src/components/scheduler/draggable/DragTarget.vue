@@ -51,6 +51,11 @@
         type: Boolean,
         default: true,
       },
+      //ドロップできるか
+      isDropTarget:{
+        type: Boolean,
+        default: true,
+      }
     },
     mounted() {
       this.init();
@@ -147,6 +152,7 @@
           date: this.date,
           type_id: this.type_id,
           ref: this.$refs.self,
+          isDropTarget:this.isDropTarget
         });
       },
 

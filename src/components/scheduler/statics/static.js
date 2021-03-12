@@ -3,8 +3,8 @@
 */
 
 const TYPES = [
-  { type_id: 100, name: "予定" },
-  { type_id: 101, name: "実績" },
+  { type_id: 100, name: "予定", isDropTarget: false },
+  { type_id: 101, name: "実績", isDropTarget: true },
 ];
 
 /**

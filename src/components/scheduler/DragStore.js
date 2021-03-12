@@ -20,7 +20,7 @@ const _dragStore = () => {
   //全てのアイテム
   let allItems = [];
 
-  const setTarget = ({ date, ref, type_id }) => {
+  const setTarget = ({ date, ref, type_id, isDropTarget }) => {
     const find = targets.find((t) => {
       return t.date === date && t.type_id === type_id;
     });
@@ -30,6 +30,7 @@ const _dragStore = () => {
         date,
         type_id,
         ref: ref,
+        isDropTarget,
       });
       targetsItemIds[`${date}`] = [];
     } else {
@@ -40,6 +41,7 @@ const _dragStore = () => {
             date,
             type_id,
             ref: ref,
+            isDropTarget,
           };
         } else {
           return target;
@@ -99,25 +101,27 @@ const _dragStore = () => {
   };
 
   const hitTarget = (itemRect) => {
-    const hits = targets.filter((tgt) => {
-      //エリア
-      const rect = tgt.ref.getBoundingClientRect();
-      //点がエリアに入っているか判定
-      return hitArea(
-        //点
-        {
-          x: itemRect.x + itemRect.width / 2,
-          y: itemRect.y + itemRect.height / 2,
-        },
+    const hits = targets
+      .filter((tgt) => tgt.isDropTarget == true)
+      .filter((tgt) => {
         //エリア
-        {
-          x: rect.x,
-          y: rect.y,
-          width: rect.width,
-          height: rect.height,
-        }
-      );
-    });
+        const rect = tgt.ref.getBoundingClientRect();
+        //点がエリアに入っているか判定
+        return hitArea(
+          //点
+          {
+            x: itemRect.x + itemRect.width / 2,
+            y: itemRect.y + itemRect.height / 2,
+          },
+          //エリア
+          {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+          }
+        );
+      });
     return hits[0];
   };
 

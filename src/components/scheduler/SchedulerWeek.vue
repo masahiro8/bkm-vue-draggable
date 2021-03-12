@@ -44,6 +44,7 @@
             :limit="{ vertical: true, horizontal: false }"
             :style="getStyle"
             :isClickToAdd="config.isClickToAdd"
+            :isDropTarget="type.isDropTarget"
             v-slot="{ params }"
           >
             <!-- フレーム内の後ろに表示 -->

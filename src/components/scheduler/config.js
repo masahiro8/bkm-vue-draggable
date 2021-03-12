@@ -3,7 +3,7 @@ let _CONFIG_SCHEDULER = {
   targetWidth: 86, //幅ピクセル
   gideWidth: 32, //時間ガイドの幅
   grid15min: 16, //15分ごとのグリッドのピクセル数
-  isClickToAdd: true, //クリックして新規予定の作成
+  isClickToAdd: false, //クリックして新規予定の作成
 };
 
 //内部の高さを計算しておく
