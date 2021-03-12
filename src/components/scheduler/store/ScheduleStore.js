@@ -1,4 +1,5 @@
 import { Observer } from "../util/observer";
+import { ObserverKeyValue } from "../util/observerKeyValue";
 import { TYPES, TAGS } from "../statics/static";
 
 /**
@@ -31,4 +32,9 @@ ScheduleTypes.init();
  */
 const ScheduleHeaderTableData = Observer();
 
-export { ScheduleTags, ScheduleTypes, ScheduleHeaderTableData };
+/**
+ * Bodyのスクロールを返す
+ */
+const UIObserver = ObserverKeyValue();
+
+export { ScheduleTags, ScheduleTypes, ScheduleHeaderTableData, UIObserver };

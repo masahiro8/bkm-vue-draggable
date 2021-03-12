@@ -83,6 +83,15 @@
       },
       target:{
         type: HTMLDivElement
+      },
+      //スケジューラーのスクロール量
+      bodyScroll:{
+        type: Number,
+        defaultValue: 0
+      },
+      //ヘッダーのRect
+      headerRect:{
+        type:Object
       }
     },
     mounted() {
@@ -252,15 +261,23 @@
         const point = getPointer(e);
 
         if (this.isMove && this.isEnter) {
+
+          console.log("headerrect", this.headerRect.top ,this.headerRect.height );
+
           //位置を補正
+          // const targetRect = {...this.targetRect};
+          // targetRect.y = targetRect.y - this.headerRect.height;
+
           const localPoint = convertToLocalPoint(
             point,
             this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
           );
+
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : localPoint.x,
-            y: this.fixVertical ? 0 : localPoint.y,
+            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.height,
           };
+
           this.mousepoint_margin = {
             x: this.fixHorizontal ? 0 : this.mousepoint_margin.x,
             y: this.fixVertical ? 0 : this.mousepoint_margin.y,

@@ -27,7 +27,7 @@ export const scheduleTile = () => {
     const group = list.filter((element) => {
       //自分と同じか後に開始して、かつ
       //相手の開始が自分の終了より前
-      return element.start >= me.start && me.start + me.end >= element.start;
+      return element.start >= me.start && me.end >= element.start;
     });
     return [me, ...group];
   };

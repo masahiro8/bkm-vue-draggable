@@ -40,6 +40,7 @@
   import ScheduleHeaderTableLabel from "./UI/ScheduleHeader/ScheduleHeaderTableLabel";
   import { getLangDateFromDateFormat } from "./util/timeUtil";
   import ToggleBtn from "./UI/ToggleBtn";
+  import {UIObserver} from "./store/ScheduleStore";
 
   export default {
     data:()=>{
@@ -82,6 +83,7 @@
       toggleTable(v){
         this.$emit("onChange", v);
         this.isTableOpen = v;
+        UIObserver.putValue("isHeaderTableOpen",v);
       }
     },
   };

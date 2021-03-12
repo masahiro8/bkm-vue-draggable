@@ -15,6 +15,9 @@
         :target="params.targetRef"
         :ticket="ticket"
         :fitGridY="CONFIG.grid15min"
+        :bodyScroll="bodyScroll"
+        :isHeaderTableOpen="isHeaderTableOpen"
+        :headerRect="headerRect"
       >{{ticket.title}}</DraggableTicket>
     </DragTarget>
   </div>  
@@ -35,6 +38,18 @@ export default {
   components:{
     DragTarget,
     DraggableTicket
+  },
+  props:{
+    bodyScroll:{
+      type:Number,
+      defaultValue: 0
+    },
+    isHeaderTableOpen:{
+      type:Boolean
+    },
+    headerRect:{
+      type:Object
+    }
   }
 }
 </script>

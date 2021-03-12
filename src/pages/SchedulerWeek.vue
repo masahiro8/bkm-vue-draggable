@@ -2,7 +2,7 @@
   <PageFrame>
     <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide>
-      <ScheduleMenu />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" />
     </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
@@ -15,6 +15,8 @@
           :config="config"
           :config_reserve_type_ids="config_reserve_type_ids"
           :week="weekArray"
+          :bodyScroll="bodyScroll"
+          :isHeaderTableOpen="isHeaderTableOpen"
         />
       </div>
     </template>
@@ -34,6 +36,7 @@
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
   import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";
+  import { UIObserver } from "../components/scheduler/store/ScheduleStore";
 
   export default {
     data: () => {
@@ -44,6 +47,9 @@
         lists: [],
         weekArray: [],
         todayObject: {},
+        bodyScroll:0,
+        isHeaderTableOpen: true,
+        headerRect:{}
       };
     },
     components: {
@@ -69,6 +75,13 @@
       this.loadData(today);
 
       this.setBodyOverflowHidden(true);
+
+      //スクロール取得
+      UIObserver.getCallback((value)=>{
+        this.bodyScroll = value["bodyScroll"];
+        this.isHeaderTableOpen = value["isHeaderTableOpen"];
+        this.headerRect = value["headerRect"];
+      })
     },
     destroyed() {
       this.setBodyOverflowHidden(true);

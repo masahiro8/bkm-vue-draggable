@@ -3,22 +3,22 @@
     :innerHeight="getInnerHeight"
   >
     <!-- スケジュールヘッダー -->
-    <template #headerLabel="{ onchange }">
+    <template #headerLabel="{ onChangeLayout }">
       <ScheduleHeader
         :config="config"
         :config_reserve_type_ids="config_reserve_type_ids"
         :week="week" 
         :hasTable="true"
-        @onChange="onchange"
+        @onChange="onChangeLayout"
       />
     </template>
     <!-- スケジュールラベル -->
-    <template v-slot:bodyLabel>
+    <template #bodyLabel>
       <!-- 時間表示 -->
       <GuideFrame :config="config" />
     </template>
     <!-- スケジュール表 -->
-    <template v-slot:bodyMain>
+    <template #bodyMain>
       <!-- 曜日ごと＆属性ごとのデータに分類 -->
       <TargetDay
         v-for="(date, index) in week"
