@@ -1,5 +1,7 @@
 <template>
-  <ScheduleLayout>
+  <ScheduleLayout
+    :innerHeight="getInnerHeight"
+  >
     <!-- スケジュールヘッダー -->
     <template #headerLabel="{ onchange }">
       <ScheduleHeader
@@ -23,12 +25,14 @@
         :key="index"
         :date="date"
         :config_reserve_type_ids="config_reserve_type_ids"
+        :innerHeight="getInnerHeight"
       >
         <!-- 属性ごとのテーブルを作成 -->
         <TargetFrame
           v-for="(type,frame_index) in config_reserve_type_ids"
           :key="frame_index"
           :type="type"
+          :innerHeight="getInnerHeight"
         >
           <DragTarget
             :date="date"
@@ -110,6 +114,7 @@
   import GuideFrame from "./UI/GuideFrame";
   import ScheduleLayout from "./UI/ScheduleLayout";
   import ScheduleHeader from "./ScheduleHeader";
+  import { CONFIG_SCHEDULER } from "./config";
 
   export default {
     name: "Scheduler",
@@ -148,6 +153,9 @@
         const height = this.config.hour * this.config.grid15min * 4;
         return `min-width:${this.config.targetWidth}px;height:${height}px;`;
       },
+      getInnerHeight() {
+        return CONFIG_SCHEDULER.innerHeight;
+      }
     },
   };
 </script>

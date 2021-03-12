@@ -5,7 +5,7 @@
 </template>
 <script>
   import { dragStore } from "../DragStore";
-  import { getTimeFromYpx, roundTo15min, getYpxFromTime } from "../util/timeUtil";
+  import { getTimeFromYpx, roundTo15min, getYpxFromTime,getYesturday,getMinFromTimeStr } from "../util/timeUtil";
   import { scheduleTile } from "../util/scheduleTIle";
 
   export default {
@@ -14,7 +14,6 @@
         flag: false,
         params: {
           lists: null,
-          listIds: null,
           lastItem: null,
           targetRef: null
         },
@@ -75,22 +74,41 @@
     },
     computed: {
       getStyle() {
-        const height = this.config.hour * this.config.grid15min * 4;
+        const height = this.config.innerHeight;
         return `min-width:${this.config.targetWidth}px;height:${height}px;`;
-        // return `height:${height}px;`;
       },
     },
     methods: {
       init() {
         this.params.targetRef = this.$refs.self;
         dragStore.setCallback(({ allItems }) => {
-          const items = allItems.filter((item) => {
-            // console.log("init",item);
+          
+          //日付とタイプで絞り込み
+          let refined = allItems.filter((item) => {
             return item.date === this.date && item.type_id === this.type_id
           });
 
+          //前日の日跨ぎをチェック
+          const yesturday = getYesturday(this.date);
+
+          //日跨ぎしている予約を取得
+          const overItems = allItems.filter((item) => {
+            const endMin = getMinFromTimeStr(item.endTime);
+            const h24Min = getMinFromTimeStr("24:00");
+            return item.date === yesturday && item.type_id === this.type_id && endMin > h24Min
+          });
+          // if ( overItems.length ) console.log("OverTime ", this.date, overItems);
+          
+          //日跨ぎの予約をゴーストとして追加
+          refined = [...refined, ...overItems.map(item => {
+            const _item = {...item};
+            _item.overDay = true;//日跨ぎフラグ
+            _item.date = this.date;
+            return _item;
+          })];
+
           //時間をピクセルに変換
-          const _items = items.map(item=>{
+          const _items = refined.map(item=>{
             let _item = {...item};
             //時間から座標に変換
             const start_time = {
@@ -101,6 +119,7 @@
               h: _item.endTime.split(":")[0],
               m: _item.endTime.split(":")[1],
             };
+            //タイルを作成するために時間からピクセルに変換して保持
             const _start_time = getYpxFromTime({time:start_time,grid15min: this.grid.y });
             const _end_time = getYpxFromTime({time:end_time,grid15min: this.grid.y });
             _item.start = _start_time;
@@ -113,7 +132,6 @@
           const items_tiled = scheduleTile().sortAll([..._items]);
 
           this.params = {
-            listIds: items_tiled.map((item) => item.itemId),
             lists: items_tiled,
             grid: this.grid,
             fit0: this.fit0,

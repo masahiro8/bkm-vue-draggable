@@ -9,19 +9,26 @@
       <div class="bodyLabel">
         <slot name="bodyLabel"></slot>
       </div>
-      <div class="bodyMain">
+      <div class="bodyMain" :style="getInnerStyle">
         <slot name="bodyMain"></slot>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { CONFIG_SCHEDULER } from "../config";
   export default {
     data: () => {
       return {
         bodyRect: {},
         scrollMarginBottom: 16,
       };
+    },
+    props:{
+      innerHeight:{
+        type:Number,
+        defaultValue: CONFIG_SCHEDULER.innerHeight
+      }
     },
     mounted() {
       window.addEventListener("resize", () => {
@@ -33,6 +40,9 @@
       getScrollStyle() {
         return `top:${-4}px;height:${this.bodyRect.height}px`;
       },
+      getInnerStyle(){
+        return `height:${this.innerHeight}px`;
+      }
     },
     methods: {
       onChange(){
@@ -79,5 +89,6 @@
   .bodyMain {
     display: flex;
     flex:1;
+    overflow: hidden;
   }
 </style>

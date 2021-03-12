@@ -15,9 +15,20 @@
   </div>
 </template>
 <script>
+/**
+ * 
+ * props.item.overDay が日跨ぎのフラグで翌日の場合にtrue
+ * 自分が日跨ぎの翌日の場合は、便宜上”goast”としている
+ */
   import { hitArea } from "../util/hitArea";
   import { dragStore } from "../DragStore";
-  import { getTimeFromYpx, getEndTime, getYpxFromTime } from "../util/timeUtil";
+  import {
+    getTimeFromYpx,
+    getEndTime,
+    getYpxFromTime,
+    getRangeFromStartEnd,
+    getTimeObjectFromString
+  } from "../util/timeUtil";
   import DeleteBtn from "../UI/DeleteBtn";
 
   //ポインター位置を返すラッパー
@@ -124,71 +135,11 @@
       //idが無い場合はdragStoreに登録
       this.id = this.itemId;
 
-      //自分を取得
-      const self = dragStore.getItemById(this.id);
-
       //新規ドロップの検知
-      const target = dragStore.getSelfTarget({ itemId: this.id, type_id:this.type_id });
-
-      const targetRect = target ? target.ref.getBoundingClientRect() : null;
-      if (targetRect) {
-        let rect = this.$refs.self.getBoundingClientRect();
-        const target_margin = {
-          x: rect.x - targetRect.x,
-          y: rect.y - targetRect.y,
-        };
-        this.target = target.ref;
-        this.target_margin = target_margin;
-        this.mousepoint_margin = { x: 0, y: 0 };
-        this.tag_id = self.tag_id;
-
-        //時間から座標に変換
-        const time = {
-          h: self.startTime.split(":")[0],
-          m: self.startTime.split(":")[1],
-        };
-
-        //時間から座標に変換
-        const localPosition = {
-          x: 0,
-          y: getYpxFromTime({ time: time, grid15min: this.fitGridY }),
-        };
-        // let movingpoint = { ...self.localPosition };//座標をそのまま取得
-        let movingpoint = { ...localPosition };
-
-        //時間から座標に変換
-        const endtime = {
-          h: self.endTime.split(":")[0],
-          m: self.endTime.split(":")[1],
-        };
-
-        const expandPosition = {
-          x: 0,
-          y:
-            getYpxFromTime({
-              time: endtime,
-              grid15min: this.fitGridY,
-            }) - localPosition.y,
-        };
-
-        //固定補正
-        this.movingpoint = {
-          x: this.fixHorizontal ? 0 : movingpoint.x,
-          y: this.fixVertical ? 0 : movingpoint.y,
-        };
-        //expandから経過時間を設定
-        this.params = {
-          target: target.ref,
-          position: this.movingpoint,
-          expand: expandPosition,
-          startTime: this.getStartTime.time,
-          fitGrid: {
-            x: this.fitGridX,
-            y: this.fitGridY,
-          },
-        };
-
-        this.tags = dragStore.getTags();
+      if(!this.item.overDay) {
+        this.initMainUnit();
+      }else {
+        this.initGoastUnit();
       }
 
       this.$watch(
@@ -200,6 +151,23 @@
           this.params = params;
         }
       );
+
+      //ゴーストを監視
+      this.$watch(
+        () => [this.item],
+        (newValue, oldValue) => {
+          const n = JSON.stringify(newValue);
+          const o = JSON.stringify(oldValue);
+          if("overDay" in this.item && n != o) {
+            console.log("Updated Main Unit !!!!");
+            this.initGoastUnit();
+          }
+        },
+        {
+          immediate: true,
+          deep: true
+        }
+      )
     },
     beforeDestroy() {
       this.removeDragEvent();
@@ -242,6 +210,116 @@
       },
     },
     methods: {
+      //本体初期化
+      initMainUnit(){
+        const target = dragStore.getSelfTarget({
+          itemId: this.id,
+          type_id:this.type_id
+        });
+        //配置位置を決定
+        const targetRect = target ? target.ref.getBoundingClientRect() : null;
+        if (targetRect) {
+          this.setInitialPosition({target,targetRect,overDay:false});
+        }
+      },
+      //ゴースト初期化
+      initGoastUnit(){
+        const target = dragStore.getGoastTarget({
+          type_id:this.type_id,
+          date:this.date
+        });
+        // console.log("--------OverDay",this.date,this.item.overDay,target);
+        //配置位置を決定
+        const targetRect = target ? target.ref.getBoundingClientRect() : null;
+        if (targetRect) {
+          this.setInitialPosition({target,targetRect,overDay:true});
+        }
+
+      },
+      //初期化時の座標計算と設置
+      setInitialPosition({target,targetRect,overDay}){
+        //自分を取得
+        const self = dragStore.getItemById(this.id);
+        let rect = this.$refs.self.getBoundingClientRect();
+        const target_margin = {
+          x: rect.x - targetRect.x,
+          y: rect.y - targetRect.y,
+        };
+        this.target = target.ref;
+        this.target_margin = target_margin;
+        this.mousepoint_margin = { x: 0, y: 0 };
+        this.tag_id = self.tag_id;
+
+        //時間から座標に変換
+        const time = {
+          h: self.startTime.split(":")[0],
+          m: self.startTime.split(":")[1],
+        };
+
+        //時間から座標に変換
+        const localPosition = {
+          x: 0,
+          y: getYpxFromTime({ time: time, grid15min: this.fitGridY }),
+        };
+        // let movingpoint = { ...self.localPosition };//座標をそのまま取得
+        let movingpoint = { ...localPosition };
+
+        //時間から座標に変換
+        const endtime = {
+          h: self.endTime.split(":")[0],
+          m: self.endTime.split(":")[1],
+        };
+
+        const expandPosition = {
+          x: 0,
+          y:
+            getYpxFromTime({
+              time: endtime,
+              grid15min: this.fitGridY,
+            }) - localPosition.y,
+        };
+
+        //固定補正
+        if(!overDay){
+          this.movingpoint = {
+            x: this.fixHorizontal ? 0 : movingpoint.x,
+            y: this.fixVertical ? 0 : movingpoint.y,
+          };
+        }else {
+          //ゴースト
+          this.movingpoint = this.getGoastPosition();
+        }
+
+        //expandから経過時間を設定
+        this.params = {
+          target: target.ref,
+          position: this.movingpoint,
+          expand: expandPosition,
+          startTime: this.getStartTime.time,
+          fitGrid: {
+            x: this.fitGridX,
+            y: this.fitGridY,
+          },
+        };
+
+        this.tags = dragStore.getTags();
+        console.log("Mounted", this.item.itemId);
+      },
+      getGoastPosition(){
+        const self = dragStore.getItemById(this.id);
+        //ゴーストの位置
+        //開始時間から24時までの時間
+        const range = getRangeFromStartEnd({
+          startTime:self.startTime,
+          endTime:"24:00"
+        })
+        //ピクセルに変換
+        const top = getYpxFromTime({
+          time: getTimeObjectFromString(range),
+          grid15min: this.fitGridY
+        });
+        return {x:0,y:-top};
+      },
       //座標を正規化
       getNormalizedPosition({ x, y }) {
         const targetRect = this.target
@@ -255,8 +333,10 @@
           : { x: 0, y: 0 };
       },
       getClass() {
-        if (this.isMove) return "moving";
-        return "";
+        let c = '';
+        if (this.isMove) c += " moving";
+        if( this.item.overDay ) c += " goast";
+        return c;
       },
       getStyle() {
         let style = "";
@@ -305,8 +385,13 @@
         this.timerExpandUpdate = setTimeout(() => {
           this.updatedExpand = expand;
           this.expandTime = expandTime;
-          //登録
-          this.thisPutOnTarget(this.date,this.type_id);
+
+          if(this.item.overDay) {
+            this.thisUpdateGoastOnTarget(this.date,this.type_id);
+          }else{
+            //登録
+            this.thisPutOnTarget(this.date,this.type_id);
+          }
         }, 200);
       },
 
@@ -327,7 +412,6 @@
           2,
           "0"
         )}`}:${`${_endtime.m.padStart(2, "0")}`}`;
-
         //所属先を変更
         dragStore.putOnTarget({
           itemId: this.id,
@@ -335,8 +419,13 @@
           startTime,
           endTime,
           type_id,
-          tag_id:this.tag_id
+          tag_id:this.tag_id,
         });
+      },
+
+      //ゴーストは登録しない
+      thisUpdateGoastOnTarget(){
+        console.log("UpdateGoast!!!!!!!");
       },
 
       //エリアヒット検出 >> ドロップ先を検出して登録
@@ -481,7 +570,7 @@
     position: absolute;
     width: 100%;
     z-index: 1;
-    transform:scale(0.94);
+    // transform:scale(0.97);
     transition: all .1s ease-in;
     border-radius:4px;
     border:1px solid rgba(255,255,255,.3);
@@ -489,7 +578,23 @@
     &:hover {
       cursor: move;
       transition:none;
-      transform:scale(1.0);
+      // transform:scale(1.0);
+      box-shadow: 0 0 6px rgba(0,0,0,.1);
+      border:1px solid rgba(0,0,0,.2);
+    }
+
+    &.goast {
+      pointer-events: none;
+      z-index: 0;
+      opacity: .8;
+      &:hover {
+        cursor: default;
+        transition:none;
+      }
+    }
+
+    &.moving{
+      transition:none;
     }
   }
 

@@ -1,10 +1,11 @@
 <template>
-  <div class="DayFrame">
+  <div class="DayFrame" :style="style">
       <div class="DayFrame-name">{{type.name}}</div>
       <slot/>
   </div>
 </template> 
 <script>
+import { CONFIG_SCHEDULER } from "../config";
 export default {
   data:()=>{
     return {
@@ -14,7 +15,16 @@ export default {
     type:{
       type:Object
     },
+    innerHeight:{
+      type:Number,
+      defaultValue: CONFIG_SCHEDULER.innerHeight
+    }
   },
+  computed:{
+    style(){
+      return `height:${this.innerHeight}px`;
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

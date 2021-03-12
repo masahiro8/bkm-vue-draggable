@@ -1,10 +1,11 @@
 <template>
-  <div class="MainTable">
+  <div class="MainTable" :style="style">
     <slot :types="types" />
   </div>
 </template>
 <script>
 import { dragStore } from "../DragStore";
+import { CONFIG_SCHEDULER } from "../config";
 export default {
   data: () => {
     return {
@@ -25,6 +26,15 @@ export default {
     },
     config_reserve_type_ids: {
       type: Array
+    },
+    innerHeight:{
+      type:Number,
+      defaultValue: CONFIG_SCHEDULER.innerHeight
+    }
+  },
+  computed:{
+    style(){
+      return `height:${this.innerHeight}px`;
     }
   },
   mounted() {

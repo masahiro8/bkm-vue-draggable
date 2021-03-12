@@ -2,12 +2,22 @@ import { hitArea } from "./util/hitArea";
 import { apiConnect } from "./util/apiConnect";
 //Drag & Dropに関連したいデータストア
 import { ScheduleTags } from "./store/ScheduleStore";
+import {
+  getMinFromTimeStr,
+  getYesturday,
+  getTimeStrFromMin,
+} from "./util/timeUtil";
 
 const _dragStore = () => {
   let callbacks = [];
 
+  //日付ターゲットを登録
   let targets = [];
+
+  //日付ターゲットごとに紐づくアイテムidを登録
   let targetsItemIds = {};
+
+  //全てのアイテム
   let allItems = [];
 
   const setTarget = ({ date, ref, type_id }) => {
@@ -169,19 +179,53 @@ const _dragStore = () => {
     type_id,
     tag_id,
   }) => {
+    //登録時刻を取得
+    let time = {
+      date,
+      startTime,
+      endTime,
+    };
+
+    /**
+     * 1.日跨ぎ予定を検出
+     * 2.前日から開始の場合は、日付を前日に変えて、日跨ぎは全て翌日跨ぎに変えて揃える
+     */
+    //開始時間、終了時間が0-24以内か
+    let startMin = getMinFromTimeStr(time.startTime);
+    let endMin = getMinFromTimeStr(time.endTime);
+    const h0Min = getMinFromTimeStr("0:0");
+    const h24Min = getMinFromTimeStr("24:00");
+    // console.log("min", startMin, endMin, h0Min, h24Min);
+
+    //開始が前日の場合は、日付を前日に変える
+    if (startMin < h0Min) {
+      const _date = getYesturday(time.date);
+      const _startMin = h24Min + startMin;
+      const _endMin = h24Min + endMin;
+      time.date = _date;
+      time.startTime = getTimeStrFromMin(_startMin);
+      time.endTime = getTimeStrFromMin(_endMin);
+      startMin = getMinFromTimeStr(time.startTime);
+      endMin = getMinFromTimeStr(time.endTime);
+      // console.log("updated ", time.date, time.startTime, time.endTime);
+    }
+
     //検索
-    const find = targetsItemIds[`${date}`].find((item) => {
-      return item === itemId;
-    });
+    let find = null;
+    if (`${time.date}` in targetsItemIds) {
+      find = targetsItemIds[`${time.date}`].find((item) => {
+        return item === itemId;
+      });
+    }
 
     //なかったら追加
     if (!find) {
-      targetsItemIds[`${date}`].push(itemId);
+      targetsItemIds[`${time.date}`].push(itemId);
 
       //他のターゲットから削除
       Object.keys(targetsItemIds).forEach((key) => {
         //他のリスト
-        if (date !== key) {
+        if (time.date !== key) {
           const index = targetsItemIds[key].indexOf(itemId);
           //みつかれば削除
           if (index > -1) {
@@ -191,7 +235,7 @@ const _dragStore = () => {
       });
     }
 
-    if (startTime == "NaN:NaN" || endTime === "NaN:NaN") return;
+    if (time.startTime == "NaN:NaN" || time.endTime === "NaN:NaN") return;
 
     //全アイテムを検索
     const result = allItems.find((item) => {
@@ -202,9 +246,9 @@ const _dragStore = () => {
       //なければ追加
       allItems.push({
         itemId,
-        startTime,
-        endTime,
-        date,
+        date: time.date,
+        startTime: time.startTime,
+        endTime: time.endTime,
         type_id,
         tag_id,
       });
@@ -213,17 +257,17 @@ const _dragStore = () => {
       //変更があった場合だけ更新
       if (
         result.itemId !== itemId ||
-        result.date !== date ||
-        result.startTime !== startTime ||
-        result.endTime !== endTime ||
+        result.date !== time.date ||
+        result.startTime !== time.startTime ||
+        result.endTime !== time.endTime ||
         result.type_id !== type_id ||
         result.tag_id !== tag_id
       ) {
         const result = await updateItem({
           itemId,
-          date,
-          startTime,
-          endTime,
+          date: time.date,
+          startTime: time.startTime,
+          endTime: time.endTime,
           type_id,
           tag_id,
         });
@@ -232,9 +276,9 @@ const _dragStore = () => {
             return item.itemId === itemId
               ? {
                   itemId,
-                  startTime,
-                  endTime,
-                  date,
+                  date: time.date,
+                  startTime: time.startTime,
+                  endTime: time.endTime,
                   type_id,
                   tag_id,
                 }
@@ -246,17 +290,33 @@ const _dragStore = () => {
     publishCallbacks();
   };
 
+  /**
+   * 自分のターゲットを取得
+   *
+   * @param {Object} { itemId, type_id }
+   * @returns {Object}
+   */
   const getSelfTarget = ({ itemId, type_id }) => {
     const date = Object.keys(targetsItemIds).find((key) => {
       return targetsItemIds[key].indexOf(itemId) > -1;
     });
     if (date) {
-      const find = targets.find((t) => {
+      return targets.find((t) => {
         return t.date === date && t.type_id === type_id;
       });
-      return find ? find : null;
     }
     return null;
+  };
+
+  /**
+   * ゴーストのターゲットを取得
+   * @param {Object} { type_id, date }
+   * @returns
+   */
+  const getGoastTarget = ({ type_id, date }) => {
+    return targets.find((t) => {
+      return t.date === date && t.type_id === type_id;
+    });
   };
 
   const getItemById = (id) => {
@@ -299,6 +359,7 @@ const _dragStore = () => {
     hitTarget,
     putOnTarget,
     getSelfTarget,
+    getGoastTarget,
     getItemById,
     getItemsIdFromDate,
     getAllItemsFromDate,
