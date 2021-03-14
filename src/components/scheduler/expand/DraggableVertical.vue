@@ -272,3 +272,10 @@ export default {
   }
 }
 </style>
+<style lang="scss">
+  .goast {
+    .draggable_vertical{
+      pointer-events: none!important;
+    }
+  }
+</style>

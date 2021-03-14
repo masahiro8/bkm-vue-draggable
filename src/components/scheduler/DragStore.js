@@ -1,4 +1,4 @@
-import { hitArea } from "./util/hitArea";
+import { hitTargetArea } from "./util/hitArea";
 import { apiConnect } from "./util/apiConnect";
 //Drag & Dropに関連したいデータストア
 import { ScheduleTags } from "./store/ScheduleStore";
@@ -102,16 +102,19 @@ const _dragStore = () => {
 
   const hitTarget = (itemRect) => {
     const hits = targets
+      //ドロップ対象フラグ >> statics/static.js > TYPES
       .filter((tgt) => tgt.isDropTarget == true)
       .filter((tgt) => {
         //エリア
         const rect = tgt.ref.getBoundingClientRect();
         //点がエリアに入っているか判定
-        return hitArea(
+        console.log("point", itemRect.x, itemRect.y);
+        console.log("rect", tgt.date, rect.y, rect.height);
+        return hitTargetArea(
           //点
           {
             x: itemRect.x + itemRect.width / 2,
-            y: itemRect.y + itemRect.height / 2,
+            y: itemRect.y + itemRect.height * 0.95,
           },
           //エリア
           {
@@ -222,6 +225,15 @@ const _dragStore = () => {
       });
     }
 
+    // console.log(
+    //   "targetに",
+    //   find ? "ある" : "ない",
+    //   "=",
+    //   time.date,
+    //   time.startTime,
+    //   time.endTime
+    // );
+
     //なかったら追加
     if (!find) {
       targetsItemIds[`${time.date}`].push(itemId);
@@ -245,6 +257,8 @@ const _dragStore = () => {
     const result = allItems.find((item) => {
       return item.itemId === itemId;
     });
+
+    // console.log("resultに", result ? "ある" : "ない", "=", result);
 
     if (!result) {
       //なければ追加
@@ -275,6 +289,13 @@ const _dragStore = () => {
           type_id,
           tag_id,
         });
+        // console.log(
+        //   "updateItem ",
+        //   result ? "ある" : "ない",
+        //   "=",
+        //   itemId,
+        //   result
+        // );
         if (result) {
           allItems = allItems.map((item) => {
             return item.itemId === itemId

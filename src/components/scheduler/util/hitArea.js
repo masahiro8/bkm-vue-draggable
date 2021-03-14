@@ -12,6 +12,20 @@ const hitArea = (point, area) => {
   }
 };
 
+//点がリアに入っているか判定
+const hitTargetArea = (point, area) => {
+  if (
+    point.x > area.x &&
+    point.y > area.y &&
+    point.x < area.x + area.width &&
+    point.y < area.height
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 // 矩形同士の当たり判定を検出する。
 const hitRect = (rect1, rect2) => {
   if (!rect1 || !rect2) return null;
@@ -33,4 +47,4 @@ const hitAreaInner = (point, area, n) => {
   return hitArea(point, inner_area);
 };
 
-export { hitArea, hitAreaInner, hitRect };
+export { hitArea, hitTargetArea, hitAreaInner, hitRect };

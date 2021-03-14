@@ -158,9 +158,20 @@
         (newValue, oldValue) => {
           const n = JSON.stringify(newValue);
           const o = JSON.stringify(oldValue);
-          if("overDay" in this.item && n != o) {
-            console.log("Updated Main Unit !!!!");
-            this.initGoastUnit();
+          if(n != o) {
+            if("overDay" in this.item && this.item.overDay) {
+              this.initGoastUnit();
+            }else {
+              if(
+                oldValue && 
+                newValue[0].startTime === oldValue[0].startTime &&
+                newValue[0].endTime !== oldValue[0].endTime
+              ){
+                //終了時間の変更だけの場合は位置の更新しない
+              } else {
+                this.initMainUnit();
+              }
+            }
           }
         },
         {
@@ -285,9 +296,11 @@
             x: this.fixHorizontal ? 0 : movingpoint.x,
             y: this.fixVertical ? 0 : movingpoint.y,
           };
+          // console.log("Mounted Main",this.date);
         }else {
           //ゴースト
           this.movingpoint = this.getGoastPosition();
+          // console.log("Mounted Goast",this.date);
         }
 
         //expandから経過時間を設定
@@ -303,7 +316,6 @@
         };
 
         this.tags = dragStore.getTags();
-        console.log("Mounted", this.item.itemId);
       },
       getGoastPosition(){
         const self = dragStore.getItemById(this.id);
@@ -425,7 +437,7 @@
 
       //ゴーストは登録しない
       thisUpdateGoastOnTarget(){
-        console.log("UpdateGoast!!!!!!!");
+        // console.log("UpdateGoast!!!!!!!");
       },
 
       //エリアヒット検出 >> ドロップ先を検出して登録

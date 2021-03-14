@@ -8,6 +8,11 @@
   import { getTimeFromYpx, roundTo15min, getYpxFromTime,getYesturday,getMinFromTimeStr } from "../util/timeUtil";
   import { scheduleTile } from "../util/scheduleTIle";
 
+  const deepCopyObject = (obj) =>{
+    const _copy = JSON.stringify(obj);
+    return JSON.parse(_copy);
+  }
+
   export default {
     data: () => {
       return {
@@ -93,28 +98,33 @@
             return item.date === this.date && item.type_id === this.type_id
           });
 
+          // console.log(" 今日 all ",this.date, [...refined]);
+
           //前日の日跨ぎをチェック
           const yesturday = getYesturday(this.date);
 
           //日跨ぎしている予約を取得
-          const overItems = allItems.filter((item) => {
+          const overItems = allItems.filter( item => {
             const endMin = getMinFromTimeStr(item.endTime);
             const h24Min = getMinFromTimeStr("24:00");
             return item.date === yesturday && item.type_id === this.type_id && endMin > h24Min
           });
-          // if ( overItems.length ) console.log("OverTime ", this.date, overItems);
           
           //日跨ぎの予約をゴーストとして追加
           refined = [...refined, ...overItems.map(item => {
-            const _item = {...item};
+            const _item = deepCopyObject(item);
             _item.overDay = true;//日跨ぎフラグ
             _item.date = this.date;
             return _item;
           })];
 
+          // if(overItems.length){
+          //   console.log("ゴースト追加済み ",this.date, overItems, [...refined]);
+          // }
+
           //時間をピクセルに変換
           const _items = refined.map(item=>{
-            let _item = {...item};
+            let _item = deepCopyObject(item);
             //時間から座標に変換
             const start_time = {
               h: _item.startTime.split(":")[0],
@@ -130,11 +140,18 @@
             _item.start = _start_time;
             _item.end = _end_time;
             _item.id = item.itemId;
+
+            //日跨ぎは時間ピクセルを再計算
+            if("overDay" in item) {
+              const _24 = getYpxFromTime({time:{h:"24",m:"0"},grid15min: this.grid.y });
+              _item.start = getYpxFromTime({time:{h:"0",m:"0"},grid15min: this.grid.y });
+              _item.end = _end_time - _24;
+            }
             return _item;
           })
 
           //時間レイアウトを設定
-          const items_tiled = scheduleTile().sortAll([..._items]);
+          const items_tiled = scheduleTile().sortAll([..._items],this.grid?this.grid.y:0);
 
           this.params = {
             lists: items_tiled,
