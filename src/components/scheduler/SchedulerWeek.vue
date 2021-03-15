@@ -12,6 +12,17 @@
         @onChange="onChangeLayout"
       />
     </template>
+    <!-- 固定のテーブルヘッダーラベル -->
+    <template #bodyHeaderLabel>
+      <TableHeaderLabel 
+        v-for="(date, index) in week"
+        :key="index"
+        :date="date"
+        :config="config"
+        :config_reserve_type_ids="config_reserve_type_ids"
+        :innerHeight="getInnerHeight" 
+      />
+    </template>
     <!-- スケジュールラベル -->
     <template #bodyLabel>
       <!-- 時間表示 -->
@@ -115,6 +126,7 @@
   import GuideFrame from "./UI/GuideFrame";
   import ScheduleLayout from "./UI/ScheduleLayout";
   import ScheduleHeader from "./ScheduleHeader";
+  import TableHeaderLabel from "./UI/TableHeaderLabel";
   import { CONFIG_SCHEDULER } from "./config";
 
   export default {
@@ -144,6 +156,7 @@
       DraggableExpandBox,
       ScheduleLayout,
       ScheduleHeader,
+      TableHeaderLabel,
       ItemBox,
       ListBox,
       GridFrame,

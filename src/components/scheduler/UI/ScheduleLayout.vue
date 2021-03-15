@@ -10,7 +10,12 @@
         <slot name="bodyLabel"></slot>
       </div>
       <div ref="bodyMain" class="bodyMain" :style="getInnerStyle">
-        <slot name="bodyMain"></slot>
+        <div class="bodyHeaderLabel">
+          <slot name="bodyHeaderLabel"></slot>
+        </div>
+        <div class="bodyMainScroll">
+          <slot name="bodyMain"></slot>
+        </div>
       </div>
     </div>
   </div>
@@ -47,7 +52,6 @@ import { UIObserver } from "../store/ScheduleStore";
         const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
         UIObserver.putValue("bodyScroll",scroll);
       })
-      UIObserver.putValue("bodyScroll",0);
       
     },
     computed: {
@@ -66,10 +70,10 @@ import { UIObserver } from "../store/ScheduleStore";
       },
       windowSizeChange() {
         const headerrect = this.$refs.header.getBoundingClientRect();
-        // const headerLabelRect = this.$refs.headerLabel.getBoundingClientRect();
+        const headerLabelRect = this.$refs.headerLabel.getBoundingClientRect();
         UIObserver.putValue("headerRect",{
           top:headerrect.top ,
-          height:headerrect.height - (CONFIG_SCHEDULER.grid15min*2)
+          height:headerrect.height - headerLabelRect.height
         });
         this.bodyRect = {
           top: headerrect.top + headerrect.height,
@@ -87,7 +91,7 @@ import { UIObserver } from "../store/ScheduleStore";
   }
   .body {
     display: inline-flex;
-    overflow-x: visible;
+    overflow-x: hidden;
     overflow-y: scroll;
     position: relative;
     min-width:100%;
@@ -106,8 +110,23 @@ import { UIObserver } from "../store/ScheduleStore";
     display: flex;
   }
   .bodyMain {
+    position:relative;
+    min-width:calc(100% - 32px);
+  }
+  .bodyMainScroll{
     display: flex;
     flex:1;
     overflow: hidden;
+  }
+  .bodyHeaderLabel{
+    position: sticky;
+    top:0;
+    left:0;
+    height: 16px;
+    flex:1;
+    background-color: white;
+    z-index: 2;
+    display: flex;
+    border-bottom:1px solid #ddd;
   }
 </style>

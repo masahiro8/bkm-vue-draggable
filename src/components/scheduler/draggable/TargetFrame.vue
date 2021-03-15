@@ -1,6 +1,5 @@
 <template>
   <div class="DayFrame" :style="style">
-      <div class="DayFrame-name">{{type.name}}</div>
       <slot/>
   </div>
 </template> 
@@ -30,8 +29,5 @@ export default {
 <style lang="scss" scoped>
 .DayFrame{
   width:100%;
-}
-.DayFrame-name{
-  font-size:8px;
 }
 </style>
