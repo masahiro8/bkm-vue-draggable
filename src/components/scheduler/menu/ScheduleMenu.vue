@@ -18,6 +18,7 @@
         :bodyScroll="bodyScroll"
         :isHeaderTableOpen="isHeaderTableOpen"
         :headerRect="headerRect"
+        :bodyMainRect="bodyMainRect"
       >{{ticket.title}}</DraggableTicket>
     </DragTarget>
   </div>  
@@ -48,6 +49,9 @@ export default {
       type:Boolean
     },
     headerRect:{
+      type:Object
+    },
+    bodyMainRect:{
       type:Object
     }
   }

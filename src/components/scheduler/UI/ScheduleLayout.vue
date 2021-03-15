@@ -1,5 +1,5 @@
 <template>
-  <div clss="scheduler">
+  <div class="scheduler">
     <div ref="header" class="header">
       <div ref="headerLabel" class="headerLabel">
         <slot name="headerLabel" :onChangeLayout="onChangeLayout" ></slot>
@@ -51,6 +51,7 @@ import { UIObserver } from "../store/ScheduleStore";
         const bodyMainRect = bodyMain.getBoundingClientRect();
         const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
         UIObserver.putValue("bodyScroll",scroll);
+        UIObserver.putValue("bodyMainRect",bodyMainRect);
       });
 
       //初期設定する
@@ -58,6 +59,7 @@ import { UIObserver } from "../store/ScheduleStore";
       const bodyMainRect = bodyMain.getBoundingClientRect();
       const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
       UIObserver.putValue("bodyScroll",scroll);
+      UIObserver.putValue("bodyMainRect",bodyMainRect);
       
     },
     computed: {
@@ -140,5 +142,8 @@ import { UIObserver } from "../store/ScheduleStore";
     z-index: 2;
     display: flex;
     border-bottom:1px solid #ddd;
+  }
+  .scheduler{
+    margin-right:8px;
   }
 </style>

@@ -1,8 +1,7 @@
 <template>
   <PageFrame>
-    <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide>
-      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
     </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
@@ -48,6 +47,7 @@
         weekArray: [],
         todayObject: {},
         bodyScroll:0,
+        bodyMainRect:{},
         isHeaderTableOpen: true,
         headerRect:{}
       };
@@ -81,6 +81,7 @@
         this.bodyScroll = value["bodyScroll"];
         this.isHeaderTableOpen = value["isHeaderTableOpen"];
         this.headerRect = value["headerRect"];
+        this.bodyMainRect = value["bodyMainRect"];
         console.log("UIObserver",value);
       })
     },

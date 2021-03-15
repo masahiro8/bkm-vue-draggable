@@ -1,6 +1,5 @@
 <template>
   <PageFrame>
-    <template v-slot:pageHeader> Global Header </template>
     <template v-slot:pageBodySide>
       <ScheduleMenu />
     </template>

@@ -17,6 +17,11 @@
 export default {};
 </script>
 <style lang="scss" scoped>
+
+.page{
+  background-color: #eee;
+  height: 100%;
+}
 .pageHeader {
   height: 48px;
 }
