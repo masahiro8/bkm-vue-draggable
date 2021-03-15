@@ -51,7 +51,13 @@ import { UIObserver } from "../store/ScheduleStore";
         const bodyMainRect = bodyMain.getBoundingClientRect();
         const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
         UIObserver.putValue("bodyScroll",scroll);
-      })
+      });
+
+      //初期設定する
+      const bodyRect = body.getBoundingClientRect();
+      const bodyMainRect = bodyMain.getBoundingClientRect();
+      const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
+      UIObserver.putValue("bodyScroll",scroll);
       
     },
     computed: {
@@ -70,11 +76,11 @@ import { UIObserver } from "../store/ScheduleStore";
       },
       windowSizeChange() {
         const headerrect = this.$refs.header.getBoundingClientRect();
-        const headerLabelRect = this.$refs.headerLabel.getBoundingClientRect();
         UIObserver.putValue("headerRect",{
           top:headerrect.top ,
-          height:headerrect.height - headerLabelRect.height
+          height:headerrect.height
         });
+
         this.bodyRect = {
           top: headerrect.top + headerrect.height,
           height:

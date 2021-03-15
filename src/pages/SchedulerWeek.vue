@@ -81,6 +81,7 @@
         this.bodyScroll = value["bodyScroll"];
         this.isHeaderTableOpen = value["isHeaderTableOpen"];
         this.headerRect = value["headerRect"];
+        console.log("UIObserver",value);
       })
     },
     destroyed() {

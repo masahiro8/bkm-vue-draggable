@@ -262,20 +262,16 @@
 
         if (this.isMove && this.isEnter) {
 
-          console.log("headerrect", this.headerRect.top ,this.headerRect.height );
-
-          //位置を補正
-          // const targetRect = {...this.targetRect};
-          // targetRect.y = targetRect.y - this.headerRect.height;
-
           const localPoint = convertToLocalPoint(
             point,
             this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
           );
 
+          //ここで座標を補正してスケジュール座標に設定する
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : localPoint.x,
-            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.height,
+            //どうしても上にずれるので、this.fitGridY * 2を追加してる
+            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.height + (this.fitGridY * 2),
           };
 
           this.mousepoint_margin = {
@@ -338,7 +334,7 @@
   .ticket {
     user-select: none;
     position: absolute;
-    width: 128px;
+    width: 164px;
     height:$height - 1;
     z-index: 1;
     display: flex;
@@ -355,6 +351,7 @@
       z-index: 2;
     }
     &.moving{
+      // width: 128px;
       box-shadow:0 1px 3px rgba(0,0,0,.3);
       border-bottom: none;
       z-index: 3;
