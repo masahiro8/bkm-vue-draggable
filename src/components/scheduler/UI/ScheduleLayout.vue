@@ -62,7 +62,7 @@ import { UIObserver } from "../store/ScheduleStore";
     },
     computed: {
       getScrollStyle() {
-        return `top:${-4}px;height:${this.bodyRect.height}px`;
+        return `top:${8}px;height:${this.bodyRect.height}px`;
       },
       getInnerStyle(){
         return `height:${this.innerHeight}px`;
@@ -118,6 +118,8 @@ import { UIObserver } from "../store/ScheduleStore";
     display: flex;
     position: sticky;
     left:0;
+    min-width: 42px;
+    justify-content: flex-end;
   }
   .bodyMain {
     position:relative;
@@ -132,7 +134,7 @@ import { UIObserver } from "../store/ScheduleStore";
     position: sticky;
     top:0;
     left:0;
-    height: 16px;
+    height: 24px;
     flex:1;
     background-color: white;
     z-index: 2;

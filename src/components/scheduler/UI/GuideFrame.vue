@@ -41,5 +41,6 @@ export default {
 .frame {
   user-select: none;
   position: relative; 
+  top: 40px;
 }
 </style>

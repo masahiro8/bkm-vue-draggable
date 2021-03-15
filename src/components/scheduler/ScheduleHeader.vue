@@ -107,6 +107,7 @@
 <style lang="scss" scoped>
   .headerLabel {
     display: flex;
+    background-color: white;
   }
   .headerLabel--labels {
     display: flex;

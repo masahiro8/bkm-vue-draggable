@@ -271,7 +271,7 @@
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : localPoint.x,
             //どうしても上にずれるので、this.fitGridY * 2を追加してる
-            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.height + (this.fitGridY * 2),
+            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.height + (this.fitGridY * 0),
           };
 
           this.mousepoint_margin = {

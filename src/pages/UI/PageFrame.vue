@@ -30,5 +30,6 @@ export default {};
   position: absolute;
   left: 180px;
   width: calc(100% - 180px);
+  background-color: #F4F4F4;
 }
 </style>

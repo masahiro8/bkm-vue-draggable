@@ -62,14 +62,24 @@ export default {
   height: 12px;
   width: 100%;
   right: 0;
-  color: #333;
+  color: #979797;
   font-size: 8px;
   text-align: right;
   padding-right: 4px;
   opacity: 0;
   transform: translateY(-12px);
+
   &.min60 {
     opacity: 1;
+  }
+  &:before{
+    content:'';
+    position: absolute;
+    top:-3px;
+    right:0;
+    width:90%;
+    height:1px;
+    background-color: #DADADA;
   }
 }
 </style>

@@ -33,8 +33,9 @@ export default {
 <style lang="scss" scoped>
 .DayFrame{
   width:100%;
-  height:16px;
+  height:100%;
   display: flex;
+  align-items: center;
   flex:1;
   border-left:1px solid #ddd;
 }
