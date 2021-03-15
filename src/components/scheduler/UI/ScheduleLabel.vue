@@ -17,8 +17,14 @@ export default {
 @import "./ui.scss";
 .schedulelabel {
   width: 100%;
+  height: 48px;
   position: relative;
   transition: all .2s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+
   &:before {
     content: "";
     display: block;

@@ -4,7 +4,9 @@
       <!-- テーブル表示 -->
       <div v-if="hasTable">
         <!-- 開閉トグル -->
-        <ToggleBtn @onChange="toggleTable" />
+        <div class="headerLabel--togglebtn">
+          <ToggleBtn @onChange="toggleTable" />
+        </div>
         <!-- テーブルラベル -->
         <ScheduleHeaderTableLabel :isTableOpen="isTableOpen"/>
       </div>
@@ -88,6 +90,20 @@
     },
   };
 </script>
+<style lang="scss">
+  .headerLabel--label {
+    flex: 1;
+    &:last-child{
+      .scheduleheader--table{
+        .scheduleheader--cell{
+          &:before{
+            display: none;
+          }
+        }
+      }
+    }
+  }
+</style>
 <style lang="scss" scoped>
   .headerLabel {
     display: flex;
@@ -98,5 +114,8 @@
   }
   .headerLabel--label {
     flex: 1;
+  }
+  .headerLabel--togglebtn{
+    height: 48px;
   }
 </style>

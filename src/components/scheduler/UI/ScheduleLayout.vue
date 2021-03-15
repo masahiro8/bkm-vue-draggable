@@ -86,9 +86,11 @@ import { UIObserver } from "../store/ScheduleStore";
     },
   };
 </script>
+<style lang="scss">
+  @import "./ui.scss";
+  @import "./uiTable.scss";
+</style>
 <style lang="scss" scoped>
-  .scheduler{
-  }
   .body {
     display: inline-flex;
     overflow-x: hidden;
@@ -108,6 +110,8 @@ import { UIObserver } from "../store/ScheduleStore";
   }
   .bodyLabel {
     display: flex;
+    position: sticky;
+    left:0;
   }
   .bodyMain {
     position:relative;

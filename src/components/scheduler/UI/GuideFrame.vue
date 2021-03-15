@@ -40,6 +40,6 @@ export default {
 @import "./ui.scss";
 .frame {
   user-select: none;
-  position: relative;
+  position: relative; 
 }
 </style>

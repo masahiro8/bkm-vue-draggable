@@ -1,0 +1,37 @@
+//テーブルの背景色
+.bodyHeaderLabel {
+  .DayFrame {
+    background-color: white;
+    &:nth-child(odd) {
+      background-color: #fafafa;
+    }
+  }
+}
+
+.bodyMainScroll {
+  .MainTable {
+    .DayFrame {
+      .list {
+        background-color: white;
+      }
+    }
+    &:nth-child(odd) {
+      .DayFrame {
+        .list {
+          background-color: #fafafa;
+        }
+      }
+    }
+  }
+}
+
+.headerLabel {
+  .headerLabel--labels {
+    .headerLabel--label {
+      background-color: white;
+      &:nth-child(odd) {
+        background-color: #fafafa;
+      }
+    }
+  }
+}

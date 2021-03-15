@@ -59,7 +59,7 @@
             v-slot="{ params }"
           >
             <!-- フレーム内の後ろに表示 -->
-            <ListBox :last="index === week.length - 1"></ListBox>
+            <ListBox :index="index" :last="index === week.length - 1"></ListBox>
             <!-- 背景のグリッド線 -->
             <GridFrame :config="config" />
             <!-- スケジュール表示 -->
@@ -173,19 +173,3 @@
     },
   };
 </script>
-
-<style>
-  .timeframe {
-    height: 400px;
-    width: 200px;
-    margin: 16px;
-  }
-  #app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
-</style>
