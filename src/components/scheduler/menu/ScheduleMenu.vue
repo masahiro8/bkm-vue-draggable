@@ -4,9 +4,11 @@
       <div class="header__bar"></div>
       <div class="header__id">21-0000-3200</div>
       <div class="header__title">駅前工事</div>
-      <div class="toggle"></div>
+      <div class="header__toggle">
+        <ToggleBtn @onChange="toggleMenu" />
+      </div>
     </div>
-    <div class="dragMenu__body" :style="getBodyHeight">
+    <div class="dragMenu__body" :class="toggleOpen?'show':''" :style="getBodyHeight">
       <DragTarget
         ref="TicketTarget"
         :type_id="9999"
@@ -37,17 +39,20 @@ import { CONFIG_SCHEDULER } from "../config";
 import DragTarget from "../draggable/DragTarget";
 import DraggableTicket from "../draggable/DraggableTicket";
 import { dragStore } from "../DragStore";
-
+import ToggleBtn from "../UI/ToggleBtn";
+ 
 export default {
   data: () => {
       return {
+        toggleOpen:true,
         CONFIG: CONFIG_SCHEDULER,
         TICKETS:[]
       };
     },
   components:{
     DragTarget,
-    DraggableTicket
+    DraggableTicket,
+    ToggleBtn
   },
   mounted(){
     this.TICKETS = dragStore.getTags();
@@ -73,6 +78,11 @@ export default {
       const ticket_height = 27;
       const body_height = ticket_height * this.TICKETS.length;
       return `height:${body_height}px`;
+    }
+  },
+  methods:{
+    toggleMenu(v){
+      this.toggleOpen = v;
     }
   }
 }
@@ -117,8 +127,21 @@ export default {
   }
   .dragMenu__body{
     height:auto;
+    display: none;
+    &.show{
+      display: block;
+    }
   }
   .dragMenu__footer{
-    height:8px;
+    height:4px;
+  }
+  .header__toggle{
+    position: absolute;
+    bottom:0;
+    right:0;
+    .btn{
+      width:28px;
+      text-align: center;
+    }
   }
 </style>
