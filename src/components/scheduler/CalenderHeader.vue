@@ -70,6 +70,7 @@
     width: 100%;
     height: 48px;
     display: flex;
+    align-items: center;
     justify-content: space-between;
   }
 
@@ -87,6 +88,7 @@
       text-decoration: none;
       color: black;
       opacity: 0.5;
+      font-size:18px;
       &:hover {
         cursor: pointer;
         opacity: 1;
@@ -98,11 +100,16 @@
     display: flex;
     height: 32px;
     padding: 0 16px;
+    align-items: center;
+
     .tab--item {
       padding: 4px 8px;
+      width:16px;
+      height:16px;
       text-decoration: none;
       color: black;
       opacity: 0.5;
+      font-size:10px;
       &:hover {
         cursor: pointer;
         opacity: 1;
