@@ -62,6 +62,9 @@
             <ListBox :index="index" :last="index === week.length - 1"></ListBox>
             <!-- 背景のグリッド線 -->
             <GridFrame :config="config" />
+            <!-- 出社/退社ライン -->
+            <ScheduleLine time="09:00" :fitGrid="params.grid" color="ff0000" />
+            <ScheduleLine time="17:00" :fitGrid="params.grid" color="0000ff" />
             <!-- スケジュール表示 -->
               <DraggableItem
                 v-for="item in params.lists"
@@ -127,6 +130,7 @@
   import ScheduleLayout from "./UI/ScheduleLayout";
   import ScheduleHeader from "./ScheduleHeader";
   import TableHeaderLabel from "./UI/TableHeaderLabel";
+  import ScheduleLine from "./UI/ScheduleLine";
   import { CONFIG_SCHEDULER } from "./config";
 
   export default {
@@ -161,6 +165,7 @@
       ListBox,
       GridFrame,
       GuideFrame,
+      ScheduleLine
     },
     computed: {
       getStyle() {

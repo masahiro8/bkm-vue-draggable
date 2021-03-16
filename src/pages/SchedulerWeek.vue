@@ -48,10 +48,11 @@
         lists: [],
         weekArray: [],
         todayObject: {},
+        //ここからUIObserver
         bodyScroll:0,
         bodyMainRect:{},
+        headerRect:{},
         isHeaderTableOpen: true,
-        headerRect:{}
       };
     },
     components: {

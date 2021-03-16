@@ -156,7 +156,7 @@ import { UIObserver } from "../store/ScheduleStore";
     height: 24px;
     flex:1;
     background-color: white;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     border-bottom:1px solid #ddd;
   }
