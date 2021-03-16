@@ -37,7 +37,7 @@
         isEnter: false,
         isHover: false,
         movingpoint: null,
-        movepoint_start: null,
+        movepoint_start: null,//元に戻す時用の座標
         mousepoint_margin: { x: 0, y: 0 },
         mousepoint: null,
         mousedown: false,
@@ -124,11 +124,11 @@
           ? point.x - margin.x
           : fitGrid(this.fitGridX, point.x - margin.x);
 
-        // console.log("starttime",top,left);
+        console.log("starttime",top,this.targetRect.y);
 
         //時間変換は、親座標を考慮して取得
         const time = getTimeFromYpx({
-          pixel: top - this.targetRect.y,
+          pixel: top - this.headerRect.top - this.headerRect.height + (this.fitGridY * 2),
           grid15min: this.fitGridY,
         });
 
@@ -165,6 +165,8 @@
           startTime: this.getStartTime.time,
           expandTime: {h:"0",m:"30"},
         });
+
+        console.log("this.getStartTime",{...this.getStartTime});
 
         const startTime = `${`${_startTime.h}`.padStart(
           2,
@@ -258,6 +260,9 @@
             x: point.x - this.rect.x,
             y: point.y - this.rect.y,
           };
+
+          console.log("mousepoint_margin",{...this.mousepoint_margin});
+          // console.log("MD",point.y,this.targetRect.top,{...this.movingpoint},{...this.movepoint_start},{...this.mousepoint_margin});
         }
       },
       mouseUp(e) {
@@ -267,22 +272,23 @@
 
         if (this.isMove && this.isEnter) {
 
-          const localPoint = convertToLocalPoint(
-            point,
-            this.targetRect || { x: 0, y: 0, width: 0, height: 0 }
-          );
-
           //ここで座標を補正してスケジュール座標に設定する
+          console.log("point " ,point);
           this.movingpoint = {
-            x: this.fixHorizontal ? 0 : localPoint.x,
+            x: this.fixHorizontal ? 0 : point.x,
             //どうしても上にずれるので、this.fitGridY * 2を追加してる
-            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.top - this.headerRect.height + (this.fitGridY * 2),
+            // + (this.fitGridY * 2)
+            y: this.fixVertical ? 0 : point.y - this.bodyScroll + this.headerRect.top - this.headerRect.height - (this.fitGridY * 2),
           };
+
+          console.log("movingpoint " ,{...this.movingpoint});
 
           this.mousepoint_margin = {
             x: this.fixHorizontal ? 0 : this.mousepoint_margin.x,
             y: this.fixVertical ? 0 : this.mousepoint_margin.y,
           };
+          console.log("mousepoint_margin " ,{...this.mousepoint_margin});
+
           this.detectTarget(point);
         }
         this.mousedown = false;

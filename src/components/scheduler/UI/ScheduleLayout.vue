@@ -48,15 +48,32 @@ import { UIObserver } from "../store/ScheduleStore";
       const bodyMain = this.$refs.bodyMain;
       body.addEventListener("scroll",()=>{
         const bodyRect = body.getBoundingClientRect();
-        const bodyMainRect = bodyMain.getBoundingClientRect();
+        const _bodyMainRect = bodyMain.getBoundingClientRect();
+        const bodyMainRect = {
+          x:_bodyMainRect.x,
+          y:_bodyMainRect.y,
+          left:_bodyMainRect.left,
+          top:_bodyMainRect.top,
+          width:_bodyMainRect.width,
+          height:_bodyMainRect.height
+        }
         const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
+        // console.log("scroll",_bodyMainRect,bodyMainRect, CONFIG_SCHEDULER.grid15min);
         UIObserver.putValue("bodyScroll",scroll);
         UIObserver.putValue("bodyMainRect",bodyMainRect);
       });
 
       //初期設定する
       const bodyRect = body.getBoundingClientRect();
-      const bodyMainRect = bodyMain.getBoundingClientRect();
+      const _bodyMainRect = bodyMain.getBoundingClientRect();
+      const bodyMainRect = {
+        x:_bodyMainRect.x,
+        y:_bodyMainRect.y,
+        left:_bodyMainRect.left,
+        top:_bodyMainRect.top,
+        width:_bodyMainRect.width,
+        height:_bodyMainRect.height
+      }
       const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
       UIObserver.putValue("bodyScroll",scroll);
       UIObserver.putValue("bodyMainRect",bodyMainRect);

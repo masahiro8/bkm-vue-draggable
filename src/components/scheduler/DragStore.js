@@ -108,8 +108,8 @@ const _dragStore = () => {
         //エリア
         const rect = tgt.ref.getBoundingClientRect();
         //点がエリアに入っているか判定
-        console.log("point", itemRect.x, itemRect.y);
-        console.log("rect", tgt.date, rect.y, rect.height);
+        // console.log("point", itemRect.x, itemRect.y);
+        // console.log("rect", tgt.date, rect.y, rect.height);
         return hitTargetArea(
           //点
           {

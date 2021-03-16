@@ -2,6 +2,8 @@
   <PageFrame>
     <template v-slot:pageBodySide>
       <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
     </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
@@ -82,7 +84,7 @@
         this.isHeaderTableOpen = value["isHeaderTableOpen"];
         this.headerRect = value["headerRect"];
         this.bodyMainRect = value["bodyMainRect"];
-        console.log("UIObserver",value);
+        // console.log("UIObserver",value);
       })
     },
     destroyed() {
