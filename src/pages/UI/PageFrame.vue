@@ -27,9 +27,11 @@ export default {};
 }
 .pageBody {
   display: flex;
+  height: 100%;
 }
 .pageBody--side {
   width: 180px;
+  height: 100%;
 }
 .pageBody--main {
   position: absolute;

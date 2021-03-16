@@ -1,7 +1,7 @@
 <template>
   <div ref="self" class="ticket" :class="getClass()" :style="getStyle()">
-    <div class="ticket__bar" :style="getBarColor(ticket.color)"></div>
     <div class="ticket__title">{{ticket.title}}</div>
+    <img class="ticket__handle" :src="icon_handle" alt="" />
   </div>
 </template>
 <script>
@@ -47,6 +47,7 @@
           fitGrid: { x: 1, y: 1 },
         },
         targetRect: { x: 0, y: 0 },
+        icon_handle: require("../assets/drag_handle.svg"),
       };
     },
     props: {
@@ -275,7 +276,7 @@
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : localPoint.x,
             //どうしても上にずれるので、this.fitGridY * 2を追加してる
-            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.top - this.headerRect.height - (this.fitGridY * 2),
+            y: this.fixVertical ? 0 : localPoint.y - this.bodyScroll - this.headerRect.top - this.headerRect.height + (this.fitGridY * 2),
           };
 
           this.mousepoint_margin = {
@@ -348,11 +349,19 @@
     border-bottom:2px solid white;
     z-index: 1;
 
+    .icon_handle{
+        opacity: .5;
+      }
+
     &.hover{ 
       cursor: move;
       box-shadow:0 1px 3px rgba(0,0,0,.3);
       border-bottom: none;
       z-index: 2;
+
+      .icon_handle{
+        opacity: 1;
+      }
     }
     &.moving{
       // width: 128px;
@@ -362,7 +371,7 @@
     }
     @for $index from 10 through 0 {
       &:nth-child(#{$index}) {
-        top: $height * $index;
+        top: $height * ($index - 1);
       }
     }
   }
@@ -375,5 +384,9 @@
     font-size: 10px;
     text-align: left;
     text-indent: 1em;
+  }
+  .ticket__handle{
+    width: 12px;
+    margin-right: 4px;
   }
 </style>
