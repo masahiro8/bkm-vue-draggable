@@ -18,7 +18,7 @@
 </template>
 <script>
   import { dragStore } from "../components/scheduler/DragStore";
-  import PageFrameSingle from "./UI/PageFrameSingle";
+  import PageFrameSingle from "../components/scheduler/UI/PageFrameSingle";
   import CalenderHeaderMonth from "../components/scheduler/CalenderHeaderMonth";
   import SchedulerMonth from "../components/scheduler/SchedulerMonth";
   import {

@@ -24,7 +24,7 @@
 </template>
 <script>
   import { dragStore } from "../components/scheduler/DragStore";
-  import PageFrame from "./UI/PageFrame";
+  import PageFrame from "../components/scheduler/UI/PageFrame";
   import SchedulerWeek from "../components/scheduler/SchedulerWeek";
   import {
     getDateStringFromObject,
