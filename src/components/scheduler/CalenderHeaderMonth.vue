@@ -5,13 +5,13 @@
     </div>
     <div class="calenderHeader--center">
       <div class="calenderHeader--back">
-        <button @click="updateDate(-numbersOfDays)">
+        <button @click="updateMonth(-1)">
           <img :src="arrow_back" alt="" />
         </button>
       </div>
       <div class="calenderHeader--title">{{ getTitle }}</div>
       <div class="calenderHeader--forward">
-        <button @click="updateDate(numbersOfDays)">
+        <button @click="updateMonth(1)">
           <img :src="arrow_forward" alt="" />
         </button>
       </div>
@@ -37,10 +37,6 @@
       today: {
         type: Object,
       },
-      numbersOfDays: {
-        type: Number,
-        default: 1,
-      },
     },
     computed: {
       getTitle() {
@@ -48,15 +44,15 @@
       },
     },
     methods: {
-      updateDate(n) {
+      updateMonth(n) {
         const ndate = new Date(
           this.today.year,
           this.today.month - 1,
           this.today.day
         );
-        ndate.setDate(ndate.getDate() + n);
+        ndate.setMonth(ndate.getMonth() + n);
         const dateObject = getDateObjectFromDateFormat(ndate);
-        this.$emit("updateDate", dateObject);
+        this.$emit("updateMonth", dateObject);
       },
       onClickToday() {
         const ndate = new Date();
@@ -73,6 +69,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: white;
   }
 
   .calenderHeader--center {

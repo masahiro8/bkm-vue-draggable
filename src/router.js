@@ -2,6 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import SchedulerWeek from "./pages/SchedulerWeek";
 import SchedulerDay from "./pages/SchedulerDay";
+import SchedulerMonth from "./pages/SchedulerMonth";
 
 Vue.use(Router);
 
@@ -22,6 +23,11 @@ export default new Router({
       path: "/day",
       name: "SchedulerDay",
       component: SchedulerDay,
+    },
+    {
+      path: "/month",
+      name: "SchedulerMonth",
+      component: SchedulerMonth,
     },
   ],
 });
