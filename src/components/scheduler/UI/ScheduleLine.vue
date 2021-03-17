@@ -23,7 +23,7 @@ export default {
       type: Object,
     },
     color:{
-      type: Number
+      type: String
     }
   },
   mounted(){
