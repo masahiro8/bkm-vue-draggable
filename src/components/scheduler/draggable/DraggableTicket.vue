@@ -278,16 +278,18 @@
             x: this.fixHorizontal ? 0 : point.x,
             //どうしても上にずれるので、this.fitGridY * 2を追加してる
             // + (this.fitGridY * 2)
-            y: this.fixVertical ? 0 : point.y - this.bodyScroll + this.headerRect.top - this.headerRect.height - (this.fitGridY * 2),
+            // y: this.fixVertical ? 0 : point.y - this.bodyScroll + this.headerRect.top + this.headerRect.height,
+            y: this.fixVertical ? 0 : point.y - this.bodyScroll - (this.fitGridY * 4),
           };
 
           console.log("movingpoint " ,{...this.movingpoint});
+          console.log("headerRect " ,{...this.headerRect});
 
           this.mousepoint_margin = {
             x: this.fixHorizontal ? 0 : this.mousepoint_margin.x,
             y: this.fixVertical ? 0 : this.mousepoint_margin.y,
           };
-          console.log("mousepoint_margin " ,{...this.mousepoint_margin});
+          // console.log("mousepoint_margin " ,{...this.mousepoint_margin});
 
           this.detectTarget(point);
         }
