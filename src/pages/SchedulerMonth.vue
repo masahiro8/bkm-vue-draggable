@@ -5,9 +5,13 @@
         @updateDate="updateDate"
         @updateMonth="updateMonth"
         :today="todayObject"
+        :scheduleTypeId="scheduleTypeId"
       />
       <div>
-        <SchedulerMonth :todayObject="todayObject" @updateDate="updateDate" />
+        <SchedulerMonth
+          :todayObject="todayObject"
+          @updateDate="updateDate"
+        />
       </div>
     </template>
   </PageFrameSingle>
@@ -20,12 +24,10 @@
   import {
     getDateStringFromObject,
     getDateObjectFromString,
-    getWeekFromDate
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER } from "../components/scheduler/config";
+  import { CONFIG_SCHEDULER,SCHEDULER_TYPE } from "../components/scheduler/config";
   import { ScheduleTypes } from "../components/scheduler/store/ScheduleStore";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
-  import { UIObserver } from "../components/scheduler/store/ScheduleStore";
 
   export default {
     data: () => {
@@ -34,13 +36,8 @@
         config_reserve_type_ids: null,
         gridLines: [],
         lists: [],
-        weekArray: [],
         todayObject: {},
-        //ここからUIObserver
-        bodyScroll:0,
-        bodyMainRect:{},
-        headerRect:{},
-        isHeaderTableOpen: true,
+        scheduleTypeId:SCHEDULER_TYPE.MONTH.id
       };
     },
     components: {
@@ -63,17 +60,8 @@
       const todayObject = getDateObjectFromString(today);
       this.todayObject = todayObject;
 
-      this.loadData(today);
+      this.loadData();
       this.setBodyOverflowHidden(true);
-      
-      //スクロール取得
-      UIObserver.getCallback((value)=>{
-        this.bodyScroll = value["bodyScroll"];
-        this.isHeaderTableOpen = value["isHeaderTableOpen"];
-        this.headerRect = value["headerRect"];
-        this.bodyMainRect = value["bodyMainRect"];
-        // console.log("UIObserver",value);
-      })
     },
     destroyed() {
       this.setBodyOverflowHidden(true);
@@ -83,23 +71,15 @@
       async updateDate(val) {
         //選択日
         this.todayObject = val;
-        const today = getDateStringFromObject(val);
-        this.loadData(today);
+        this.loadData();
       },
       async updateMonth(val){
         //選択日
         this.todayObject = val;
-        const today = getDateStringFromObject(val);
-        console.log(today);
-        this.loadData(today);
+        this.loadData();
       },
-      async loadData(today) {
+      async loadData() {
         dragStore.resetTargets();
-
-        //1週間の日付データ
-        this.weekArray = getWeekFromDate(today);
-        dragStore.resetTargets();
-
         //Firebaseから取得
         const schedule = await apiConnect.getItems({
           year: this.todayObject.year,

@@ -1,64 +1,56 @@
 <template>
-  <PageFrame>
-    <template v-slot:pageBodySide>
-      <ScheduleMenu
-        :bodyScroll="bodyScroll"
-        :headerRect="headerRect"
-        :bodyMainRect="bodyMainRect"
-      />
-    </template>
+  <PageFrameSingle>
     <template v-slot:pageBodyMain>
-      <CalenderHeader
+      <CalenderHeaderMonth
         @updateDate="updateDate"
+        @updateMonth="updateMonth"
         :today="todayObject"
-        :numbersOfDays="1"
         :scheduleTypeId="scheduleTypeId"
       />
-      <SchedulerWeek
-        :config="config"
-        :config_reserve_type_ids="config_reserve_type_ids"
-        :week="weekArray"
-      />
+      <div>
+        <SchedulerList
+          :todayObject="todayObject"
+          v-slot="{ list }"
+        >
+          <table>
+            <tr v-for="(day,index) in list" :key="index">
+              <td>
+                  <div>{{day.day}}</div>
+              </td>
+            </tr>
+          </table>
+        </SchedulerList>
+      </div>
     </template>
-  </PageFrame>
+  </PageFrameSingle>
 </template>
 <script>
   import { dragStore } from "../components/scheduler/DragStore";
-  import PageFrame from "./UI/PageFrame";
-  import SchedulerWeek from "../components/scheduler/SchedulerWeek";
+  import PageFrameSingle from "./UI/PageFrameSingle";
+  import CalenderHeaderMonth from "../components/scheduler/CalenderHeaderMonth";
+  import SchedulerList from "../components/scheduler/SchedulerList";
   import {
     getDateStringFromObject,
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER, SCHEDULER_TYPE} from "../components/scheduler/config";
-  import {ScheduleTypes} from "../components/scheduler/store/ScheduleStore";
-  import CalenderHeader from "../components/scheduler/CalenderHeader";
+  import { CONFIG_SCHEDULER,SCHEDULER_TYPE } from "../components/scheduler/config";
+  import { ScheduleTypes } from "../components/scheduler/store/ScheduleStore";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
-  import ScheduleMenu from "../components/scheduler/menu/ScheduleMenu";
-  import { UIObserver } from "../components/scheduler/store/ScheduleStore";
+  
 
   export default {
     data: () => {
       return {
         config: CONFIG_SCHEDULER,
         config_reserve_type_ids: null,
-        gridLines: [],
-        lists: [],
-        weekArray: [],
         todayObject: {},
-        //ここからUIObserver
-        bodyScroll:0,
-        bodyMainRect:{},
-        headerRect:{},
-        isHeaderTableOpen: true,
-        scheduleTypeId:SCHEDULER_TYPE.DAY.id
+        scheduleTypeId:SCHEDULER_TYPE.LIST.id
       };
     },
     components: {
-      PageFrame,
-      SchedulerWeek,
-      CalenderHeader,
-      ScheduleMenu
+      PageFrameSingle,
+      CalenderHeaderMonth,
+      SchedulerList
     },
     async mounted() {
       
@@ -75,18 +67,8 @@
       const todayObject = getDateObjectFromString(today);
       this.todayObject = todayObject;
 
-      this.loadData(today);
-
+      this.loadData();
       this.setBodyOverflowHidden(true);
-      
-      //スクロール取得
-      UIObserver.getCallback((value)=>{
-        this.bodyScroll = value["bodyScroll"];
-        this.isHeaderTableOpen = value["isHeaderTableOpen"];
-        this.headerRect = value["headerRect"];
-        this.bodyMainRect = value["bodyMainRect"];
-        // console.log("UIObserver",value);
-      })
     },
     destroyed() {
       this.setBodyOverflowHidden(true);
@@ -96,14 +78,15 @@
       async updateDate(val) {
         //選択日
         this.todayObject = val;
-        const today = getDateStringFromObject(val);
-        this.loadData(today);
+        this.loadData();
       },
-      async loadData(today) {
+      async updateMonth(val){
+        //選択日
+        this.todayObject = val;
+        this.loadData();
+      },
+      async loadData() {
         dragStore.resetTargets();
-
-        //1週間の日付データ
-        this.weekArray = [today];
 
         //Firebaseから取得
         const schedule = await apiConnect.getItems({

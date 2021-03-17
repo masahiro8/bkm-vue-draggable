@@ -16,21 +16,21 @@
         </button>
       </div>
     </div>
-    <div class="calenderHeader--tab">
-      <router-link class="tab--item" :to="'month'"> <div>月</div></router-link>
-      <router-link class="tab--item" :to="'week'"> <div>週</div></router-link>
-      <router-link class="tab--item" :to="'day'"><div>日</div></router-link>
-    </div>
+    <CalenderHeaderTab :scheduleTypeId="scheduleTypeId" />
   </div>
 </template>
 <script>
   import { getDateObjectFromDateFormat } from "./util/timeUtil";
+  import CalenderHeaderTab from "./UI/CalenderHeaderTab";
   export default {
     data: () => {
       return {
         arrow_back: require("./assets/arrow_back.svg"),
         arrow_forward: require("./assets/arrow_forward.svg"),
       };
+    },
+    components:{
+      CalenderHeaderTab
     },
     mounted() {},
     props: {
@@ -41,6 +41,9 @@
         type: Number,
         default: 1,
       },
+      scheduleTypeId:{
+        type: Number
+      }
     },
     computed: {
       getTitle() {
@@ -73,6 +76,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: white;
   }
 
   .calenderHeader--center {
@@ -90,27 +94,6 @@
       color: black;
       opacity: 0.5;
       font-size:18px;
-      &:hover {
-        cursor: pointer;
-        opacity: 1;
-      }
-    }
-  }
-
-  .calenderHeader--tab {
-    display: flex;
-    height: 32px;
-    padding: 0 16px;
-    align-items: center;
-
-    .tab--item {
-      padding: 4px 8px;
-      width:16px;
-      height:16px;
-      text-decoration: none;
-      color: black;
-      opacity: 0.5;
-      font-size:10px;
       &:hover {
         cursor: pointer;
         opacity: 1;

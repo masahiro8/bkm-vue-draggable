@@ -10,6 +10,7 @@
         @updateDate="updateDate"
         :today="todayObject"
         :numbersOfDays="7"
+        :scheduleTypeId="scheduleTypeId"
       />
       <div class="week__main">
         <SchedulerWeek
@@ -32,7 +33,7 @@
     getDateStringFromObject,
     getDateObjectFromString,
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER } from "../components/scheduler/config";
+  import { CONFIG_SCHEDULER,SCHEDULER_TYPE } from "../components/scheduler/config";
   import {ScheduleTypes} from "../components/scheduler/store/ScheduleStore";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
@@ -53,6 +54,7 @@
         bodyMainRect:{},
         headerRect:{},
         isHeaderTableOpen: true,
+        scheduleTypeId:SCHEDULER_TYPE.WEEK.id
       };
     },
     components: {

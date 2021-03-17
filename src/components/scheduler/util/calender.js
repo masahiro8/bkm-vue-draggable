@@ -53,8 +53,30 @@ export const Calender = ({ year, month, day }) => {
     return cal;
   };
 
+  const getDaysOfList = () => {
+    let dayCount = 1;
+    let list = [];
+
+    for (let w = 0; w < 6; w++) {
+      for (let d = 0; d < 7; d++) {
+        const day_label = weeks[d];
+        if ((w == 0 && d < startDay) || dayCount > endDayCount) {
+          //前月と翌月は追加しない
+        } else {
+          list.push({
+            day: dayCount,
+            day_label,
+          });
+          dayCount++;
+        }
+      }
+    }
+    return list;
+  };
+
   return {
     getDayOfWeekLabel,
     getDaysOfMonth,
+    getDaysOfList,
   };
 };
