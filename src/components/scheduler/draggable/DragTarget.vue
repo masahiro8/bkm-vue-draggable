@@ -162,7 +162,6 @@
           };
         });
       },
-
       update() {
         //ストアに自身を登録
         dragStore.setTarget({
@@ -217,5 +216,10 @@
     position: relative;
     flex: 1;
     pointer-events: all;
+    &.isDrop{
+      &:hover{
+        background-color: red;
+      }
+    }
   }
 </style>

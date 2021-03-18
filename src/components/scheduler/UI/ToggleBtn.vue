@@ -24,6 +24,9 @@
 @import "./ui.scss";
 @include btn;
 .btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   img {
     transition: transform .1s ease-out;
     &.close {
@@ -31,5 +34,6 @@
     }
   }
   height: 24px;
+  width: 24px;
 }
 </style>

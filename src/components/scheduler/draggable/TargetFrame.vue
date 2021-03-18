@@ -1,5 +1,5 @@
 <template>
-  <div class="DayFrame" :style="style">
+  <div class="DayFrame" :style="style()">
       <slot/>
   </div>
 </template> 
@@ -17,11 +17,12 @@ export default {
     innerHeight:{
       type:Number,
       defaultValue: CONFIG_SCHEDULER.innerHeight
-    }
+    },
   },
-  computed:{
+  methods:{
     style(){
-      return `height:${this.innerHeight}px`;
+      let _style =`height:${this.innerHeight}px;`;
+      return _style;
     }
   }
 }

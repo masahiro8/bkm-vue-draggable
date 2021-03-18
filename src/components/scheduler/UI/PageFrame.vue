@@ -17,7 +17,8 @@ export default {};
 .page-scheduler{
   background-color: #eee;
   height: 100%;
-  padding-top: 32px;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 .page-scheduler__body {
   display: flex;
@@ -29,6 +30,7 @@ export default {};
 }
 .page-scheduler__main {
   position: absolute;
+  margin-top: 8px;
   left: 180px;
   width: calc(100% - 180px);
   background-color: #F4F4F4;

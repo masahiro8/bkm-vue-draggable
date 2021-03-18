@@ -1,5 +1,8 @@
 <template>
-  <div class="scheduleheader--table" :class="isTableOpen?'open':'close'">
+  <div class="scheduleheader--table"
+    :class="isTableOpen?'open':'close'"
+    :style="getStyle()"
+  >
     <div class="scheduleheader--cell">
       <slot name="cell1"></slot>
     </div>
@@ -12,9 +15,20 @@
 export default {
   props: {
     isTableOpen:{
-      type:Boolean
+      type: Boolean
+    },
+    holiday:{
+      type: Object,
     }
   },
+  methods:{
+    getStyle(){
+      if(this.holiday && !this.holiday.color) return '';
+      let style = ``;
+      if(this.holiday) style += `background-color:${this.holiday['color']}`;
+      return style;
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -31,6 +45,7 @@ export default {
   height:48px;
   border-top:1px solid $grid-color;
   position: relative;
+  text-align: center;
   &:before {
     content: "";
     display: block;

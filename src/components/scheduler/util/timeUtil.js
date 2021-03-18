@@ -295,6 +295,15 @@ const getTommorow = (date) => {
   return `${_date.getFullYear()}-${m}-${d}`;
 };
 
+/**
+ * 日付から曜日を取得
+ * @param {string} date yyyy-mm-dd
+ */
+const getDayFromDate = (date) => {
+  const d = new Date(date);
+  return d.getDay();
+};
+
 export {
   roundTo15min,
   //ピクセル数から時間を返す
@@ -327,4 +336,6 @@ export {
   getTimeStrFromMin,
   //00:00から{h:00,m:00}を返す
   getTimeObjectFromString,
+  //日付から曜日を取得
+  getDayFromDate,
 };

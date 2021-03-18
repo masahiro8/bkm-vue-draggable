@@ -1,11 +1,9 @@
 <template>
   <PageFrame>
     <template v-slot:pageBodySide>
-      <ScheduleMenu
-        :bodyScroll="bodyScroll"
-        :headerRect="headerRect"
-        :bodyMainRect="bodyMainRect"
-      />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
+      <ScheduleMenu :bodyScroll="bodyScroll" :headerRect="headerRect" :bodyMainRect="bodyMainRect" />
     </template>
     <template v-slot:pageBodyMain>
       <CalenderHeader
@@ -13,12 +11,18 @@
         :today="todayObject"
         :numbersOfDays="1"
         :scheduleTypeId="scheduleTypeId"
+        :holiday="holiday"
       />
-      <SchedulerWeek
-        :config="config"
-        :config_reserve_type_ids="config_reserve_type_ids"
-        :week="weekArray"
-      />
+      <div class="week__main">
+        <SchedulerWeek
+          :config="config"
+          :config_reserve_type_ids="config_reserve_type_ids"
+          :week="weekArray"
+          :bodyScroll="bodyScroll"
+          :isHeaderTableOpen="isHeaderTableOpen"
+          :holiday="holiday"
+        />
+      </div>
     </template>
   </PageFrame>
 </template>
@@ -29,8 +33,9 @@
   import {
     getDateStringFromObject,
     getDateObjectFromString,
+    getDayFromDate
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER, SCHEDULER_TYPE} from "../components/scheduler/config";
+  import { CONFIG_SCHEDULER, SCHEDULER_TYPE,HOLIDAY_TYPE} from "../components/scheduler/config";
   import {ScheduleTypes} from "../components/scheduler/store/ScheduleStore";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
@@ -104,6 +109,17 @@
 
         //1週間の日付データ
         this.weekArray = [today];
+
+        //土日を指定
+        let holiday = {};
+        this.weekArray.forEach(item => {
+          let h = HOLIDAY_TYPE.WEE;
+          const w = getDayFromDate(item);
+          if( w === 0 ) h = HOLIDAY_TYPE.SUN;
+          if( w === 6 ) h = HOLIDAY_TYPE.SAT;
+          holiday[item] = h;
+        });
+        this.holiday = holiday;
 
         //Firebaseから取得
         const schedule = await apiConnect.getItems({

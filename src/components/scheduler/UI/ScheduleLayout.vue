@@ -58,10 +58,16 @@ import { UIObserver } from "../store/ScheduleStore";
           height:_bodyMainRect.height
         }
         const scroll = bodyMainRect.top - bodyRect.top - CONFIG_SCHEDULER.grid15min;
-        // console.log("scroll",_bodyMainRect,bodyMainRect, CONFIG_SCHEDULER.grid15min);
+        // console.log("scroll",bodyMainRect.top, CONFIG_SCHEDULER.grid15min);
         UIObserver.putValue("bodyScroll",scroll);
         UIObserver.putValue("bodyMainRect",bodyMainRect);
       });
+
+      //スクロールしておく
+      setTimeout(()=>{
+        const h = 9;//スクロール先の時間
+        body.scrollTop = CONFIG_SCHEDULER.grid15min * h * 4;
+      },1000);
 
       //初期設定する
       const bodyRect = body.getBoundingClientRect();

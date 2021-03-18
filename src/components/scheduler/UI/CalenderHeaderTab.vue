@@ -36,13 +36,15 @@ export default {
 
   .tab--item {
     padding: 4px 8px;
-    width:32px;
-    height:16px;
+    min-width:48px;
+    min-height:16px;
     text-decoration: none;
     color: black;
     opacity: 0.5;
     font-size:10px;
     background-color: #fbfbfb;
+    text-align: center;
+    box-sizing: border-box;
 
     &.select{
       font-weight: bold;

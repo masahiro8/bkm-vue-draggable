@@ -1,5 +1,5 @@
 <template>
-  <div class="list" :class="last ? 'last' : null">
+  <div class="list" :class="getClass()" :style="getStyle()">
     <div class="body"><slot /></div>
   </div>
 </template>
@@ -9,7 +9,27 @@ export default {
     last: {
       type: Boolean,
     },
+    isDropTarget:{
+      type: Boolean,
+    },
+    holiday:{
+      type: Object,
+    }
   },
+  methods:{
+    getClass(){
+      let classes= "";
+      classes += this.last?'last ':'';
+      classes += this.isDropTarget?'isDrop ':'';
+      return classes;
+    },
+    getStyle(){
+      if(this.holiday && !this.holiday.color) return '';
+      let style = '';
+      style += `background-color:${this.holiday.color};`;
+      return style;
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -20,7 +40,8 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  // pointer-events: none;
+
   &:before {
     content: "";
     position: absolute;
@@ -44,6 +65,12 @@ export default {
       border-right: 1px solid $grid-color;
     }
   }
+
+  &:hover{
+    &.isDrop{
+    }
+  }
+
 }
 .body {
 }

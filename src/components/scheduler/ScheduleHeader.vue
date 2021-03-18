@@ -18,10 +18,16 @@
         :key="index"
         :style="'min-width:' + (config.targetWidth * config_reserve_type_ids.length) + 'px;'"
       >
-        <ScheduleLabel :label="getLabel(date)" />
+        <ScheduleLabel 
+          :label="getLabel(date)"
+          :holiday="holiday[date]"
+        />
         <!-- テーブル表示 -->
         <div v-if="hasTable">
-          <ScheduleHeaderTable :isTableOpen="isTableOpen">
+          <ScheduleHeaderTable
+            :isTableOpen="isTableOpen"
+            :holiday="holiday[date]"
+          >
             <!-- 申請 -->
             <template v-slot:cell1>
               <!-- コンポーネントを作って、propsを渡す -->
@@ -72,6 +78,9 @@
       },
       onchange:{
         type:Function
+      },
+      holiday:{
+        type: Object,
       }
     },
     methods: {
@@ -118,5 +127,8 @@
   }
   .headerLabel--togglebtn{
     height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
   }
 </style>

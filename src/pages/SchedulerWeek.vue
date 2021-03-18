@@ -11,6 +11,7 @@
         :today="todayObject"
         :numbersOfDays="7"
         :scheduleTypeId="scheduleTypeId"
+        :holiday="holiday"
       />
       <div class="week__main">
         <SchedulerWeek
@@ -19,6 +20,7 @@
           :week="weekArray"
           :bodyScroll="bodyScroll"
           :isHeaderTableOpen="isHeaderTableOpen"
+          :holiday="holiday"
         />
       </div>
     </template>
@@ -32,8 +34,9 @@
     getWeekFromDate,
     getDateStringFromObject,
     getDateObjectFromString,
+    getDayFromDate
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER,SCHEDULER_TYPE } from "../components/scheduler/config";
+  import { CONFIG_SCHEDULER,SCHEDULER_TYPE,HOLIDAY_TYPE } from "../components/scheduler/config";
   import {ScheduleTypes} from "../components/scheduler/store/ScheduleStore";
   import CalenderHeader from "../components/scheduler/CalenderHeader";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
@@ -49,6 +52,7 @@
         lists: [],
         weekArray: [],
         todayObject: {},
+        holiday:{},//休日
         //ここからUIObserver
         bodyScroll:0,
         bodyMainRect:{},
@@ -106,6 +110,18 @@
         this.weekArray = getWeekFromDate(today);
         dragStore.resetTargets();
 
+        //土日を指定
+        let holiday = {};
+        this.weekArray.forEach(item => {
+          let h = HOLIDAY_TYPE.WEE;
+          const w = getDayFromDate(item);
+          if( w === 0 ) h = HOLIDAY_TYPE.SUN;
+          if( w === 6 ) h = HOLIDAY_TYPE.SAT;
+          holiday[item] = h;
+        });
+        console.log("holi",holiday);
+        this.holiday = holiday;
+
         //Firebaseから取得
         const schedule = await apiConnect.getItems({
           year: this.todayObject.year,
@@ -113,6 +129,7 @@
           day: null,
         });
         dragStore.setAllItems({ schedule });
+        
       },
       setBodyOverflowHidden(b) {
         document.querySelector("body").style.overflow = b ? "hidden" : "auto";

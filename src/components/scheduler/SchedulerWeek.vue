@@ -9,6 +9,7 @@
         :config_reserve_type_ids="config_reserve_type_ids"
         :week="week" 
         :hasTable="true"
+        :holiday="holiday"
         @onChange="onChangeLayout"
       />
     </template>
@@ -21,6 +22,7 @@
         :config="config"
         :config_reserve_type_ids="config_reserve_type_ids"
         :innerHeight="getInnerHeight" 
+        :holiday="holiday[date]"
       />
     </template>
     <!-- スケジュールラベル -->
@@ -59,7 +61,12 @@
             v-slot="{ params }"
           >
             <!-- フレーム内の後ろに表示 -->
-            <ListBox :index="index" :last="index === week.length - 1"></ListBox>
+            <ListBox 
+              :isDropTarget="type.isDropTarget"
+              :index="index"
+              :last="index === week.length - 1"
+              :holiday="holiday[date]"
+            ></ListBox>
             <!-- 背景のグリッド線 -->
             <GridFrame :config="config" />
             <!-- 出社/退社ライン -->
@@ -131,7 +138,7 @@
   import ScheduleHeader from "./ScheduleHeader";
   import TableHeaderLabel from "./UI/TableHeaderLabel";
   import ScheduleLine from "./UI/ScheduleLine";
-  import { CONFIG_SCHEDULER } from "./config";
+  import { CONFIG_SCHEDULER,HOLIDAY_TYPE } from "./config";
 
   export default {
     name: "Scheduler",
@@ -139,6 +146,7 @@
       return {
         gridLines: [],
         resizeHeader:false,
+        HOLIDAY_TYPE
       };
     },
     props: {
@@ -150,6 +158,9 @@
       },
       config_reserve_type_ids:{
         type: Array,
+      },
+      holiday:{
+        type: Object
       }
     },
     components: {

@@ -1,6 +1,6 @@
 <template>
   <div class="DayFrame"
-    :style="'min-width:' + (config.targetWidth * config_reserve_type_ids.length) + 'px;'"
+    :style="getStyle()"
   >
     <div
       v-for="(type,index) in config_reserve_type_ids"
@@ -26,8 +26,20 @@ export default {
     },
     config_reserve_type_ids:{
       type:Array
+    },
+    holiday:{
+      type: Object,
     }
   },
+  methods:{
+    getStyle(){
+      let style = 'min-width:' + (this.config.targetWidth * this.config_reserve_type_ids.length) + 'px;';
+      if(this.holiday && !this.holiday.color) return style;
+      
+      style += `background-color:${this.holiday.color};`;
+      return style;
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -276,10 +276,12 @@
           console.log("point " ,point);
           this.movingpoint = {
             x: this.fixHorizontal ? 0 : point.x,
+            //チケットドロップがずれる時はここで調整
             //どうしても上にずれるので、this.fitGridY * 2を追加してる
             // + (this.fitGridY * 2)
             // y: this.fixVertical ? 0 : point.y - this.bodyScroll + this.headerRect.top + this.headerRect.height,
-            y: this.fixVertical ? 0 : point.y - this.bodyScroll - (this.fitGridY * 4),
+            // y: this.fixVertical ? 0 : point.y - this.bodyScroll - (this.fitGridY * 4),
+            y: this.fixVertical ? 0 : point.y - this.bodyScroll - (this.fitGridY * 6),
           };
 
           console.log("movingpoint " ,{...this.movingpoint});

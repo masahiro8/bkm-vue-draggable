@@ -1,5 +1,5 @@
 <template>
-  <div class="schedulelabel">
+  <div class="schedulelabel" :style="getStyle()">
     <div class="schedulelabel--date">{{ label }}</div>
   </div>
 </template>
@@ -9,8 +9,19 @@ export default {
   props: {
     label: {
       type: String,
+    },
+    holiday:{
+      type: Object,
     }
   },
+  methods:{
+    getStyle(){
+      if(this.holiday && !this.holiday.color) return '';
+      let style = ``;
+      if(this.holiday) style += `background-color:${this.holiday['color']}`;
+      return style;
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
