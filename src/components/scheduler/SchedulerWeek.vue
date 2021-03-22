@@ -86,6 +86,7 @@
                 :fitGridX="params.grid.x"
                 :fitGridY="params.grid.y"
                 @onclick="onClickItem"
+                @onhover="onHoverItem"
                 v-slot="{
                   target,
                   position,
@@ -191,6 +192,13 @@
     methods:{
       onClickItem({itemId,item}){
         console.log(itemId,item);
+      },
+      onHoverItem({itemId,item,point}){
+        if(itemId && item && point){
+          console.log(itemId,item,point);
+        }else {
+          console.log("hover out");
+        }
       }
     }
   };

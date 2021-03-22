@@ -484,6 +484,11 @@
           point,
           targetRect || { x: 0, y: 0, width: 0, height: 0 }
         );
+        this.$emit("onhover",{
+          itemId:null,
+          item:null,
+          point:null
+        });
       },
       mouseDown(e) {
         e.stopPropagation();
@@ -543,11 +548,24 @@
       mouseEnter(e) {
         e.stopPropagation();
         this.isEnter = true;
+        const point = getPointer(e);
+        this.$emit("onhover",{
+          itemId:this.itemId,
+          item:this.item,
+          point
+        });
       },
       mouseOut() {
         //mouseOutはこの要素の上に乗ってる要素にポインターが乗った時にも呼ばれるので、
         //座標だけではなく、深度も含めて挙動を監視している
         // this.isEnter = false;
+        if(this.isEnter){
+          this.$emit("onhover",{
+            itemId:null,
+            item:null,
+            point:null
+          });
+        }
       },
       mouseLeave() {
         this.isEnter = false;
