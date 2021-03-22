@@ -63,6 +63,7 @@
         mousepoint_margin: null,
         mousepoint: null,
         mousedown: false,
+        isMouseDrag:false, //ドラッグとクリックを区別するフラグ
         hitarea: false,
         target: null,//自分がいるDragTarget
         target_margin: null,
@@ -475,6 +476,7 @@
       mouseMove(e) {
         e.stopPropagation();
         if (!this.self || !this.isMove) return;
+        this.isMouseDrag = true;
         const point = getPointer(e);
         this.mousepoint = point;
         const targetRect = this.target.getBoundingClientRect();
@@ -534,6 +536,7 @@
           };
           this.detectTarget(point);
         }
+
         this.mousedown = false;
         this.isMove = false;
       },
@@ -552,6 +555,13 @@
       mouseClick(e) {
         e.stopPropagation();
         e.preventDefault();
+        if(!this.isMouseDrag){
+          this.$emit("onclick",{
+            itemId:this.itemId,
+            item:this.item
+          });
+        }
+        this.isMouseDrag = false;
       },
 
       addDragEvent() {

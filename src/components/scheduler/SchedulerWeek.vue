@@ -85,6 +85,7 @@
                 :fixVertical="false"
                 :fitGridX="params.grid.x"
                 :fitGridY="params.grid.y"
+                @onclick="onClickItem"
                 v-slot="{
                   target,
                   position,
@@ -187,5 +188,10 @@
         return CONFIG_SCHEDULER.innerHeight;
       }
     },
+    methods:{
+      onClickItem({itemId,item}){
+        console.log(itemId,item);
+      }
+    }
   };
 </script>
