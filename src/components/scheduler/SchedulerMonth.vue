@@ -2,14 +2,25 @@
   <div class="scheduler__calender">
     <table class="calender">
       <tr>
-        <th class="calender__label" v-for="(day,index) in calenderLabel" :key="index">{{day}}</th>
+        <th class="calender__label"
+          v-for="(day,index) in calenderLabel"
+          :key="index"
+          :style="getLabelStyle(index)"
+        >{{day}}</th>
       </tr>
       <tr class="calender__week" v-for="(week,index) in calenderData" :key="index">
         <td class="calender__day" v-for="day in week" :key="day.day" :class="getClass(day)">
           <button class="day__label" :disable="day.enable" @click="update(day.day)">
             <div class="day__number">{{day.day}}</div>
           </button>
-          <CalenderCell :year="year" :month="month" :day="day.day" :enable="day.enable" :today="day.today"  />
+          <CalenderCell
+            :year="year"
+            :month="month"
+            :day="day.day"
+            :enable="day.enable"
+            :today="day.today"
+            :holiday="getHoliday(day.day)"
+          />
         </td>
       </tr>
     </table>
@@ -19,20 +30,24 @@
 import { Calender } from "../scheduler/util/calender";
 import CalenderCell from "../scheduler/UI/CalenderCell";
 import { getDateObjectFromDateFormat } from "./util/timeUtil";
+import { HOLIDAY_TYPE } from "../scheduler/config";
 
 export default {
   data:()=>{
     return {
       year:null,
       month:null,
+      calenderLabel:null,
+      calenderData:null,
     }
   },
   props:{
     todayObject:{
       type: Object,
     },
-    calenderLabel:null,
-    calenderData:null
+    holiday:{
+      type: Object
+    },
   },
   components:{
     CalenderCell
@@ -78,10 +93,21 @@ export default {
       classes += day.enable&&day.today?'today ':'';
       return classes;
     },
+    getLabelStyle(index){
+      let h = HOLIDAY_TYPE.WEE;
+      if( index === 0 ) h = HOLIDAY_TYPE.SUN;
+      if( index === 6 ) h = HOLIDAY_TYPE.SAT;
+      return `background-color:${h.color};`;
+    },
     update(d){
       const ndate = new Date(`${this.year}-${this.month}-${d}`);
       const dateObject = getDateObjectFromDateFormat(ndate);
       this.$emit("updateDate", dateObject);
+    },
+    getHoliday(day){
+      const _month = `${this.month}`.padStart(2,"0");
+      const _day = `${day}`.padStart(2,"0");
+      return this.holiday[`${this.year}-${_month}-${_day}`];
     }
   }
 }
@@ -121,6 +147,7 @@ td,th {
 .calender__day {
   position: relative;
   height: 100px;
+  padding:0;
 
   &.today {
     .day__label{

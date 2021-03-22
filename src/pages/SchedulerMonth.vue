@@ -6,10 +6,12 @@
         @updateMonth="updateMonth"
         :today="todayObject"
         :scheduleTypeId="scheduleTypeId"
+        :holiday="holiday"
       />
       <div>
         <SchedulerMonth
           :todayObject="todayObject"
+          :holiday="holiday"
           @updateDate="updateDate"
         />
       </div>
@@ -24,10 +26,12 @@
   import {
     getDateStringFromObject,
     getDateObjectFromString,
+    getDayFromDate
   } from "../components/scheduler/util/timeUtil";
-  import { CONFIG_SCHEDULER,SCHEDULER_TYPE } from "../components/scheduler/config";
+  import { CONFIG_SCHEDULER,SCHEDULER_TYPE,HOLIDAY_TYPE } from "../components/scheduler/config";
   import { ScheduleTypes } from "../components/scheduler/store/ScheduleStore";
   import { apiConnect } from "../components/scheduler/util/apiConnect";
+  import { Calender } from "../components/scheduler/util/calender";
 
   export default {
     data: () => {
@@ -37,6 +41,7 @@
         gridLines: [],
         lists: [],
         todayObject: {},
+        holiday:{},//休日
         scheduleTypeId:SCHEDULER_TYPE.MONTH.id
       };
     },
@@ -80,6 +85,27 @@
       },
       async loadData() {
         dragStore.resetTargets();
+
+        //土日を指定
+        const {year,month,day} = this.todayObject;
+        const cal = Calender({year,month,day});
+        let calenderList = cal.getDaysOfList();
+
+        let holiday = {};
+        const _month = `${month}`.padStart(2,"0");
+        calenderList = calenderList.map(item=>{
+          const day = `${item.day}`.padStart(2,"0");
+          return `${year}-${_month}-${day}`;
+        })
+        calenderList.forEach(item => {
+          let h = HOLIDAY_TYPE.WEE;
+          const w = getDayFromDate(item);
+          if( w === 0 ) h = HOLIDAY_TYPE.SUN;
+          if( w === 6 ) h = HOLIDAY_TYPE.SAT;
+          holiday[item] = h;
+        });
+        this.holiday = holiday;
+
         //Firebaseから取得
         const schedule = await apiConnect.getItems({
           year: this.todayObject.year,
