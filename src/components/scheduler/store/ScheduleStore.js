@@ -37,4 +37,16 @@ const ScheduleHeaderTableData = Observer();
  */
 const UIObserver = ObserverKeyValue();
 
-export { ScheduleTags, ScheduleTypes, ScheduleHeaderTableData, UIObserver };
+/**
+ * ツールチップ
+ */
+
+const Tooltips = Observer();
+
+export {
+  ScheduleTags,
+  ScheduleTypes,
+  ScheduleHeaderTableData,
+  UIObserver,
+  Tooltips,
+};

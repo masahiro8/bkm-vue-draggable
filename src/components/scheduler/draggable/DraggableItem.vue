@@ -548,11 +548,17 @@
       mouseEnter(e) {
         e.stopPropagation();
         this.isEnter = true;
-        const point = getPointer(e);
+        // const point = getPointer(e);
+        const rect = this.$refs.self.getBoundingClientRect();
         this.$emit("onhover",{
           itemId:this.itemId,
           item:this.item,
-          point
+          point:{
+            x:rect.x,
+            y:rect.y,
+            width:rect.width,
+            height:rect.height
+          }
         });
       },
       mouseOut() {

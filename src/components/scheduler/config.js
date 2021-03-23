@@ -4,6 +4,7 @@ let _CONFIG_SCHEDULER = {
   gideWidth: 46, //時間ガイドの幅
   grid15min: 16, //15分ごとのグリッドのピクセル数
   isClickToAdd: false, //クリックして新規予定の作成
+  isTooltipOnSchedule: true, //スケジュールでツールチップを表示するか
 };
 
 //スケジューラー画面の選択肢

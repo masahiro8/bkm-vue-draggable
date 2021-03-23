@@ -122,6 +122,12 @@
           </DragTarget>
         </TargetFrame>
       </TargetDay>
+      <!-- ツールチップ -->
+      <Tooltip
+        v-slot="{tooltipValue}"
+      >
+        <TooltipBody :tooltipValue="tooltipValue" />
+      </Tooltip>
     </template>
   </ScheduleLayout>
 </template>
@@ -141,6 +147,9 @@
   import TableHeaderLabel from "./UI/TableHeaderLabel";
   import ScheduleLine from "./UI/ScheduleLine";
   import { CONFIG_SCHEDULER,HOLIDAY_TYPE } from "./config";
+  import { Tooltips } from "./store/ScheduleStore";
+  import Tooltip from "./tooltip/Tooltip";
+  import TooltipBody from "./UI/TooltipBody";
 
   export default {
     name: "Scheduler",
@@ -178,7 +187,9 @@
       ListBox,
       GridFrame,
       GuideFrame,
-      ScheduleLine
+      ScheduleLine,
+      Tooltip,
+      TooltipBody
     },
     computed: {
       getStyle() {
@@ -194,10 +205,12 @@
         console.log(itemId,item);
       },
       onHoverItem({itemId,item,point}){
+        //ツールチップ表示フラグ
+        if(!this.config.isTooltipOnSchedule) return;
         if(itemId && item && point){
-          console.log(itemId,item,point);
+          Tooltips.setValues([{itemId,item,point}]);
         }else {
-          console.log("hover out");
+          Tooltips.setValues([]);
         }
       }
     }
