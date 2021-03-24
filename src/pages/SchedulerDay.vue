@@ -72,37 +72,55 @@
         this.config_reserve_type_ids = values;
       });
 
-      //日付をロード
-      const { year, month, day } = this.$route.params;
-
-      //今日の日付
-      const today = getDateStringFromObject({ year, month, day });
-      const todayObject = getDateObjectFromString(today);
-      this.todayObject = todayObject;
-
-      this.loadData(today);
-
-      this.setBodyOverflowHidden(true);
-      
       //スクロール取得
       UIObserver.getCallback((value)=>{
         this.bodyScroll = value["bodyScroll"];
         this.isHeaderTableOpen = value["isHeaderTableOpen"];
         this.headerRect = value["headerRect"];
         this.bodyMainRect = value["bodyMainRect"];
-        // console.log("UIObserver",value);
-      })
+      });
+
+      this.setBodyOverflowHidden(true);
+
+      this.$watch(
+        ()=>[this.$route.params],
+        ( newValue )=>{
+          if( newValue[0] ){
+            const { year, month, day } = newValue[0];
+            this.init({ year, month, day } );
+          }
+        },
+        {
+          immediate: true,
+          deep: true
+        }
+      )
     },
     destroyed() {
       this.setBodyOverflowHidden(true);
     },
     methods: {
+      init ({ year, month, day }) {
+        //今日の日付
+        const today = getDateStringFromObject({ year, month, day });
+        const todayObject = getDateObjectFromString(today);
+        this.todayObject = todayObject;
+
+        this.loadData(today);
+        
+      },
       //選択日を更新
       async updateDate(val) {
-        //選択日
-        this.todayObject = val;
-        const today = getDateStringFromObject(val);
-        this.loadData(today);
+        //TODO: history backで再描画されない
+        const {year,month,day} = val;
+        this.$router.push({
+          name: 'SchedulerDay-yyyymmdd',
+          params: { year, month, day}
+        });
+        // //選択日
+        // this.todayObject = val;
+        // const today = getDateStringFromObject(val);
+        // this.loadData(today);
       },
       async loadData(today) {
         dragStore.resetTargets();

@@ -57,29 +57,50 @@
         this.config_reserve_type_ids = values;
       });
 
-      //日付をロード
-      const { year, month, day } = this.$route.params;
-
-      //今日の日付
-      const today = getDateStringFromObject({ year, month, day });
-      const todayObject = getDateObjectFromString(today);
-      this.todayObject = todayObject;
-
-      this.loadData();
       this.setBodyOverflowHidden(true);
+
+      //日付をロード
+      this.$watch(
+        ()=>[this.$route.params],
+        ( newValue )=>{
+          if( newValue[0] ){
+            const { year, month } = newValue[0];
+            this.init({ year, month } );
+          }
+        },
+        {
+          immediate: true,
+          deep: true
+        }
+      )
     },
     destroyed() {
       this.setBodyOverflowHidden(true);
     },
     methods: {
+      init({ year, month }){
+        //今日の日付
+        const today = getDateStringFromObject({ year, month, day:1 });
+        const todayObject = getDateObjectFromString(today);
+        this.todayObject = todayObject;
+        this.loadData();
+      },
       //選択日を更新
       async updateDate(val) {
-        //選択日
-        this.todayObject = val;
-        this.loadData();
+        const {year,month,day} = val;
+        this.$router.push({
+          name: 'SchedulerDay-yyyymmdd',
+          params: { year, month, day}
+        });
       },
       async updateMonth(val){
         //選択日
+        //TODO: history backで再描画されない
+        const {year,month} = val;
+        this.$router.push({
+          name: 'SchedulerMonth-yyyymm',
+          params: { year,month:`${month}`.padStart(2,"0")}
+        });
         this.todayObject = val;
         this.loadData();
       },

@@ -9,10 +9,10 @@ let _CONFIG_SCHEDULER = {
 
 //スケジューラー画面の選択肢
 let SCHEDULER_TYPE = {
-  LIST: { id: 1, title: "一覧", to: "list" },
-  MONTH: { id: 2, title: "月", to: "month" },
-  WEEK: { id: 3, title: "週", to: "week" },
-  DAY: { id: 4, title: "日", to: "day" },
+  LIST: { id: 1, title: "一覧", to: "/list" },
+  MONTH: { id: 2, title: "月", to: "/month" },
+  WEEK: { id: 3, title: "週", to: "/week" },
+  DAY: { id: 4, title: "日", to: "/day" },
 };
 
 //休日

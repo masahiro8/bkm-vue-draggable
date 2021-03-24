@@ -22,7 +22,7 @@ export default new Router({
     },
     {
       path: "/week/:year/:month/:day",
-      name: "SchedulerWeek",
+      name: "SchedulerWeek-yyyymmdd",
       component: SchedulerWeek,
     },
     {
@@ -32,7 +32,7 @@ export default new Router({
     },
     {
       path: "/day/:year/:month/:day",
-      name: "SchedulerDay",
+      name: "SchedulerDay-yyyymmdd",
       component: SchedulerDay,
     },
     {
@@ -42,7 +42,7 @@ export default new Router({
     },
     {
       path: "/month/:year/:month",
-      name: "SchedulerMonth",
+      name: "SchedulerMonth-yyyymm",
       component: SchedulerMonth,
     },
     {
