@@ -58,7 +58,7 @@
       });
 
       //日付をロード
-      const { year, month, day } = this.$route.query;
+      const { year, month, day } = this.$route.params;
 
       //今日の日付
       const today = getDateStringFromObject({ year, month, day });

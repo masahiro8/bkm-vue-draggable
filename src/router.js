@@ -21,12 +21,27 @@ export default new Router({
       component: SchedulerWeek,
     },
     {
+      path: "/week/:year/:month/:day",
+      name: "SchedulerWeek",
+      component: SchedulerWeek,
+    },
+    {
       path: "/day",
       name: "SchedulerDay",
       component: SchedulerDay,
     },
     {
+      path: "/day/:year/:month/:day",
+      name: "SchedulerDay",
+      component: SchedulerDay,
+    },
+    {
       path: "/month",
+      name: "SchedulerMonth",
+      component: SchedulerMonth,
+    },
+    {
+      path: "/month/:year/:month",
       name: "SchedulerMonth",
       component: SchedulerMonth,
     },
